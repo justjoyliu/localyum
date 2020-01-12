@@ -27,7 +27,7 @@ gem 'mysql2'
 #gem 'image_sorcery'
 #gem 'rmagick'
 # gem 'paperclip', '3.3.1'
-gem "paperclip", "~> 3.0"#, :path => "/usr/local/bin/" #for image upload
+gem "paperclip", "~> 4.3"#, :path => "/usr/local/bin/" #for image upload
 #gem "cocaine", "= 0.3.2" 
 
 gem 'validates_timeliness', '~> 3.0'
