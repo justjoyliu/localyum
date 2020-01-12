@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head><title></title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <link href='http://fonts.googleapis.com/css?family=Josefin+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  </head>
+
+  <body style="font-family: 'Josefin Sans', sans-serif;line-height: 24px;text-align: center;">
+    <table width="100%" border="0" id="background-table" style="background-color: #f19231;padding: 20px;">
+      <tbody>
+        <tr><td id="logo" style="font-size: 16px;color: #ffffff;">LOCAL YUM</td></tr>
+        <tr><td>
+          <table width="100%" border="0" id="background-table-content" style="background-color: #ffffff;padding: 20px;border-spacing: 0px;">
+            <tbody>
+              <tr><td><h1 style="font-size: 18px;font-weight: bold;margin: 10px 0 20px 0;">We could not process your Local Yum event contribution for <%= @evt.event_name.titlecase %>. </h1></td></tr>
+              
+              <tr><td style="background-color: #fcf7df;padding: 10px 20px;margin-bottom: 10px;vertical-align: top;">
+                Your contribution of <%= number_to_currency(@signup.payment_amt.to_f/100.00) %> was not completed because <%= @fail_msg.downcase %> <br>  
+                <%= link_to "Please try and contribute to the event again by clicking here to reserve your seat.", signup_url(@signup.permalink) %>
+              </td></tr>
+
+              <tr><td class="margin_top" style="padding-top: 25px;">Hope you can join this event and have a great time!</td></tr>
+              <tr><td class="margin_top_20px" style="padding-top: 20px;">
+                Warmest regards,
+                <br> Local Yum
+              </td></tr>
+            </tbody>
+          </table>
+        </td></tr>
+      </tbody>
+    </table>
+  </body>
+</html>

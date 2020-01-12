@@ -1,0 +1,164 @@
+<% provide(:title, "Edit Event") %> 
+
+<div class="row margin_bottom_20px">
+  <div class="span6">
+
+      <div class = "page_tagline_big">
+        Make your event fantastic.
+      </div>
+
+      <div class="event_nav_bar margin_top"><div class="btn-group">
+          <%= link_to "1: Basic", edit_basic_path(@hostevent.permalink), :class => "btn_complete" %>
+
+          <% if @hostevent.hostevent_step1? %>
+            <%= link_to "2: Menu", edit_hostevent_path(@hostevent.permalink), :class => "btn_complete" %>
+            <% else %>
+              <%= link_to "2: Menu", edit_hostevent_path(@hostevent.permalink), :class => "btn_incomplete" %>
+            <% end %>
+
+          <% if @hostevent.hostevent_step2? %>
+            <%= link_to "3: Details", step2_path(@hostevent.permalink), :class => "btn_complete_active" %>
+            <% else %>
+              <%= link_to "3: Details", step2_path(@hostevent.permalink), :class => "btn_incomplete_active" %>
+            <% end %>
+          
+          <% if @hostevent.hostevent_step3? %>
+            <%= link_to "4: Photos", addphoto_to_event_path(@hostevent.permalink), :class => "btn_complete" %>
+            <% else %>
+              <%= link_to "4: Photos", addphoto_to_event_path(@hostevent.permalink), :class => "btn_incomplete" %>
+            <% end %>
+      </div></div>
+  </div>
+
+  <div class = 'span6'>
+    <div class = "margin_top_20px"> 
+      <%= form_for(@hostevent, :url => hostevent_path(@hostevent.permalink), :via => :put, :validate => true) do |f| %>
+          <div class = 'btn_w150px margin_bottom margin_right'><div class = "green_btn"><%= f.submit "Save" %></div></div>
+          
+          <%if @hostevent.hostevent_status_could_be_complete? && @hostevent.eventstatus != "Open" %>
+           <div class = 'btn_w150px margin_bottom'><div class = "org_btn"><%= f.submit "Open Event", :name => "open_event[open]", confirm: "You cannot edit the time, price, policies, cuisine theme, and name once it is open. Are you sure you want to open this event?" %></div></div>
+          <% else %>
+            <p> <div class = "highlight"> <%= @hostevent.hostevent_to_complete %> </div> <div class = "small_text"> more detail to complete </div> </p>
+          <% end %>
+          <%= hidden_field_tag :return_edit_page, 'details' %>
+    </div>
+  </div>
+</div>
+
+  
+    <div class = "row">
+      <%= render 'shared/error_messages', object: f.object %>
+        <div class = 'span7'><div class = 'padding_around white_container'>
+            <table class="table table-hover"><tbody>
+                        <tr>
+                          <td width = '90px'><%= f.label :addressuser_id, "Location" %>
+                            <div class = "intensity_sub"> Only visible to confirmed guests </div>
+                          </td>
+                          <td><%= select("hostevent", "addressuser_id", current_user.addressusers.where("line1 is not null").collect {|p| [ p.address_city_state, p.id ] }) %>
+                            <%= link_to "Add New Address", 'addressusers/new', data: { toggle: "modal", target: "#ajax-modal" }, remote: true %>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td width = '90px'><%= f.label :bestwaytocontact, "Contact Info" %>
+                            <div class = "intensity_sub"> Only visible to confirmed guests </div>
+                          </td>
+                          <td><%= f.text_area :bestwaytocontact, rows: 2, placeholder: "Please describe best way to contact, including details" %></td>
+                        </tr> 
+
+                        <tr>
+                          <td><%= f.label :local_ingredients_optin, "Opt-in" %></td>
+                          <td><div class = "halfhalf-left">
+                            <%= f.radio_button :local_ingredients_optin, 1, :checked => @hostevent.local_ingredients_optin == true %> &nbsp; Use local ingredients
+                          </div>
+                          <div class = "halfhalf-right">
+                            <%= f.radio_button :local_ingredients_optin, 0, :checked => @hostevent.local_ingredients_optin == false %> &nbsp; Not Opt-in  
+                          </div></td> 
+                        </tr>
+
+                        <tr>
+                          <td><%= f.label :age_21plus, "Age Limit" %></td>
+                          <td><div class = "halfhalf-left">
+                            <%= f.radio_button :age_21plus, 1, :checked => @hostevent.age_21plus == true %> &nbsp; Must be 21+
+                          </div>
+                          <div class = "halfhalf-right">
+                            <%= f.radio_button :age_21plus, 0, :checked => @hostevent.age_21plus == false %> &nbsp; Any Age
+                          </div></td> 
+                        </tr>
+
+                        <tr>
+                          <td><%= f.label :tip_included, "Gratuitiy" %></td>
+                          <td><div class = "halfhalf-left">
+                            <%= f.radio_button :tip_included, 1, :checked => @hostevent.tip_included == true %> &nbsp; Included in seat price
+                          </div>
+                          <div class = "halfhalf-right">
+                            <%= f.radio_button :tip_included, 0, :checked => @hostevent.tip_included == false %> &nbsp; Not Included in seat price
+                          </div></td> 
+                        </tr>
+            </tbody></table>
+        </div></div>
+
+        <div class = 'span5'><div class = 'padding_around white_container'>
+            <table class="table table-hover"><tbody>
+              <tr>
+                          <td><%= f.label :requestsforguests, "Request for Guests" %></td>
+                          <td><%= f.text_area :requestsforguests, rows: 4, placeholder: "(optional) this would be the space to list any special requests, such as house rules you may have, contact before arrival, etc." %></td>
+                        </tr> 
+
+                        <tr>
+                          <td><%= f.label :discussiontopics, "Topics for Discussion" %></td>
+                          <td><%= f.text_area :discussiontopics, rows: 3, placeholder: "(optional) this would be the space to list any themes or discussion topics this event would focus on." %></td>
+                        </tr> 
+                        
+                        <tr>
+                          <td><%= f.label :extracomments, "Additional Comments" %></td>
+                          <td><%= f.text_area :extracomments, rows: 3, placeholder: "(optional) this would be the space to list any location restrictions such as parking situation or inform of any pets, etc." %></td>
+                        </tr> 
+            </tbody></table>
+        </div></div>
+    </div>
+<% end %> 
+
+
+        <div id="ajax-modal" class="modal hide fade" tabindex="-1">
+          <div class='modal-header'>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 class="modal-title">New Address</h3>
+          </div>
+          <div class='modal-body'><div class="ajax-loader">
+            <!--%= render :template => 'addressusers/new' %-->
+            <div class="margin_left_20px margin_right_20px">
+                <%= form_for(@addressuser, :url => url_for(:controller => "addressusers", :action => "create", :hostevent_id => @hostevent.permalink)) do |f| %>  
+                  <%= render 'shared/error_messages', object: f.object %>
+                  <div class = "margin_bottom margin_top">
+                      <%= f.text_field :nickname, :placeholder => "(optional: for your later reference only)" %>   
+                    </div>
+
+                    <div class = "margin_bottom">
+                      <%= f.text_field :line1, placeholder: "Address Line 1" %>   
+                    </div>
+
+                    <div class = "margin_bottom">
+                      <%= f.text_field :city, :placeholder => "City" %>
+                    </div>
+                    
+                    <div class = "margin_bottom">
+                      <%= f.select("state", @addressuser.us_states_abrev {|p| [ p.state] }, placeholder: "State" ) %>
+                    </div>
+
+                    <div class = "margin_bottom">
+                      <%= f.text_field :zip5, placeholder:"Zip Code" %>
+                    </div>
+
+                    <div class = "margin_bottom">
+                      <%= f.select("metroarea", @addressuser.target_metro {|p| [p[0], p[1]] }) %>
+                    </div>
+
+                    <div class = "margin_bottom">
+                      <%= f.select("private_flag", [['Commercial Property', 0], ['Private Residence', 1]]) %>
+                    </div>
+                    <div class = "org_btn"><%= f.submit "   Add New Address   " %></div>
+                <% end %>
+            </div>
+          </div></div>
+        </div>

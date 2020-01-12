@@ -1,0 +1,85 @@
+<% provide(:title, 'All Recipe Requests') %>
+<!-- <h1>All Events</h1> -->
+
+<% unless @chef_unanswered.count == 0 %>
+  <div class = 'span3_5'>
+	<div class = 'org_font font_cuprum center margin_bottom_20px padding_left padding_right' style='font-size:24px'>Requests to Feature Item from Hosts</div>
+	<% @chef_unanswered.each do |req| %>
+		<div class = 'margin_bottom white_container padding_around'>
+			<%= link_to 'Request for ' + Menuitem.find(req.menuitem_id).name.titleize, recipereq_path(req.permalink) %>
+			<div class = 'margin_top_5px'><%= link_to 'From ' + User.find(req.user_id).name.titleize, user_path(User.find(req.user_id).permalink) %></div>
+			<div class = "regular_mustbookhoursinadvance margin_top_5px">
+               Requested <%= time_ago_in_words(req.updated_at) %> ago
+            </div>
+
+			<div class = 'padding_around_10'><div class = "org_btn"><%= button_to 'Accept Request', {:controller => "recipereqs", :action => "update_status", :permalink => req.permalink, :req_status => 1} %></div></div>
+
+			<div class = 'padding_around_10'><div class = "lightgray_btn"><%= button_to 'Decline Request', {:controller => "recipereqs", :action => "update_status", :permalink => req.permalink, :req_status => -1} %></div></div>
+		</div>
+	<% end %>
+  </div>
+<% end %>
+
+<% unless @chef_answered.count == 0 %>
+  <div class = 'span3_5 margin_left_20px'>
+	<div class = 'org_font font_cuprum center margin_bottom_20px' style='font-size:24px; padding-bottom:20px;'>Answered Requests</div>
+	<% @chef_answered.each do |a| %>
+		<div class = 'margin_bottom white_container padding_around'>
+			<%= link_to 'Request for ' + Menuitem.find(a.menuitem_id).name.titleize, recipereq_path(a.permalink) %>
+			<div class = "regular_mustbookhoursinadvance margin_top_5px">
+               Requested updated <%= time_ago_in_words(a.updated_at) %> ago
+            </div>
+			<% if a.req_status == 1 %>
+				<div>Status: Approved </div>
+				<% if a.hostevent_id.nil? %>
+					<div class = 'padding_around_10'><div class = 'org_btn'><%= button_to "Propose Event", new_evt_from_req_path(a.permalink), :method => :get %></div></div>
+				<% else %>
+					<div class = 'padding_top padding_bottom'>Event Status: <%= Hostevent.find(a.hostevent_id).eventstatus %> </div>
+					<% if Hostevent.find(a.hostevent_id).eventstatus == 'Setup' %>
+						<div class = 'padding_around_10'><div class = 'org_btn'><%= button_to "Edit Event", edit_hostevent_path(Hostevent.find(a.hostevent_id).permalink), :method => :get %></div></div>
+					<% elsif Hostevent.find(a.hostevent_id).eventstatus == 'Open' and Hostevent.find(a.hostevent_id).chef_confirm? %>
+						<div class = 'padding_around_10'><div class = 'org_btn'><%= button_to "View Event", hostevent_path(Hostevent.find(a.hostevent_id).permalink), :method => :get %></div></div>
+					<% elsif Hostevent.find(a.hostevent_id).eventstatus == 'Open' %>
+						<div class = 'padding_around_10'><div class = 'org_btn'><%= button_to "Confirm Event", chef_confirm_evt_path(Hostevent.find(a.hostevent_id).permalink) %></div></div>
+					<% end %>
+				<% end %>
+			<% else %>
+				<div>Status: Decline </div>
+			<% end %>
+		</div>
+	<% end %>
+  </div>
+<% end %>
+
+<% unless @host_req.count == 0 %>
+  <div class = 'span3_5 margin_left_20px'>
+	<div class = 'org_font font_cuprum center margin_bottom_20px' style='font-size:24px; padding-bottom:20px;'>Requests as Host</div>
+	<% @host_req.each do |a| %>
+		<div class = 'margin_bottom white_container padding_around'>
+			<%= link_to 'Request for ' + Menuitem.find(a.menuitem_id).name.titleize, edit_recipereq_path(a.permalink) %>
+			<div class = "regular_mustbookhoursinadvance margin_top_5px">
+               Requested updated <%= time_ago_in_words(a.updated_at) %> ago
+            </div>
+			<% if a.req_status == 1 %>
+				<div>Status: Approved </div>
+				<% if a.hostevent_id.nil? %>
+					<div>Event Status: Waiting for chef to propose event</div>
+				<% else %>
+					<% if Hostevent.find(a.hostevent_id).eventstatus == 'Setup' %>
+						<div class = 'padding_top padding_bottom'>Event Status: Setup </div>
+						<div class = 'padding_around_10'><div class = 'org_btn'><%= button_to "Edit Event", edit_hostevent_path(Hostevent.find(a.hostevent_id).permalink), :method => :get %></div></div>
+					<% elsif Hostevent.find(a.hostevent_id).eventstatus == 'Open' and Hostevent.find(a.hostevent_id).chef_confirm? %>
+						<div class = 'padding_top padding_bottom'>Event Status: Open and Ready to Receive Signup </div>
+						<div class = 'padding_around_10'><div class = 'org_btn'><%= button_to "View Event", hostevent_path(Hostevent.find(a.hostevent_id).permalink), :method => :get %></div></div>
+					<% elsif Hostevent.find(a.hostevent_id).eventstatus == 'Open' %>
+						<div class = 'padding_top padding_bottom'>Event Status: Open and Waiting for Chef Review </div>
+					<% end %>
+				<% end %>
+			<% else %>
+				<div>Status: Decline </div>
+			<% end %>
+		</div>
+	<% end %>
+  </div>
+<% end %>
+

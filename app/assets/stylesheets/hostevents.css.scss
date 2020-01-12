@@ -1,0 +1,178 @@
+// Place all the styles related to the Users controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+
+/*  http://www.freshdesignweb.com/beautiful-image-hover-effects-with-jquery-css3.html */
+
+/*colors*/
+	$orange1: #f19231;
+
+/*if no events*/
+	.evt_new_btn{
+		background-color: $orange1;
+		height: 30px;
+		text-align: center;
+		/*margin: 10px 0 10px 0;*/
+		/*vertical-align: center;*/
+		line-height: 30px;
+		width: 200px;
+		/*font-family: 'Josefin Sans', sans-serif;*/
+		/*font-size: 16px;*/
+		margin-left: 370px;
+		/*overflow: hidden;*/
+		a{
+			color: #3e3c3f;
+		}
+	}
+
+/*evt index filter*/
+	#evt_filter{
+		position: fixed;
+		z-index: 10;
+	}
+
+	.evt_filter_image{
+		opacity: 0;
+		filter: alpha(opacity=0);
+		margin-top: -30px;
+		&:hover{
+			opacity: 0.2;
+			filter: alpha(opacity=20);
+		}
+	}
+
+	.evt_filter_initial_btn{
+		background-color: $orange1;
+		height: 30px;
+		text-align: left;
+		vertical-align: center;
+		line-height: 30px;
+		width: 310px;
+		font-family: 'Josefin Sans', sans-serif;
+		font-size: 16px;
+		overflow: hidden;
+	}
+
+	.evt_filter_container{
+		margin-top: -20px;
+		margin-bottom: 20px;
+		width: 310px;
+		text-align: left;
+		vertical-align: center;
+		line-height: 30px;
+		background-color: white;
+		border:none;
+		input[type = "submit"] {
+			width: 280px;
+			margin-top: 20px;
+			background-color: $orange1;
+			font-family: 'Josefin Sans', sans-serif;
+			line-height: 30px;
+			height: 30px;
+			vertical-align: center;
+			align: right;
+			border: none;
+			&:hover{
+				background-color: #f7a65e;
+			}
+		}
+	}
+
+	
+/*evt index*/
+	.single_evt_container{
+			display: inline-block;
+			background-color: white;
+			width: 300px;
+			height: 200px;
+			/*padding: 5px 5px 3px 5px;*/
+			margin: 0 0 10px 5px;
+			/*box-shadow: 1px 1px 1px #888888;*/
+			border: solid;
+			border-width: 1px;
+			border-color: #c1c1c1;
+			overflow: hidden;
+		}
+
+	.single_evt_details{
+			opacity: 0.75;
+			filter: alpha(opacity=10);
+			width: 300px;
+			height: 200px;
+			
+			&:hover{
+				opacity: 0.9;
+				filter: alpha(opacity=90);
+			}
+		}
+
+	.evt_display_overlap{
+		margin-left: 20px;
+		height: 200px;
+		width: 260px;
+		margin-top: -280px;	
+	}
+
+
+	/*
+	.evt_container_top {
+		height: 40%;
+		position: relative;
+	}
+
+	.evt_container_bottom {
+		position: absolute;
+		min-height: 20px;
+		bottom: 0px;
+	}*/
+
+	.evt_name {
+		/*position: relative;*/
+		/*color: #fff;*/
+		font-size: 20px;
+		line-height: 26px;
+		font-family: 'Josefin Sans', sans-serif;
+		/*font-style: italic;*/
+		/*vertical-align: bottom;*/
+		/*vertical-align: text-bottom;*/
+		text-align: center;
+		height: 55px;
+		/*vertical-align: bottom;*/
+		/*margin: 0 auto;*/
+
+		/*margin-right: auto;*/
+		padding-left: 4px;
+		padding-right: 4px;
+		padding-top: 20px;
+		/*overflow: hidden;*/
+		/*padding:40px 40px 0;*/
+	}
+
+
+	.evt_name a, .evt_name a:visited {
+		/*color: #fff;*/
+		color: black;
+		font-size: 20px;
+	}   
+
+
+	.evt_desc {
+		/*color: #fff;*/
+		font-size: 14px;
+		/*font-weight: bold;*/
+		line-height: 22px;
+		/*font-style: italic;*/
+		text-align:center; 
+		padding-left: 4px;
+		padding-right: 4px;
+		/*padding-top: 10px;*/
+		height: 70px;
+		/*padding:40px 40px 0;*/
+	}
+
+	/*.evt_more {
+		float: right;
+		vertical-align: bottom;
+		padding-right: 10px;
+		padding-bottom: 10px;
+	} */

@@ -1,0 +1,158 @@
+
+<% provide(:title, @hostevent.startdate.to_s ) %>
+
+<div class="row">
+  <div class="span7 margin_right_20px">
+    <% if @evt_signups.count > 0 %>
+      <div id = "my_signups">
+        <%= render 'evt_signups' %>
+      </div>   
+    <% else %>
+      <div class = "mng_one_evt center">
+        <br>
+        <h2>Sadly no one has signed up yet.</h2>
+        <div class="accordion margin_left_20px margin_right_20px" id="invite"> 
+            <div class="accordion-group background_white">
+              <div class="accordion-heading">
+                <div class = "org_btn">
+                  <div class = 'margin_top_5px'>TRY SENDING INVITATIONS TO FRIENDS</div>
+                  <div class = "btn_image"><%= link_to image_tag('white.png', width: '100%', height: '100%'), "#invite_inside", :data => {:toggle=>"collapse", :parent => "#invite"} %></div>
+                </div>
+              </div>
+              <div id="invite_inside" class="accordion-body collapse">
+                      <div class="accordion-inner">
+
+                        <form action="/invite_to_event" method="post">
+                          <textarea cols="40" id="invite_guest_emails" name="hostevent[invite_guest_emails]" placeholder = "Emails (if you would like to send to multiple addresses, seperate each by , )" rows="4"></textarea>
+                          <%= hidden_field_tag :id, @hostevent.permalink %>
+                          <div class = "org_btn margin_top"><input name="commit" type="submit" value="Send" /></div>
+                        </form>
+                      </div>
+              </div>
+            </div>
+        </div>
+
+      </div>
+    <% end %>
+  </div>    
+
+  <div class="span4">
+    <section class = "date_container">
+        <!--%= image_tag @hostevent.eventphotos.first.eventpic.url(:thumb)%-->
+        <div class = "regular_name">
+          <%= link_to @hostevent.event_name, hostevent_path(@hostevent.permalink) %> 
+        </div>
+
+        <div class = "regular_date">
+          <%= @hostevent.mealstarttime.time.strftime("%A, %b. %d, %Y") %> 
+        </div>
+        <div class = "regular_time">
+          @ <%= @hostevent.mealstarttime.time.strftime("%l:%M  %P") %> 
+        </div>
+    </section>
+
+    <section>
+      <div class = "date_container padding_top padding_bottom font_josefin font_18px">
+        <div class = "padding_top padding_bottom">
+          Paid Attending Guests: <%= @paid.sum(:guest_count) %> 
+          <div class = 'padding_top_5px font_14px'> <%= pluralize(@paid_communal.sum(:guest_count), 'guest') %> at communal table </div>
+          <div class = 'padding_top_5px font_14px'> <%= pluralize(@own_table.count, 'own table') %> (<%= @own_table.sum(:guest_count) %> guests) </div>
+        </div>
+        <% if @confirmed.count > 0 %>
+          <div class = "padding_top padding_bottom">
+            Confirmed Guests: <%= @confirmed.sum(:guest_count) %> 
+          </div>
+        <% end %>
+        <% if @waiting.count > 0 %>
+          <div class = "padding_top padding_bottom">
+            Pending Requests: <%= @waiting.sum(:guest_count) %> 
+          </div>
+        <% end %>
+      </div>
+    </section>
+
+    <section class = "margin_top">
+      <% if @evt_signups.count > 0 %>
+        <div class = 'btn_w280px margin_bottom_20px'>
+          <div class = 'green_btn'><%= button_to "SEND GUEST LIST TO EMAIL", send_guestlist_to_host_path(@hostevent.permalink) %></div>
+        </div>
+
+        <div class="accordion" id="invite"> 
+            <div class="accordion-group btn_w280px background_white">
+              <div class="accordion-heading">
+                <div class = "green_btn">
+                  <div class = 'margin_top_5px'>SEND INVITATION TO FRIENDS</div>
+                  <div class = "btn_image"><%= link_to image_tag('white.png', width: '100%', height: '100%'), "#invite_inside", :data => {:toggle=>"collapse", :parent => "#invite"} %></div>
+                </div>
+              </div>
+              <div id="invite_inside" class="accordion-body collapse">
+                      <div class="accordion-inner">
+
+                        <form action="/invite_to_event" method="post">
+                          <textarea cols="40" id="invite_guest_emails" name="hostevent[invite_guest_emails]" placeholder = "Emails (if you would like to send to multiple addresses, seperate each by , )" rows="4"></textarea>
+                          <%= hidden_field_tag :id, @hostevent.permalink %>
+                          <div class = "org_btn margin_top"><input name="commit" type="submit" value="Send" /></div>
+                        </form>
+                      </div>
+              </div>
+            </div>
+        </div>
+
+        <div class = 'btn_w280px margin_bottom_20px'>
+          <div class = 'org_btn'><%= button_to "Edit Menu", edit_hostevent_path(@hostevent.permalink), :method => :get  %></div>
+        </div>
+
+        <div class = 'btn_w280px margin_bottom_20px'>
+          <div class = 'org_btn'><%= button_to "Add Photos", addphoto_to_event_path(@hostevent.permalink), :method => :get  %></div>
+        </div>
+
+        <div class = 'btn_w280px margin_bottom_20px'>
+          <div class = 'lightgray_btn'><%= button_to "Cancel Event", hostevent_cancel_path(@hostevent.permalink), :confirm => 'Are you sure you want to cancel the event? All guests will be notified and their requests will be considered denied. You will be charged a penalty of $1 per refunded guests who has already paid and 10% of the refunded amount. In addition, the settings for this event will be saved and ready to edit if you decide to re-open this event.', :method => :get  %></div>
+        </div>
+      <% else %>
+        <div class = 'btn_w280px margin_bottom_20px'>
+          <div class = 'org_btn'><%= button_to "Edit Menu", edit_hostevent_path(@hostevent.permalink), :method => :get  %></div>
+        </div>
+        <div class = 'btn_w280px margin_bottom_20px'>
+          <div class = 'lightgray_btn'><%= button_to "Edit Details", hostevent_cancel_path(@hostevent.permalink), :confirm => 'The event status will change to set up when you edit this event. After you have completed your edits, remember to re-open the event.', :method => :get  %></div>
+        </div>
+      <% end %>
+    </section>
+    
+    <section class = "date_container background_blue">
+
+      <div class = "margin_top_20px font_20px font_josefin"> Settings </div>
+      
+      <%= form_for(@hostevent, :url => hostevent_path(@hostevent.permalink), :via => :put, :validate => true) do |f| %>
+        <%= render 'shared/error_messages', object: f.object %>
+
+        <div class = 'font_bold margin_top'>Sign up cut off time in hours</div>
+        <div><%= f.text_field :mustbookhoursinadvance, :placeholder => "hrs (optional) ", :class => "mng_signup_hr" %></div>
+
+        <div class = 'font_bold margin_top'>Max. guests</div>
+        <div><%= f.text_field :maxguests, :placeholder => "(optional)", :class => "mng_signup_hr" %></div>
+
+        <div class = 'font_bold margin_top'>Confirm Sign Up <i class="icon-info-sign popright" rel="popover" 
+              data-title="When you choose confirm request, all requests will come to you for approval before guests are considered signed up for your event. All requests that is not confirmed by you within 24 hours will be considered void. When you enable auto function, all requests will be considered approved and guests considered signed up when the requests is made to attend your event."></i></div>
+        <div>
+              <div class = 'width_100px'>
+                <%= f.radio_button :confirmability, 1, :checked => @hostevent.confirmability == true %> Confirm 
+              </div>
+              <div class = 'width_100px'>
+                <%= f.radio_button :confirmability, 0, :checked => @hostevent.confirmability == false %> Auto 
+              </div>
+        </div>
+
+        <div class = 'font_bold margin_top font_lightgray'>Request for Guests</div>
+        <div class = 'margin_left_20px margin_right_20px'><%= f.text_area :requestsforguests, rows: 4, placeholder: "(optional) this would be the space to list any special requests, such as house rules you may have, contact before arrival, etc." %></div>
+
+        <div class = 'font_bold font_lightgray'>Additional Comments</div>
+        <div class = 'margin_left_20px margin_right_20px'><%= f.text_area :extracomments, rows: 6, placeholder: "(optional) this would be the space to list any location restrictions such as parking situation or inform of any pets, etc." %></div>
+
+        <div class = "margin_top margin_left_20px margin_right_20px">
+          <div class = 'white_btn'><%= f.submit "  Update for Future Guest Sign Up  " %></div>
+        </div>       
+      <% end %>
+    </section>
+  </div>
+</div>

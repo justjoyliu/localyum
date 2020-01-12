@@ -1,0 +1,8 @@
+
+          
+       	<% if @hostevent.hostevent_step3? %>
+            <%= link_to "3: Photos", addphoto_to_event_path(@hostevent.permalink), :class => "btn_complete_active" %>
+        <% else %>
+            <%= link_to "3: Photos", addphoto_to_event_path(@hostevent.permalink), :class => "btn_incomplete_active" %>
+        <% end %>
+      

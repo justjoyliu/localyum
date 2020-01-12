@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head><title></title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+  </head>
+
+  <body>
+    <table width="100%" border="0">
+      <tbody>
+        <tr><td style = 'color: #f37d2a; font-size:22px;'>The chef has reviewed and confirmed the event details for "<%= @evt.event_name.titleize %>" on Local Yum</td></tr>
+              
+        <tr><td style='padding-top:5px;line-height: 24px;'><span style='font-weight: bold;'>Date:     </span><%= @evt.startdate %></td></tr>
+        <tr><td style='padding-top:5px;line-height: 24px;'><span style='font-weight: bold;'>Price per Seat:      </span><%= number_to_currency(@evt.price) %></td></tr>
+
+        <tr><td style='margin-top:15px; font-size:16px;line-height: 40px;'><%= link_to "This event is ready for sign up.", hostevent_url(@evt.permalink) %></td></tr>
+
+         <tr><td style='margin-top:10px; font-size:14px;line-height: 20px;'>Best of Luck. Do not hesitate to let us know at contact@localyum.me if there is anything we can help with!</td></tr>
+      </tbody>
+    </table>
+  </body>
+</html>

@@ -1,0 +1,36 @@
+<section class = "font_josefin font_26px font_bold">
+  Create a New Menu Item
+</section>
+
+<%= form_for(@menuitem, :validate => true) do |f| %>
+  <%= render 'shared/error_messages', object: f.object %>
+  <div class = "white_container padding_around span5 margin_top margin_bottom_20px">
+    <div class = 'font_bold margin_bottom_5px'>Name</div>
+    <div class = 'margin_bottom'><%= f.text_field :name %></div>
+
+    <div class = 'font_bold margin_bottom_5px'>Photo (please keep size under 5MB)</div>
+    <div class = 'margin_bottom'><%= f.file_field :menupic %></div>
+
+    <div class = 'font_bold margin_bottom_5px'>Course</div>
+    <div class = 'margin_bottom'><%= select("menuitem", "course", @menuitem.course_select {|p| [ p.course] }) %></div>
+
+    <div class = 'font_bold margin_bottom_5px'>Recipe View Option</div>
+    <div class = 'margin_bottom'><%= select("menuitem", "recipeview", @menuitem.recipe_view_select {|p| [ p.recipeview] }) %></div>
+
+    <div class = 'font_bold margin_bottom_5px'>Description</div>
+    <div><%= f.text_area :description, :rows => 3, placeholder: "optional" %></div>
+  </div>
+  
+  <div class = "white_container padding_around span5 margin_top margin_bottom_20px">
+    <div class = 'font_bold margin_bottom_5px'>Ingredients</div>
+    <div class = 'margin_bottom'><%= f.text_area :ingredient, rows: 4, placeholder: "optional, but highly recommended noting ingredients that guests could be allergic to" %></div>
+
+    <div class = 'font_bold margin_bottom_5px'>Recipe</div>
+    <div class = 'margin_bottom'><%= f.text_area :recipe, rows: 5, placeholder: "optional" %></div>
+
+    <div class = 'font_bold margin_bottom_5px'>Extra Notes</div>
+    <div class = 'margin_bottom_5px'><%= f.text_area :notes, rows: 3, placeholder: "optional" %></div>
+  </div>
+      
+  <div class = 'span11'><div class = "org_btn margin_bottom_5px"><%= f.submit "Create" %></div></div>
+<% end %>

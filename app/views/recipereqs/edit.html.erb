@@ -1,0 +1,35 @@
+<% provide(:title, "Request Item as Host") %> 
+
+<section class = "font_josefin font_26px font_bold">
+  Request to Host an Event to Feature <%= @menuitem.name.titleize %>
+</section>
+
+<%= form_for(@req, :url => recipereq_path(@req.permalink), :via => :put) do |f| %>
+  <%= render 'shared/error_messages', object: f.object %>
+  <div class = "white_container padding_around span5 margin_top margin_bottom_20px">
+    <div class = 'font_bold margin_bottom_5px'>Date</div>
+    <div class = 'margin_bottom'><%= f.text_field :req_date %></div>
+
+    <div class = 'font_bold margin_bottom_5px'>Estimated Guests</div>
+    <div class = 'margin_bottom'><%= f.text_field :est_guests %></div>
+
+    <div class = 'font_bold margin_bottom_5px'>Price Range</div>
+    <div class = 'margin_bottom'><%= f.text_field :price_range %></div>
+
+    <div class = 'font_bold margin_bottom_5px'>Location</div>
+    <% if @chef.allow_offsite_request_flag? or @chef_addresses.count == 0 %>
+      <div class = 'margin_bottom'><%= select("recipereq", "req_addressuser_id", @chef_addresses.all.collect {|p| [ p.address_city_state_nickname, p.id] }, :include_blank => 'Offsite (include approx. area in "Request Detail")') %></div>
+    <% else %>
+      <div class = 'margin_bottom'><%= select("recipereq", "req_addressuser_id", @chef_addresses.all.collect {|p| [ p.address_city_state_nickname, p.id] }) %></div>
+    <% end %>
+  </div>
+  
+  <div class = "white_container padding_around span5 margin_top margin_bottom_20px">
+    <div class = 'font_bold margin_bottom_5px'>Request Detail</div>
+    <div class = 'padding_bottom_15px'><%= f.text_area :req_detail, :rows => 12 %></div>
+  </div>
+      
+  <div class = 'span11'><div class = "org_btn margin_bottom_5px"><%= f.submit "Submit Request" %></div></div>
+<% end %>
+
+<div class = 'span11 margin_top_20px'><div class = "lightgray_btn"><%= button_to 'Delete Request', {:controller => "recipereqs", :action => "destroy", :id => Menuitem.find(@req.menuitem_id).permalink, :page_return => @title}, :method => :delete %></div></div>

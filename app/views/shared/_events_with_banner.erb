@@ -1,0 +1,27 @@
+<% @hostevents.each do |e| %>
+
+     <div class="evt_banner_container" style="background:url(<%= e.eventphotos.first.eventpic.url(:index_search) %>) no-repeat center"> 
+          <div class="single_evt_details">
+            <%= link_to image_tag('white.png', width: '100%', height: '100%'), hostevent_path(e.permalink) %>
+
+            <div class = "evt_display_overlap">
+              <div class = "evt_name">
+                <%= link_to e.event_name.truncate(50), hostevent_path(e.permalink) %>
+              </div>
+
+              <div class = "evt_desc link_font_black">
+                $ <%= link_to number_with_precision(e.price, :precision => 2), hostevent_path(e.permalink) %>
+              </div>
+            </div>
+          </div>
+          <div class = "banner_container link_font_black font_josefin"> 
+          	<div class = 'padding_top_5px padding_left_20px'><%= link_to e.mealstarttime.time.strftime("%a . %b . %d @ %I:%M %p"), hostevent_path(e.permalink) %> </div>
+            <div class = 'padding_left_20px'> <%= link_to e.addressuser.city.to_s + ", " + e.addressuser.state.to_s, hostevent_path(e.permalink) %></div>
+          </div>
+
+          <div class = "profile_pic_container">
+          	<%= link_to image_tag(User.find(e.user_id).avatar.url(:thumb), width: '100%', height: '100%'), user_path(User.find(e.user_id).permalink) %>
+          </div>
+      </div>
+
+<% end %>

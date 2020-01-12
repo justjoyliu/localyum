@@ -1,0 +1,79 @@
+<!-- <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- <!DOCTYPE html> -->
+<html>
+  <head><title></title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <link href='http://fonts.googleapis.com/css?family=Josefin+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  </head>
+
+  <body style="font-family: 'Josefin Sans', sans-serif;line-height: 24px;text-align: center;">
+    <table width="100%" border="0" id="background-table" style="background-color: #f19231;padding: 20px;">
+      <tbody>
+        <tr><td>
+          <table width="100%" border="0" id="background-table-content" style="background-color: #ffffff;padding: 20px;border-spacing: 0px;">
+            <tbody>
+              <tr><td><h1 style="font-size: 18px;font-weight: bold;margin: 10px 0 10px 0;">We are excited to tell you that <%= @guests.sum(:guest_count).to_s %> guests are attending <%= @evt.event_name %>! </h1></td></tr>
+              
+              <tr><td style="padding: 10px 20px;margin-bottom: 10px;">
+                on <%= @evt.mealstarttime.time.strftime("%A, %b. %d, %Y @ %l:%M %P") %><br>
+                <% if @evt.mustbookhoursinadvance.to_i > 0 %>(guests must sign up <%= @evt.mustbookhoursinadvance %> hours in advance)<% end %>
+              </td></tr>
+              
+              <tr><td style="padding: 10px 20px;margin-bottom: 10px;">
+                <div style = 'padding: 5px;'> <%= pluralize(@paid_communal.sum(:guest_count), 'guest') %> at the communal table </div>
+                <div style = 'padding: 5px;'> <%= pluralize(@own_table.count, 'own table') %> (<%= @own_table.sum(:guest_count) %> guests) </div>
+              </td></tr>
+
+              <tr><td style="padding: 10px 20px;margin-bottom: 10px;">
+                <% @guests.each do |signup| %>
+                  <div style = 'display: inline-block; width: 200px; vertical-align: top; margin-top: 5px;'>
+                      <div style = "margin-bottom: 5px;"><%= image_tag('http://www.localyum.me' + signup.user.avatar.url(:thumb), size: "80x80")%> </div>
+                      <div><%= link_to signup.user.name.titleize, user_url(signup.user.permalink), { :title => "Click Here To View Guest Profile" } %></div>
+                      <div style = "font-size: 12px;"> (<%=pluralize(signup.guest_count, 'seat') %>  
+                        <% if signup.own_group_flag? %> at their Own Table)
+                        <% else %> at the Communal Table)
+                        <% end %>
+                      </div>
+                  </div>
+                <% end %> 
+              </td></tr>
+
+              <% if !@comment.blank? and @comment.count > 0 %><tr><td style="padding: 10px 20px;margin-bottom: 10px;">
+                <div style="font-size: 16px;font-weight: bold;margin: 5px 0 10px 0;">Comments </div>
+                <table>
+                  <% @comments.each do |c| %>
+                    <tr>
+                      <td style = 'width:90px;'>
+                        <% if User.find(c.sender_id).active_status? %>
+                          <%= link_to image_tag('http://www.localyum.me' + User.find(c.sender_id).avatar.url(:thumb), size: "80x80"), user_url(User.find(c.sender_id).permalink) %>
+                        <% end %>
+                      </td>
+                      <td style = 'vertical-align: top;' >
+                        <div style = "font-size: 12px; color: #a3a1a1;"><%= Message.where("messagechain_id = ? and order_id = ?", c.messagechain_id, c.order_id).first.created_at.strftime("%b %d, %Y") %></div>
+                        <div><%= h(c.message_content).gsub(/\n/, '<br/>').html_safe %></div>
+                      </td>
+                    </tr>
+                  <% end %>
+                </table>
+              </td></tr><% end %>
+
+              <tr><td style="padding-top: 20px;">
+                See additional guest information by <%= link_to "clicking this link and logging in", signup_requests_url(@evt.permalink) %>. <br><br>
+                
+                Good Luck with your event! <br>
+                Hope you have a great time.
+                <div style="margin-top: 10px;">
+                  Cheers, <br>
+                  Joy
+                  <div style = "font-size: 12px; color: #a3a1a1;">@localyumme</div>
+                  <div style = "font-size: 12px; color: #a3a1a1;">fb.com/localyum</div>
+                </div>
+              </td></tr>
+            </tbody>
+          </table>
+        </td></tr>
+      </tbody>
+    </table>
+  </body>
+</html>

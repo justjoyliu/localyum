@@ -1,0 +1,8 @@
+<div class="row-fluid"><div class = "span6 offset3">
+  <%= form_for Unsubscribe.new do |f| %>
+    <div class = "margin_top">
+      <%= f.text_field :email, :placeholder => "Enter Your Email" %>
+    </div>
+    <div class="org_btn"><%= f.submit "Unsubscribe" %></div>
+  <% end %>
+</div></div>

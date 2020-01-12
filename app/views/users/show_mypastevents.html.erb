@@ -1,0 +1,40 @@
+<% provide(:title, "My Past Events") %>
+<!--% javascript "pagination" %-->
+<div class="row">
+  <% if signed_in? and current_user.id = @user.id %>
+    <aside class="span3">
+      <!-- <section>-->
+        <!-- <h1> -->
+          <!--%= image_tag current_user.avatar.url(:thumb)%-->
+        <!-- </h1> -->
+      <!-- </section> -->
+      <section>
+        <div class = "mng_evt_summary_container">
+          <div>
+            Hosted: <%= @host_completed.count %> 
+          </div>
+        </div>
+      </section>
+        
+      <section>
+        <div class = "mng_evt_summary_container">
+          <div>
+            Attended: <%= @attended.count %> 
+          </div>
+        </div>
+      </section>
+    </aside>
+  
+    <div class="span8">
+      <% if @all_events.count > 0 %>
+        <div id = "my_past_events">
+          <%= render 'past_events' %>
+        </div>
+        
+        <!--%= render @hostevents %-->
+      <% end %>
+    </div>
+  <% else %>
+    <%= render 'past_events' %>
+  <% end %>
+</div>

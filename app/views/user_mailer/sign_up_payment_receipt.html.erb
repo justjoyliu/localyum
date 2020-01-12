@@ -1,0 +1,81 @@
+<!-- <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> -->
+<!-- <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> -->
+<!-- <!DOCTYPE html> -->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+  <head><title></title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+  </head>
+
+  <body style="font-family: 'Josefin Sans', sans-serif;line-height: 24px;">
+    <table width="100%" border="0" id="background-table" style="background-color: #f19231;padding: 20px;">
+      <tbody>
+        <tr><td id="logo" style="font-size: 16px;color: #ffffff;">LOCAL YUM</td></tr>
+        <tr><td>
+          <table width="100%" border="0" id="background-table-content" style="background-color: #ffffff;padding: 20px;border-spacing: 0px;">
+            <tbody>
+              <% if @signup.own_group_flag? %>
+                <tr><td colspan="2"><h1 style="font-size: 18px;font-weight: bold;margin: 10px 0 20px 0;">Thanks <%= @guest.name %>! <br>Your seat is now reserved at your own table for <%= pluralize(@guest.guest_count, 'person') %> </h1></td></tr>
+              <% else %>
+                <tr><td colspan="2"><h1 style="font-size: 18px;font-weight: bold;margin: 10px 0 20px 0;">Thanks <%= @guest.name %>! <br>Your seat is now reserved at the communal table for <%= pluralize(@signup.guest_count, 'person') %>. </h1></td></tr>
+              <% end %>
+
+              <tr><td colspan="2" class="section_title highight_content" style="background-color: #fcf7df;padding: 5px 10px 5px 10px;vertical-align: top;font-weight: bold;padding-top: 15px;">Event Details</td></tr>
+              <tr>
+                <td width="20%" class="highight_content" style="background-color: #fcf7df;padding: 5px 10px 5px 10px;vertical-align: top;">Event:</td>
+                <td class="highight_content" style="background-color: #fcf7df;padding: 5px 10px 5px 10px;vertical-align: top;"><%= link_to @evt.event_name, hostevent_url(@evt.permalink) %></td>
+              </tr>
+              <tr>
+                <td width="20%" class="highight_content" style="background-color: #fcf7df;padding: 5px 10px 5px 10px;vertical-align: top;">Time:</td>
+                <td class="highight_content" style="background-color: #fcf7df;padding: 5px 10px 5px 10px;vertical-align: top;"><%= @evt.mealstarttime.time.strftime("%A, %b. %d, %Y @ %l:%M %P") %></td>
+              </tr>
+              <tr>
+                <td width="20%" class="highight_content" style="background-color: #fcf7df;padding: 5px 10px 5px 10px;vertical-align: top;">Location:</td>
+                <td class="highight_content" style="background-color: #fcf7df;padding: 5px 10px 5px 10px;vertical-align: top;">
+                  <%= @evt.addressuser.line1 %><br>
+                  <%= @evt.addressuser.city %>, <%= @evt.addressuser.state %> <%= @evt.addressuser.zip5 %>
+                </td>
+              </tr>
+              <tr>
+                <td width="20%" class="highight_content table_border_top" style="background-color: #fcf7df;padding: 5px 10px 5px 10px;vertical-align: top;border-top: 1px solid #c1c1c1;padding-top: 10px;padding-bottom: 10px;">Request from Host:</td>
+                <td class="highight_content table_border_top" style="background-color: #fcf7df;padding: 5px 10px 5px 10px;vertical-align: top;border-top: 1px solid #c1c1c1;padding-top: 10px;padding-bottom: 10px;">
+                  <% if @evt.requestsforguests.empty? %>
+                    No special requests.
+                  <% else %>
+                    <%= h(@evt.requestsforguests).gsub(/\n/, '<br/>').html_safe %>
+                  <% end %>
+                </td>
+              </tr>
+
+              <tr><td colspan="2" class="section_title reg_content" style="padding: 5px 10px 5px 10px;vertical-align: top;font-weight: bold;padding-top: 15px;">Billing Details</td></tr>
+              <tr>
+                <td width="20%" class="reg_content" style="padding: 5px 10px 5px 10px;vertical-align: top;">Contribution:</td>
+                <td class="reg_content" style="padding: 5px 10px 5px 10px;vertical-align: top;">
+                  Totaling $<%= number_with_precision(@pmt.to_f/100, :precision => 2) %><br>
+                  Seat Reservation of $<%= number_with_precision(@evt.price, :precision => 2) %><br>
+                  Servicing Fee of $<%= number_with_precision(@evt.event_guest_servicing_fee, :precision => 2) %>
+                </td>
+              </tr>
+              <tr>
+                <td width="20%" class="reg_content" style="padding: 5px 10px 5px 10px;vertical-align: top;">Credit Card::</td>
+                <td class="reg_content" style="padding: 5px 10px 5px 10px;vertical-align: top;">Ending in ****-<%= @signup.card_last_4 %></td>
+              </tr>
+              <tr>
+                <td width="20%" class="reg_content" style="padding: 5px 10px 5px 10px;vertical-align: top;">Cancellation Policy:</td>
+                <td class="reg_content" style="padding: 5px 10px 5px 10px;vertical-align: top;"><%= link_to @evt.cancellationpolicy.cancellation_description, cancellation_policy_url %></td>
+              </tr>
+
+              <tr><td colspan="2" class="margin_top" style="padding-top: 25px;">Don't be shy, contact us at any time at contact@localyum.com.</td></tr>
+              <tr><td colspan="2" class="margin_top_20px" style="padding-top: 20px;">
+                Warmest regards,
+                <br> Local Yum
+              </td></tr>
+            </tbody>
+          </table>
+        </td></tr>
+      </tbody>
+    </table>
+  </body>
+</html>

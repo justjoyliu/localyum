@@ -1,0 +1,4 @@
+
+module HosteventsHelper
+
+end

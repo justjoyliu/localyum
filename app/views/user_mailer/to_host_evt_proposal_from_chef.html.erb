@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head><title></title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+  </head>
+
+  <body>
+    <table width="100%" border="0">
+      <tbody>
+        <tr><td style = 'color: #f37d2a; font-size:22px;'>The chef has answered your requested for an event to feature "<%= @mi.name.titleize %>" on Local Yum</td></tr>
+              
+        <tr><td style='padding-top:5px;line-height: 24px;'><span style='font-weight: bold;'>Date:     </span><%= @evt.startdate %></td></tr>
+        <tr><td style='padding-top:5px;line-height: 24px;'><span style='font-weight: bold;'>Price per Seat:      </span><%= number_to_currency(@evt.price) %></td></tr>
+
+        <% if @evt.addressuser_id.blank? %>
+          <tr><td style='padding-top:5px;line-height: 24px;'> Just confirm/add the details, location, plus some pictures and the event will be ready to open for sign ups! </td></tr>
+        <% else %>
+          <tr><td style='padding-top:5px;line-height: 24px;'> Just confirm/add the details plus some pictures, and the event will be ready to open for sign ups! </td></tr>
+        <% end %>
+
+        <tr><td style='margin-top:15px; font-size:16px;line-height: 40px;'><%= link_to "Click here to login and review the details", edit_basic_url(@evt.permalink) %></td></tr>
+      </tbody>
+    </table>
+  </body>
+</html>

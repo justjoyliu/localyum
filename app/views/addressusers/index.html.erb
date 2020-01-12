@@ -1,0 +1,139 @@
+
+<div class="row">
+  <div class = "span6 margin_right_20px  white_container_border padding_around">
+    <div class = "font_josefin font_20px center margin_top_20px margin_bottom"> Address Book </div>
+    <div class="accordion" id="address_list">
+          <% @addresses.each do |address| %>
+            <div class="accordion-group">
+              <div class="accordion-heading">
+                <% if address.nickname.to_s.empty? %>
+                  <%= link_to address.line1 + ", " + address.city + ", " + address.state, address.address_collapse, :data => {:toggle=>"collapse", :parent => "#address_list"},:class=>"accordion-toggle"%>
+                <% else %>
+                  <%= link_to address.nickname + " (" + address.line1 + ", " + address.city + ", " + address.state + ")", address.address_collapse, :data => {:toggle=>"collapse", :parent => "#address_list"},:class=>"accordion-toggle"%>
+                <% end %>
+              </div>
+
+              <%= content_tag :div, :id => address.address_collapse_inner, :class=>"accordion-body collapse" do %>
+                <div class="accordion-inner">
+                  
+                  <%= form_for address, :validate => true do |f| %>
+                    <div class = "span3">  
+                      <div class = "margin_bottom_5px margin_top">
+                        <%= f.text_field :nickname, :placeholder => "Nickname (opt: only for your ref)" %>   
+                      </div>
+
+                      <div class = "margin_bottom_5px">
+                        <%= f.text_field :line1, placeholder: "Address Line 1" %>   
+                      </div>
+
+                      <div class = "margin_bottom_5px">
+                        <%= f.text_field :city, :placeholder => "City" %>
+                      </div>
+                      
+                      <div class = "margin_bottom_5px">
+                        <%= f.select("state", address.us_states_abrev {|p| [ p.state] }, selected: address.state) %>
+                      </div>
+
+                      <div class = "margin_bottom_5px">
+                        <%= f.text_field :zip5, placeholder:"Zip Code" %>
+                      </div>
+
+                      <div class = "margin_bottom_5px">
+                        <!--%= f.text_field :metroarea, placeholder: "Metro Area" %-->
+                        <%= f.select("metroarea", address.target_metro {|p| [p[0], p[1]] }) %>
+                      </div>
+
+                      <div class = "margin_bottom_5px">
+                        <%= f.text_field :neighborhood, placeholder: "Neighborhood" %>
+                      </div>
+
+                      <div class = "margin_bottom_5px">
+                        <% if address.private_flag? %>
+                          <%= f.select(:private_flag, options_for_select([['Commercial Property', 0], ['Private Residence', 1]], 1)) %>
+                        <% else %>
+                          <%= f.select(:private_flag, options_for_select([['Commercial Property', 0], ['Private Residence', 1]], 0)) %>
+                        <% end %>
+                      </div>
+
+                      <div class = 'margin_bottom_5px'>
+                        <%= f.check_box  :allow_booking_flag %><span class = 'margin_left'>Allowed for event requests</span>
+                      </div>
+                    </div>
+                    
+                    <div class = "span2 margin_top">
+                      <div class = "org_btn">
+                        <%= f.submit "Save Changes"%>
+                        <% end %>
+                      </div>
+
+                      <div class = "lightgray_btn margin_top_15px">
+                            <%= button_to "Delete", delete_address_path(address.id) %>
+                      </div>
+
+                      <div class = "link_font_darkgray font_josefin font_12px margin_top_20px">
+                        <div class = "font_underline">Upcoming Events at location</div>
+                        <% if current_user.upcomingevents_as_host.where("addressuser_id = ?", address.id).count == 0 %>
+                          <div class = "ital_font">none</div>
+                          
+                        <% else %>
+                          <% current_user.upcomingevents_as_host.where("addressuser_id = ?", address.id).each do |evt| %>
+                            <div class = "hover_underline margin_bottom_5px"> 
+                              <%= link_to evt.event_name + ' (' + evt.eventstatus + ')', evt %> 
+                            </div>
+                          <% end %>
+                        <% end %>
+                      </div>
+                    </div>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+    </div> 
+  </div>
+
+  <div class="span4 white_container_border padding_around">
+    <div class = "margin_top font_josefin font_18px"> Add New Address </div>
+    <%= form_for(@new_address, :url => url_for(:controller => "addressusers", :action => "create"), :validate => true) do |f| %>  
+      <%= render 'shared/error_messages', object: f.object %>
+        <div class = "margin_bottom margin_top">
+          <%= f.text_field :nickname, :placeholder => "Nickname (optional: for your reference only)" %>   
+        </div>
+
+        <div class = "margin_bottom">
+      	  <%= f.text_field :line1, placeholder: "Address Line 1" %>   
+    	  </div>
+
+    	  <div class = "margin_bottom">
+        	<%= f.text_field :city, :placeholder => "City" %>
+        </div>
+        
+        <div class = "margin_bottom">
+          <%= f.select("state", @new_address.us_states_abrev {|p| [p.state] } ) %>
+          <!--%= f.select("state", @new_address.us_states_abrev {|p| [ p.state] }, {:prompt => 'State'} ) %-->
+        </div>
+
+        <div class = "margin_bottom">
+          <%= f.text_field :zip5, placeholder:"Zip Code" %>
+        </div>
+
+        <div class = "margin_bottom">
+          <!--%= f.text_field :metroarea, placeholder: "Metro Area" %-->
+          <!--%= f.select("metroarea", @new_address.target_metro {|p| [p[0], p[1]] }, {:prompt => 'Metro Area'}) %-->
+          <%= f.select("metroarea", @new_address.target_metro {|p| [p[0], p[1]] }) %>
+        </div>
+
+        <div class = "margin_bottom">
+          <%= f.text_field :neighborhood, placeholder: "Neighborhood" %>
+        </div>
+
+        <div class = "margin_bottom">
+          <%= f.select(:private_flag, [['Commercial Property', 0], ['Private Residence', 1]]) %>
+        </div>
+
+        <div class = 'margin_bottom'><%= f.check_box  :allow_booking_flag %> <span class = 'margin_left'>Allowed for event requests</span></div>
+
+        <div class = "org_btn"><%= f.submit "Add" %></div>
+    <% end %>
+  </div>
+
+</div>

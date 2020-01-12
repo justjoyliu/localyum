@@ -1,0 +1,155 @@
+<div class = 'span7 padding_around_10 margin_top_shift10px'>
+  <% @upcomingevts_2.each do |e| %>
+    <div style="background-color:#eaeaea;padding:10px; margin-bottom:20px;">
+      <% if e.menuitems.where('menupic_file_name is not null').count > 0 %>
+        <div class = 'container_inline no_overflow' style="width:180px;height:180px;margin-bottom:-5px;">
+          <%= link_to image_tag(e.menuitems.where('menupic_file_name is not null').first.menupic.url(:medium), :size => '180x180'), hostevent_path(e.permalink) %>
+        </div>
+      <% elsif e.eventphotos.count > 0 %>
+        <div class = 'container_inline no_overflow' style="width:180px;height:180px;margin-bottom:-5px;">
+          <div style="margin:0 -45px;">
+            <%= link_to image_tag(e.eventphotos.first.eventpic.url(:index_search), height:'270x180'), hostevent_path(e.permalink) %>
+          </div>
+        </div>
+        
+      <% else %>
+        <div class = 'container_inline no_overflow' style="width:180px;height:180px;margin-bottom:-5px;background:white;">
+          <%= link_to image_tag('logocentered.png', :size => '180x180'), hostevent_path(e.permalink) %>
+        </div>
+      <% end %>
+      <div class = "v_top container_inline" style="height:170px;width:300px;margin: 5px 0 0 20px;">
+        <div class = 'font_26px font_josefin link_font_black'><%= link_to e.event_name.truncate(25), hostevent_path(e.permalink) %></div>
+        <div class = 'margin_top link_font_black font_josefin font_16px'>
+          <%= link_to e.mealstarttime.time.strftime("%a. %b. %d, %Y at %I:%M %p"), hostevent_path(e.permalink) %> 
+          <br> <%= link_to e.addressuser.city.to_s + ", " + e.addressuser.state.to_s, hostevent_path(e.permalink) %>
+        </div>
+        <div class = 'margin_top link_font_black font_josefin font_22px margin_bottom'>
+          $ <%= link_to number_with_precision(e.price, :precision => 2), hostevent_path(e.permalink) %>
+        </div>
+        <div class = 'org_btn margin_top'><%= button_to "Check It Out!", hostevent_path(e.permalink), :class => 'font_bold', :method => :get  %></div>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @upcomingevts.count > 3 %>
+    <div class = 'org_btn'><%= button_to "Explore More Richmond Dining Adventures", events_path(:metroarea => "Richmond"), :class => 'font_bold', :method => :get  %></div>
+  <% else %>
+    <div class = 'margin_top_30px font_josefin'><div class = 'org_font font_cuprum margin_bottom' style='font-size:30px'>Past Events </div></div>
+    <% @past_2.each do |e| %>
+      <div style="background-color:#eaeaea;padding:10px; margin-bottom:20px;">
+        <% if e.menuitems.where('menupic_file_name is not null').count > 0 %>
+          <div class = 'container_inline no_overflow' style="width:180px;height:180px;margin-bottom:-5px;">
+            <%= link_to image_tag(e.menuitems.where('menupic_file_name is not null').first.menupic.url(:medium), :size => '180x180'), hostevent_path(e.permalink) %>
+          </div>
+        <% elsif e.eventphotos.count > 0 %>
+          <div class = 'container_inline no_overflow' style="width:180px;height:180px;margin-bottom:-5px;">
+            <div style="margin:0 -45px;">
+              <%= link_to image_tag(e.eventphotos.first.eventpic.url(:index_search), height:'270x180'), hostevent_path(e.permalink) %>
+            </div>
+          </div>
+        <% else %>
+          <div class = 'container_inline no_overflow' style="width:180px;height:180px;margin-bottom:-5px;background:white;">
+            <%= link_to image_tag('logocentered.png', :size => '180x180'), hostevent_path(e.permalink) %>
+          </div>
+        <% end %>
+        <div class = "v_top container_inline" style="height:170px;width:300px;margin: 5px 0 0 20px;">
+          <div class = 'font_26px font_josefin link_font_black'><%= link_to e.event_name.truncate(25), hostevent_path(e.permalink) %></div>
+          <div class = 'margin_top link_font_black font_josefin font_16px'>
+            was on <%= link_to e.mealstarttime.time.strftime("%a. %b. %d, %Y"), hostevent_path(e.permalink) %> 
+          </div>
+          <div class = 'margin_top link_font_black font_josefin font_22px margin_bottom'>
+            $ <%= link_to number_with_precision(e.price, :precision => 2), hostevent_path(e.permalink) %>
+          </div>
+          <div class = 'org_btn margin_top'><%= button_to "Check It Out!", hostevent_path(e.permalink), :class => 'font_bold', :method => :get  %></div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+
+  <div class = 'margin_top_30px font_josefin'>
+    <!-- table_border_top -->
+    <div class = 'org_font font_cuprum' style='font-size:30px'>How It Works</div>
+      <div class = 'span3 margin_right_20px'>
+        <div class = 'margin_top_20px font_ubuntu font_20px' style='color:#7ba82a;'>Host an Adventure</div>
+         <ol type = '1' class = 'font_ubuntu'>
+          <li class = 'margin_top'><span class = 'font_bold font_16px'>Setup</span> an event centered around food & <span class = 'font_bold font_16px'>Open</span> for signup</li>
+          <li class = 'margin_top'><span class = 'font_bold font_16px'>Accept</span> or decline seat <span class = 'font_bold font_16px'>requests</span></li>
+          <li class = 'margin_top'><span class = 'font_bold font_16px'>Match</span> your guest list with <span class = 'font_bold font_16px'>Yummer's name/photo</span></li>
+          <li class = 'margin_top'><span class = 'font_bold font_16px'>Withdraw</span> the earnings to your bank account</span></li>
+        </ol>
+      </div>
+      <div class = 'span3'>  
+        <div class = 'margin_top_20px font_ubuntu font_20px' style='color:#7ba82a;'>Taste as a "Yummer"</div>
+        <ol type = '1' class = 'font_ubuntu'>
+          <li class = 'margin_top'><span class = 'font_bold font_16px'>Explore</span> the events</li>
+          <li class = 'margin_top'><span class = 'font_bold font_16px'>Request/Take</span> a seat at the host's table</li>
+          <li class = 'margin_top'><span class = 'font_bold font_16px'>Contribute</span> the requested amount <span class = 'font_bold font_16px'>via credit card</span> when your seat is confirmed</li>
+          <li class = 'margin_top'><span class = 'font_bold font_16px'>Arrive</span> at the communal table and <span class = 'font_bold font_16px'>show an id</span> that matches your registered name or upload an up-to-date profile picture</li>
+          <li class = 'margin_top'><span class = 'font_bold font_16px'>Rate</span> your experience & earn badges</li>
+        </ol>
+      </div>
+  </div>
+</div>
+
+<div class = 'span4 padding_left'>
+  <div class = 'font_cuprum margin_top_shift10px'>
+    <!-- <h2 class = "margin_top font_26px">Bringing People Together <span class = "font_18px"> with</span></h2> -->
+        <div class = "font_18px margin_top_20px">Don't just get fed in <span class ='font_26px'>Richmond</span>, </div> 
+        <div class = "margin_top font_24px padding_left_20px padding_right_20px">Enjoy a social dining experience 
+          <span class = "font_16px"> with</span></div>
+        
+        <div class = 'font_18px margin_left_25px padding_left_20px margin_top' style='color:#7ba82a;'> <i class="icon-food"></i> Great Food</div>
+        <div class = "margin_top font_18px margin_left_25px padding_left_20px" style='color:#7ba82a;'> <i class="icon-group"></i> Awesome People</div>
+        <div class = "margin_top font_18px margin_left_25px padding_left_20px" style='color:#7ba82a;'> <i class="icon-magic"></i> 
+          <!-- Unique Experience -->
+          Low Pressure Atmosphere
+        </div>
+
+        <div class = 'margin_top font_16px padding_left padding_right'>Taking all the hassle out of dining out.<br>
+          Feel like going to a friend's place everytime you walk into a restaurant </div>
+  </div>
+  
+  <div class = 'padding_around font_josefin font_16px'>
+    Do you ...
+    <ul>
+      <li>love to taste & discover new dishes?</li>
+      <li>hope to use food as an excuse to meet new people?</li>
+    </ul>
+
+    <% if signed_in? %>
+      <div class = 'org_btn'><%= button_to "Join an Event!", events_path(:metroarea => "Richmond"), :class => 'font_bold', :method => :get  %></div>
+    <% else %>
+      <div class = 'org_font font_cuprum center' style='font-size:24px'>Create a Local Yum Account & Join an Event!</div>
+      <div class = "white_container_no_border padding_top_15px margin_top">
+              <div class = "padding_around_10 margin_left margin_right">
+                <%= link_to image_tag('facebook_signup_icon.png', size: '262x30'), "/auth/facebook", id: "sign_in_fb" %>
+              </div>
+              <div class = 'center light_gray_font font_12px font_bold'>OR</div>
+              <div class = "padding_around_10 margin_left margin_right">
+                <%= render 'shared/user_new_yummer'%>
+              </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class = 'padding_around font_josefin font_16px'>
+    Do you ...
+    <ul>
+      <li>have a creative menu experience to showcase?</li>
+      <li>want to present a perfect beverage pairing?</li>
+      <li>hope to use food as an excuse to gather like-minded people together?</li>
+    </ul>
+
+    <% if signed_in? %>
+      <div class = 'org_btn'><%= button_to "Create an Event!", new_event_path, :class => 'font_bold', :method => :get  %></div>
+    <% else %>
+      <div class = 'org_font font_cuprum center margin_top' style='font-size:24px'>Create a Local Yum Account & Host an Event!</div>
+      <div class = "white_container_no_border padding_top margin_top">
+              <div class = "padding_around_10 margin_left margin_right">
+                <%= render 'shared/user_new_chef'%>
+              </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+  

@@ -1,0 +1,139 @@
+<!-- <header class="navbar nav_bar_fix_top shawdow_bottom"> -->
+<header class="navbar nav_bar_fix_top">
+      <div id = 'logo' class = 'margin_left_20px'><!--%= link_to "LOCAL YUM", root_path %-->
+        <%= link_to image_tag("LogoWeb.png", size: '40x40') + ' LOCAL YUM  ', root_path %>
+      </div>
+      
+    <% if !signed_in? or current_user.yummer_flag? %>
+      <div class = "container_inline btn_w200px pull-left">
+        <div class = "nav_btn" id = 'explore_nav'><i class="icon-search"></i> &nbsp; Explore Food Events </div>
+        <div id = 'explore_inner' style="display: none;"> 
+          <% if signed_in? %>
+            <div class = "white_btn">
+              <%= button_to "Favorite Chef's Events".html_safe, following_path, :method => :get %>
+            </div>
+          <% end %>
+                <!-- <div class = "white_btn"> -->
+                  <!--%= button_to "New York City", events_path(:metroarea => "New_York_City"), :method => :get %-->
+                <!-- </div> -->
+                <!-- <div class = "white_btn"> -->
+                  <!--%= button_to "Washington DC", events_path(:metroarea => "Washington_DC"), :method => :get %-->
+                <!-- </div> -->
+                <div class = "white_btn"><%= button_to "Richmond Events", events_path(:metroarea => "Richmond"), :method => :get %></div>
+                <div class = "white_btn"><%= button_to "Richmond Hosts", hosts_path(:metroarea => "Richmond"), :method => :get %></div>
+                <!-- <div class = "white_btn"> -->
+                  <!--%= button_to "Chicago", events_path(:metroarea => "Chicago"), :method => :get %-->
+                 <!-- </div> -->
+                <!-- <div class = "white_btn"> -->
+                  <!--%= button_to "San Francisco", events_path(:metroarea => "San_Francisco"), :method => :get %-->
+                <!-- </div> -->
+
+                <!-- <div class = "white_btn"> -->
+                  <!--%= button_to "Boston", events_path(:metroarea => "Boston"), :method => :get %-->
+                <!-- </div> -->
+                <div class = "white_btn"><div class = "table_border_top"><%= button_to "Other", events_path(:metroarea => "Other"), :method => :get %></div></div>
+        </div>
+      </div>
+    <% end %>
+
+    <% if signed_in? %>
+      <% if current_user.host_flag? %><div class = 'container_inline btn_w120px pull-left'><div class = "nav_btn"> 
+              <%= link_to new_event_path, { :title => "Create Event" } do %>
+                  <i class="icon-plus-sign icon-large"></i> &nbsp; Create Event
+              <% end %>
+      </div></div><% end %>
+
+      <% if current_user.chef_flag? %><div class = 'container_inline btn_w120px pull-left'><div class = "nav_btn"> 
+              <%= link_to my_recipebox_path, { :title => "Recipe Box" } do %>
+                  <i class="icon-archive icon-large"></i> &nbsp; Recipes
+              <% end %>
+      </div></div><% end %>
+    <% end %>
+
+      <div class = 'container_inline btn_w120px pull-left'>
+            <div class = "nav_btn"> 
+              <%= link_to how_it_works_path do %>
+                <i class="icon-question-sign icon-large"></i> &nbsp;<%= "How It Works" %>
+              <% end %> 
+            </div>
+      </div>
+
+      <% if signed_in? %>
+        <div class = 'pull-right'>
+            <div class = "btn_w40px center container_inline">
+              <%= link_to signout_path, { :title => "Log Out", :class => 'nav_btn', method: "delete"} do %>
+                <i class="icon-off icon-large"></i>
+              <% end %>
+            </div>
+        </div>
+
+        <div class = 'pull-right'>
+            <div class = "btn_w40px center container_inline">
+              <%= link_to user_path(current_user.permalink), { :title => "Profile Dashboard", :class => 'nav_btn'} do %>
+                <i class="icon-user icon-large"></i>
+              <% end %>
+            </div>
+        </div>
+
+        <div class = 'pull-right'>
+            <% if Message.where("receiver_id = ? and receiver_read = 0", current_user.id).count > 0 %>
+              <div class = 'btn_w40px center container_inline org_font'>
+                <%= link_to messagechains_path, {:class => 'nav_btn', :title => "Messages"} do %>
+                  <i class="icon-envelope icon-large"></i>
+                <% end %>
+              </div>
+            <% elsif Message.where("(sender_id = ? AND sender_hidden = 0) OR (receiver_id = ? AND receiver_hidden = 0)", current_user.id, current_user.id).count > 0 %>
+              <div class = 'btn_w40px center container_inline'>
+                <%= link_to messagechains_path, {:title => "Messages", :class => 'nav_btn'} do %>
+                  <i class="icon-envelope icon-large"></i>
+                <% end %>
+              </div>
+            <% end %>
+        </div>
+        <div class = 'pull-right'>
+            <div class = 'btn_w120px center container_inline'>
+              <%= link_to show_myevents_path, { :title => "My Upcoming Events", :class => 'nav_btn' } do %>
+                <i class="icon-bell-alt icon-large"></i> &nbsp; Upcoming
+              <% end %>
+            </div> 
+        </div>
+      <% else %>
+        <div class = 'pull-right'>
+          <div class = 'container_inline btn_w150px'>
+            <div class = "nav_btn" id = 'user_su_nav'><i class="icon-flag icon-lg"></i> &nbsp; Sign Up </div>
+          </div>
+
+          <div class = 'container_inline btn_w150px'>
+            <div class = "nav_btn" id = 'user_li_nav'><i class="icon-key icon-lg"></i> &nbsp; Log In </div>
+          </div>
+
+          <div id = 'user_su_nav_inner' class = 'center' style="display: none; background: white; width:300px; position:relative;">  <div class = "padding_around_10 margin_left margin_right">
+              <%= link_to image_tag('facebook_signup_icon.png', size: '262x30'), "/auth/facebook", id: "sign_in_fb" %>
+            </div>
+            <div class = 'border_middle'>OR &nbsp;</div>
+            <div class = "padding_around_10 margin_left margin_right">
+              <%= render 'shared/user_new'%>
+            </div>
+          </div>
+           
+
+          <div id = 'user_li_nav_inner' class = 'center' style="display: none; background: white; width:300px; position:relative;">
+                <div class = "padding_around_10 margin_left margin_right">
+                  <%= link_to image_tag('facebook_login_icon.png', size: '262x30'), "/auth/facebook", id: "sign_in_fb" %>
+                </div>
+                <div class = 'border_middle'>OR &nbsp;</div>
+                <div class = "padding_around_10 margin_left margin_right table_border_bottom">
+                  <%= form_for(:session, url: sessions_path) do |f| %>
+                    <!--submitting this form will result in a params hash where params[:session][:email] and params[:session][:password] correspond to the email and password fields-->
+                    <div><%= f.email_field :email, :placeholder => "Email", class: 'email_icon' %></div>
+                    <div><%= f.password_field :password, :placeholder => "Password", class: 'password_icon' %></div>
+                    <div class = "org_btn font_bold"> <%= f.submit "Sign in" %> </div>
+                    <div class = "font_10px pull-right margin_top_5px"><%= link_to "Forgot Password? ", request_password_reset_path %></div>
+                  <% end %>
+                </div>
+          </div>
+
+        </div>
+      <% end %> 
+
+</header>

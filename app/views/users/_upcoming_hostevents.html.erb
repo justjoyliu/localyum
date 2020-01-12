@@ -1,0 +1,230 @@
+<!--%= will_paginate @upcoming_hostevents %-->
+<!--%= will_paginate @all_events %-->
+<% @all_events.each do |event| %>
+	<% if event.event_start_date_upcoming? %>
+		<% if event.user_id == current_user.id %>
+		  		<% if event.signups.where("confirmation_status = ? and confirmation_host = ?", "Waiting", "0").count > 0 %>
+		  			<div class = "mng_one_evt thick_border_orange" style="background:url('/assets/<%= event.eventstatus %>corner.png') no-repeat top right white">
+		  		<% else %>
+		  			<div class = "mng_one_evt" style="background:url('/assets/<%= event.eventstatus %>corner.png') no-repeat top right white">
+		  		<% end %>
+				<table><tr>
+					<td>
+						<% if event.eventphotos.empty? %>
+					        <div class="mng_evt_one_photo">
+					        	<%= link_to image_tag('photo.png') + "Add Photo",  addphoto_to_event_path(event.permalink)%>
+					        </div>
+					    <% else %>
+					    	<div class="mng_evt_one_photo" style="background:url(<%= event.eventphotos.first.eventpic.url(:thumb) %>) no-repeat center"> 
+					    	</div> 
+					    <% end %>
+					</td>
+
+					<td class = "mng_evt_details_container">
+						<div class = "mng_evt_name"><%= link_to event.event_name, hostevent_path(event.permalink) %></div>
+				  		on <%= event.mealstarttime.time.strftime("%A, %b. %d, %Y @ %l:%M  %P") %>
+				  			<% if event.chef_id != event.user_id %>
+				  				<div>with <%= link_to User.find(event.chef_id).name.titleize, user_path(User.find(event.chef_id).permalink) %> as chef</div>
+				  			<% end %>
+					  		<% if !event.mustbookhoursinadvance.nil? %>
+					          <div class = "mng_evt_bookby">
+					            (must sign up <%= event.mustbookhoursinadvance %> hours in advance)
+					          </div>
+					        <% else %>
+					        	<br>
+					        <% end %>  
+
+					    <div class = "mng_evt_btn_container">
+					    	<% if event.eventstatus == "Open" %>
+					    		<!--%= link_to " Manage Event ",  signup_requests_path(event.permalink), class: "btn btn-mini mng_evt_btn" %-->
+								<div class = "btn_w110px margin_top_5px"><div class = "org_btn">
+									<%= button_to "Manage Sign Ups", signup_requests_path(event.permalink), class: "font_12px" %>
+								</div></div>
+					  			&nbsp;  
+					  			<div class = "btn_w110px margin_top_5px"><div class = "lightgray_btn">
+									<% if event.signups.where("confirmation_status in ('Waiting', 'Confirmed', 'Attending')").count == 0 %>
+			                            <%= button_to "Edit Event", hostevent_cancel_path(event.permalink), class: "font_12px", :confirm => 'The event status will change to set up when you edit this event. After you have completed your edits, remember to re-open the event.' %>
+			                        <% else %>
+			                            <%= button_to "Cancel Event", hostevent_cancel_path(event.permalink), class: "font_12px", :confirm => 'Are you sure you want to cancel the event? All guests will be notified and their requests will be considered denied. You will be charged a penalty of $1 per refunded guests who has already paid and 10% of the refunded amount. In addition, the settings for this event will be saved and ready to edit if you decide to reopen this event.' %>
+			                        <% end %>
+								</div></div>
+					    	<% else %>
+					  			<div class = "btn_w110px margin_top_5px"><div class = "org_btn">
+									<%= button_to "Edit Details", edit_basic_path(event.permalink), class: "font_12px" %>
+								</div></div>
+					  			&nbsp;  
+					  			<div class = "btn_w110px margin_top_5px"><div class = "org_btn">
+									<%= button_to "Edit Menu", edit_hostevent_path(event.permalink), class: "font_12px" %>
+								</div></div>
+					  		<% end %>
+					  	</div>
+					</td>
+
+					<td class = "mng_evt_status_container">
+						<% if event.eventstatus == "Open" %>
+							<%if event.signups.where("confirmation_status = ? and confirmation_host = ?", "Waiting", "0").count > 0 %>
+								<div><%= link_to "Pending Requests: " +  event.signups.where("confirmation_status = ? and confirmation_host = ?", "Waiting", "0").count.to_s, signup_requests_path(event.permalink), class: "font_bold"%></div>
+							<% else %>
+								<div><%= link_to "Pending Requests: " +  event.signups.where("confirmation_status = ? and confirmation_host = ?", "Waiting", "0").count.to_s, signup_requests_path(event.permalink)%></div>
+							<% end %>
+							<div><%= link_to "Confirmed Guests: " + event.signups.where("confirmation_status = ?", "Confirmed").sum(:guest_count).to_s, signup_requests_path(event.permalink) %></div>
+							<div><%= link_to "Paid Guests: " + event.signups.where("confirmation_status = ?", "Attending").sum(:guest_count).to_s, signup_requests_path(event.permalink) %></div>
+
+						<% elsif event.hostevent_status_could_be_complete? %>
+		           			<div class = "btn_w100px margin_top_5px"><div class = "org_btn"><%= button_to "Open Event", hostevent_open_path(event.permalink), class: "font_12px", confirm: "You cannot edit this event once it is open. Are you sure you want to open this event?" %></div></div>
+		           			<% if event.chef_id != event.user_id %>
+				  				<div class = 'margin_top_5px btn_w100px mng_evt_bookby'>Once you open the event, the chef will be review & confirm. Then the event will be ready for sign up</div>
+				  			<% end %>
+		          		<% else %>
+		          			<% if !event.hostevent_step1? %>
+				          		<%= link_to edit_hostevent_path(event.permalink) do %>
+			 						<font size="4"><%= event.hostevent_to_complete %> </font>
+			 						<font size="1">more <%= 'step'.pluralize(event.hostevent_to_complete) %> >> </font> 
+								<% end %>	
+							<% elsif !event.hostevent_step2? %>
+								<%= link_to edit_basic_path(event.permalink) do %>
+			 						<font size="4"><%= event.hostevent_to_complete %> </font>
+			 						<font size="1">more <%= 'step'.pluralize(event.hostevent_to_complete) %> >> </font> 
+								<% end %>
+							<% else %>
+								<%= link_to addphoto_to_event_path(event.permalink) do %>
+			 						<font size="4"><%= event.hostevent_to_complete %> </font>
+			 						<font size="1">more <%= 'step'.pluralize(event.hostevent_to_complete) %> >> </font> 
+			 					<% end %>
+							<% end %>
+						<% end %>
+					</td>
+				</tr></table>
+		<% else %>
+			<% if @upcoming_signups.find_by_hostevent_id(event.id).confirmation_status.to_s == "Confirmed" and @upcoming_signups.find_by_hostevent_id(event.id).payment_status != "Captured" %>
+		  		<div class = "mng_one_evt thick_border_orange" style="background:url('/assets/<%= @upcoming_signups.find_by_hostevent_id(event.id).confirmation_status %>corner.png') no-repeat top right white">
+		  	<% elsif event.eventstatus == 'Cancelled'%>
+		  		<div class = "mng_one_evt" style="background:url('/assets/Cancelledcorner.png') no-repeat top right white">
+		  	<% else %>
+		  		<div class = "mng_one_evt" style="background:url('/assets/<%= @upcoming_signups.find_by_hostevent_id(event.id).confirmation_status %>corner.png') no-repeat top right white">
+		  	<% end %>
+				
+				<table><tr>
+					<td>
+						<% if event.eventphotos.empty? %>
+					        <div class="mng_evt_one_photo">
+					        	<%= image_tag('photo.png')%>
+					        </div>
+					    <% else %>
+					    	<div class="mng_evt_one_photo" style="background:url(<%= event.eventphotos.first.eventpic.url(:thumb) %>) no-repeat center"> 
+					    	</div> 
+					    <% end %>
+					</td>
+
+					<td class = "mng_evt_details_container">
+						<div class = "mng_evt_name"><%= link_to event.event_name, hostevent_path(event.permalink) %></div>
+						<div> for <%=pluralize(@upcoming_signups.find_by_hostevent_id(event.id).guest_count, 'Seat') %>  at the Table </div>
+				  		on <%= event.mealstarttime.time.strftime("%A, %b. %d, %Y @ %l:%M  %P") %>
+				  		<% if @upcoming_signups.find_by_hostevent_id(event.id).confirmation_status.to_s == "Attending" %>
+				  			<div> at <%= event.addressuser.line1.titleize %>, <%= event.addressuser.city.titleize %>, <%= event.addressuser.state %> (<%= event.addressuser.zip5%>)
+				  			</div>
+				  		<% end %>
+					    <div class = "mng_evt_bookby">
+					            (Cancellation Policy is <%= event.cancellationpolicy.cancellation_description %>)
+					    </div>
+					</td>
+					<td class = "mng_evt_status_container">
+						<!-- <div class = "mng_evt_btn_container"> -->
+					  		<!--%= link_to "View Event",  hostevent_path(event.permalink), class: "btn btn-mini mng_evt_btn" %-->
+					  	<!-- </div> -->
+		          		
+		          		<% if @upcoming_signups.find_by_hostevent_id(event.id).confirmation_status.to_s == "Withdrawn" %>
+			              <% if event.eventstatus == 'Open'%> 
+			              	<div class = "btn_w100px margin_top_5px margin_bottom"><div class = "org_btn">
+				               <% if !event.confirmability? %>	
+								<%= form_for :signup, :url => signup_path(@upcoming_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+				                  <%= f.hidden_field :confirmation_guest, :value => true %>
+				                  <%= f.hidden_field :confirmation_status, :value => "Confirmed"%>
+				                  <%= f.submit "Take a Seat", :class => "font_12px"  %>
+				                <% end %>
+				               <% else %>
+				                <%= form_for :signup, :url => signup_path(@upcoming_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+				                  <%= f.hidden_field :confirmation_guest, :value => true %>
+				                  <%= f.hidden_field :confirmation_host, :value => false %>
+				                  <%= f.hidden_field :confirmation_status, :value => "Waiting"%>
+				                  <%= f.submit "Req A Seat", :class => "font_12px" %>
+				                <% end %>
+				               <% end %>  
+				             </div></div>
+				          <% end %>
+			              <% unless @upcoming_signups.find_by_hostevent_id(event.id).refund_amt_cent.nil? or @upcoming_signups.find_by_hostevent_id(event.id).refund_amt_cent == 0 %> 
+			              	<div class = "font_lightgray font_josefin btn_w100px center"> Refunded: $<%= number_with_precision((@upcoming_signups.find_by_hostevent_id(event.id).refund_amt_cent)/100, :precision => 2) %></div>
+			              <% end %>
+			          	<% elsif @upcoming_signups.find_by_hostevent_id(event.id).confirmation_status.to_s == "Confirmed" and @upcoming_signups.find_by_hostevent_id(event.id).payment_status.to_s != "Captured" %>
+				          	<% if @upcoming_signups.find_by_hostevent_id(event.id).payment_status.to_s == "Failed" %>
+								<div class = "font_lightgray font_josefin btn_w100px center"> Contribution Attempt: $<%= number_with_precision((@upcoming_signups.find_by_hostevent_id(event.id).payment_amt.to_i)/100, :precision => 2) %></div>
+								<div class = 'btn_w100px margin_top_5px center'><%= link_to "Failed Processing", signup_path(@upcoming_signups.find_by_hostevent_id(event.id).permalink), :method => :get, :class => 'red_font font_14px font_bold'%></div>
+							<% end %>
+
+				          	<div class = "btn_w100px margin_top_5px margin_bottom"><div class = "org_btn">	
+				            	<%= button_to "Make Contribution", signup_path(@upcoming_signups.find_by_hostevent_id(event.id).permalink), :method => :get, :class => "font_12px"  %>
+							</div></div>
+					
+							<div class = "btn_w100px margin_top_5px margin_bottom"><div class = "lightgray_btn">	
+				            	<%= form_for :signup, :url => signup_path(@upcoming_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+				                  <%= f.hidden_field :confirmation_guest, :value => false %>
+				              	  <%= f.hidden_field :confirmation_status, :value => "Withdrawn"%>
+				              	  <%= f.submit "Withdraw", :class => "font_12px"  %>
+				            	<% end %>
+				            </div></div>
+						<% elsif @upcoming_signups.find_by_hostevent_id(event.id).confirmation_status.to_s != "Declined" %>
+							<div class = "btn_w100px margin_top_5px margin_bottom"><div class = "lightgray_btn">	
+				            	<%= form_for :signup, :url => signup_path(@upcoming_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+				                  <%= f.hidden_field :confirmation_guest, :value => false %>
+				              	  <%= f.hidden_field :confirmation_status, :value => "Withdrawn"%>
+				              	  <%= f.submit "Withdraw", :class => "font_12px"  %>
+				            	<% end %>
+				            </div></div>
+				            <% if @upcoming_signups.find_by_hostevent_id(event.id).confirmation_status.to_s == "Attending" %>
+					              <div class = "font_lightgray font_josefin btn_w100px center"> Contributed to Host: $<%= number_with_precision(event.price * @upcoming_signups.find_by_hostevent_id(event.id).guest_count, :precision => 2) %></div>
+					              <div class = "font_lightgray font_josefin btn_w100px center margin_bottom"> Paid Servicing Fee: $<%= number_with_precision(((@upcoming_signups.find_by_hostevent_id(event.id).payment_amt.to_i) - (event.price*100* @upcoming_signups.find_by_hostevent_id(event.id).guest_count).to_i)/100, :precision => 2) %></div>
+				          	<% end %>
+				        <% end %> 
+					</td>
+				</tr></table>
+		<% end %>
+	<% end %>
+	</div>
+<% end %>
+
+<% if @upcoming_chef_evts.count > 0 %>
+	<div class = 'org_font font_cuprum center margin_top_20px margin_bottom' style='font-size:24px'>Events as Chef</div>
+	<% @upcoming_chef_evts.each do |c| %>
+		<% if c.chef_confirm? %>
+            <div class = "mng_one_evt white_container_no_border">
+          <% else %>
+            <div class = "mng_one_evt thick_border_orange white_container_no_border">
+          <% end %>
+        <table><tr>
+          <td>
+            <% if c.eventphotos.empty? %>
+                  <div class="mng_evt_one_photo">
+                    <%= link_to image_tag('photo.png') + "Add Photo",  addphoto_to_event_path(c.permalink)%>
+                  </div>
+              <% else %>
+                <div class="mng_evt_one_photo" style="background:url(<%= c.eventphotos.first.eventpic.url(:thumb) %>) no-repeat center"> 
+                </div> 
+              <% end %>
+          </td>
+
+          <td class = "mng_evt_details_container">
+            <div class = "mng_evt_name"><%= link_to c.event_name, hostevent_path(c.permalink) %></div>
+              on <%= c.mealstarttime.time.strftime("%A, %b. %d, %Y @ %l:%M  %P") %>
+            <div>with <%= link_to User.find(c.user_id).name.titleize, user_path(User.find(c.user_id).permalink) %> as host</div>
+          </td>
+
+          <td class = "mng_evt_status_container">
+            <div class = "btn_w100px margin_top_5px margin_bottom"><div class = "org_btn"><%= button_to "Preview Event", hostevent_path(c.permalink), class: "font_12px", :method => :get %></div></div>
+
+            <% if !c.chef_confirm? %>
+              <div class = "btn_w100px margin_top_5px"><div class = "org_btn"><%= button_to "Confirm Event", chef_confirm_evt_path(c.permalink), class: "font_12px" %></div></div>
+            <% end %>
+          </td>
+        </tr></table>
+	<% end %>
+<% end %>

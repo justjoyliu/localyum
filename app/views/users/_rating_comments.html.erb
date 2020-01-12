@@ -1,0 +1,110 @@
+<table class="table table-hover width_90p margin_top padding_bottom"><% @signup_with_ratings.each do |r| %>
+          <tr class = "event_comments_each">
+            <td width = "90px"><%= link_to image_tag(r.user.avatar.url(:thumb), size:"80x80"), user_path(User.find(r.user).permalink) %></td>
+            <td>
+                      <div class = "font_josefin"><%=link_to "About " + r.hostevent.event_name, hostevent_path(r.hostevent.permalink) %></div>
+                      <div class = "font_10px font_lightgray"><%= r.updated_at.strftime("%b %d, %Y") %></div>
+
+                      <div class = "font_12px font_josefin"> 
+                          <div class = "cmt_type_container">Taste</div>
+                            <% unless r.taste_rating.nil? %>
+                              <div class = "cmt_display_rating">                    
+                                  <% if r.taste_rating >= 1 %>
+                                    <div class = "rating_star_on"></div>
+                                    <% if r.taste_rating >= 2 %>
+                                      <div class = "rating_star_on"></div>
+                                      <% if r.taste_rating >= 3 %>
+                                        <div class = "rating_star_on"></div>
+                                        <% if r.taste_rating >= 4 %>
+                                          <div class = "rating_star_on"></div>
+                                          <% if r.taste_rating >= 5 %>
+                                            <div class = "rating_star_on"></div>
+                                          <% else %>
+                                            <div class = "rating_star_off"></div>
+                                          <% end %>
+                                        <% else %>
+                                          <div class = "rating_star_off"></div>
+                                          <div class = "rating_star_off"></div>
+                                        <% end %>
+                                      <% else %>
+                                        <div class = "rating_star_off"></div>
+                                        <div class = "rating_star_off"></div>
+                                        <div class = "rating_star_off"></div>
+                                      <% end %>
+                                    <% else %>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                    <% end %>
+                                  <% else %>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                  <% end %>
+                                </div>
+                            <% else %>
+                              <div class = "cmt_display_rating ital_font"> not rated </div>
+                            <% end %>
+                      </div> 
+
+                      <div class = "font_12px font_josefin"> 
+                          <div class = "cmt_type_container">Experience</div>
+                            <% unless r.experience_rating.nil? %>
+                              <div class = "cmt_display_rating">                    
+                                  <% if r.experience_rating >= 1 %>
+                                    <div class = "rating_star_on"></div>
+                                    <% if r.experience_rating >= 2 %>
+                                      <div class = "rating_star_on"></div>
+                                      <% if r.experience_rating >= 3 %>
+                                        <div class = "rating_star_on"></div>
+                                        <% if r.experience_rating >= 4 %>
+                                          <div class = "rating_star_on"></div>
+                                          <% if r.experience_rating >= 5 %>
+                                            <div class = "rating_star_on"></div>
+                                          <% else %>
+                                            <div class = "rating_star_off"></div>
+                                          <% end %>
+                                        <% else %>
+                                          <div class = "rating_star_off"></div>
+                                          <div class = "rating_star_off"></div>
+                                        <% end %>
+                                      <% else %>
+                                        <div class = "rating_star_off"></div>
+                                        <div class = "rating_star_off"></div>
+                                        <div class = "rating_star_off"></div>
+                                      <% end %>
+                                    <% else %>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                    <% end %>
+                                  <% else %>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                  <% end %>
+                              </div>
+                            <% else %>
+                              <div class = "cmt_display_rating ital_font"> not rated </div>
+                            <% end %>
+                      </div>    
+
+                      <% if Message.where("signup_id = ?", r.id).count == 0 %>
+                        <div class = "font_10px font_lightgray"> No additional comments</div>
+                      <% else %>
+                        <% Message.where("signup_id = ?", r.id).order("created_at DESC").each do |c| %><div class = "font_12px margin_bottom_5px">
+                          <%= h(c.message_content).gsub(/\n/, '<br/>').html_safe %>
+                        </div><% end %>
+                      <% end %>
+                      
+            </td>      
+          </tr>
+        <% end %></table> 
+
+<div class = "font_10px margin_left_25px"> <%= will_paginate @signup_with_ratings %> </div>

@@ -1,0 +1,16 @@
+<div class = 'center'>
+<div class = 'font_josefin font_bold font_22px center margin_bottom container_inline'>
+  Sign up for a free account today to start exploring Richmond dining events!
+</div>
+<div class = "background_white container_inline v_top align_top width_280px">
+            <div class = "padding_around_10 margin_left margin_right margin_top_20px">
+              <%= link_to image_tag('facebook_signup_icon.png', size: '262x30'), "/auth/facebook", id: "sign_in_fb" %>
+            </div>
+            <div class = 'width_60px container_inline light_gray_font font_12px font_bold'>OR</div>
+            <div class = "padding_around_10 margin_left margin_right margin_top_20px">
+              <%= render 'shared/user_new'%>
+            </div>
+        </div>
+</div>
+
+ 

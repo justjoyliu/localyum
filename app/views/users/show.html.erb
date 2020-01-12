@@ -1,0 +1,493 @@
+<!-- just display name and email <%= @user.name %>, <%= @user.email %>-->
+<% if !@user.active_status? %>
+  <% if @user.id == current_user.id %>
+    <div class = "font_lightgray margin_top center">
+      <div class = "font_20px"> Your account is inactive. </div>
+      <div class = "font_20px margin_top"> No one can view your profile. </div>
+      <div class = "font_20px margin_top"> Would you like to reactivate your account? </div>
+      <div class = 'width_200px margin_top_20px'><div class = "center btn_green"><%= link_to 'Re-Activate Account', reactivate_account_path %></div>
+      </div>
+    </div>
+  <% else %>
+    <div class = "font_lightgray margin_top center">
+      <div class = "font_20px"> This account is closed. </div>
+      <div class = "font_20px margin_top"> You can no longer view this user's information. </div>
+    </div>
+  <% end %>
+<% else %>
+<% provide(:title, @user.name + ' | A Yummer') %>
+
+
+<% if @user_agent.browser == "Internet Explorer" and @user_agent.version.to_s.gsub(/\D/, '').to_i < 100 %>
+  <div class = 'center margin_bottom_20px font_bold font_16px red_font'> Use Chrome/Firefox for an ideal experience. </div>
+<% end %>
+
+<div class="row">
+  <aside class="span3 margin_right_20px center">
+    <!-- @user.avatar_file_size.nil? -->
+    <!--% unless File.exist?(@user.avatar.url(:medium)) %-->
+    <section class = 'center'>
+          <!--will fails without gravatar_for method in users_helper-->
+            <!--%= gravatar_for @user % (:thumb) -->
+            <!--%= image_tag @user.avatar.url, :height => 50, :width => 50 %-->
+            <!--%= image_tag @user.avatar.resize_to_fit (50, 50).url %-->
+            <!--%= image_tag @user.avatar.url(:thumb) %-->
+          <%= image_tag(@user.avatar.url(:medium), :alt => "No Profile Picture") %>
+    </section>
+      
+    <section>
+      <!--% if @user.zipcode? %--> <!--%= @user.zipcode %--><!--% end %-->
+      <% if @user.link_facebook? %>
+        <%= link_to image_tag( 'facebook.png', :size => "20x20"), @user.link_facebook, :target => "_blank" %> &nbsp;
+      <% end %>
+      <% if @user.link_twitter? %>
+        <%= link_to image_tag( 'twitter.png', :size => "20x20"), @user.link_twitter, :target => "_blank" %> &nbsp;
+      <% end %>
+      <% if @user.link_pintrest? %>
+        <%= link_to image_tag( 'pinterest.png', :size => "20x20"), @user.link_pintrest, :target => "_blank" %> &nbsp;
+      <% end %>
+      <% if @user.link_foodblog? %>
+        <%= link_to image_tag( 'livejournal.png', :size => "20x20"), @user.link_foodblog, :target => "_blank" %> &nbsp;
+      <% end %>
+    </section>
+
+    <section class = "center">
+      <div class = "white_container_border margin_right_5px padding_top_15px padding_bottom_15px font_josefin font_16px">
+        <div> <%= pluralize((@hosted_evts.count - @host_upcoming.count), 'event') %> hosted </div>
+        <!--% if @host_cancel_count > 0 %-->
+          <!-- <div class = "margin_top">  -->
+            <!--%= pluralize(@host_cancel_count, 'event') %--> 
+            <!-- canceled before </div> -->
+        <!--% end %-->
+        <div class = "margin_top"> <%= pluralize(@host_upcoming.count, 'event') %> upcoming </div>
+        <% if @user.followers.count > 0 %><div class = "margin_top"> <%= pluralize(@user.followers.count, 'follower') %> </div><% end %>
+      </div>
+    </section>
+
+    <% if @user_as_guest_r >= 0 %><section class = "center margin_top_shift10px">
+      <div class = "white_container_border margin_right_5px padding_around">
+          <div class = 'font_josefin font_20px'><%= number_to_percentage(@user_as_guest_r * 100, precision: 0) %></div>
+          <div> <i class = 'icon-thumbs-up green_font'></i> &nbsp; Hosting Guest</div> 
+      </div>
+    </section><% end %>
+
+    <% if signed_in? %>
+      <% unless current_user.id == @user.id %>
+        <section>
+          <div class = "center heigh_30px">
+            <%= render 'shared/follow_form' %>
+          </div>
+        </section>
+      <% else %>
+        <section>
+          <div class = 'org_btn margin_bottom margin_top'><%= button_to "Edit Profile", edit_user_path(current_user.permalink), :method => :get %></div>
+          <div class = 'org_btn margin_bottom'><%= button_to "All My Recipes", my_recipebox_path, :method => :get %></div>
+          <div class = 'org_btn margin_bottom'><%= button_to "Attended Event Recipes", my_events_recipes_path, :method => :get %></div>
+          <div class = 'org_btn margin_bottom'><%= button_to "My Past Events", show_mypastevents_path(@user.permalink), :method => :get %></div>
+          <div class = 'org_btn margin_bottom'><%= button_to "My Earnings", show_myearnings_path, :method => :get %></div>
+          <div class = 'org_btn margin_bottom'><%= button_to "Address Book", my_address_book_path, :method => :get %></div>
+
+          <div class = 'margin_top_20px'>
+            <%= render 'user_type' %>
+          </div>
+        </section>
+      <% end %>
+    <% else %>
+      <section>
+        <div class = "org_btn"> <%= button_to "Sign Up To Follow Chef", root_path %></div>
+      </section>
+    <% end %>
+  </aside>
+
+  <div class="span8">
+    <section class = "font_josefin font_26px font_bold">
+      Hi, I am <%= @user.name %>.
+    </section>
+
+    <% unless @user.user_story.nil? or @user.user_story.empty? %>
+      <section class = "table_border_top margin_top_5px">
+        <%= h(@user.user_story).gsub(/\n/, '<br/>').html_safe %>
+      </section>
+    <% else %>
+      <% if signed_in? and @user.id == current_user.id %>
+        <section class = "table_border_top margin_top_5px">
+          <%= button_to "               Add My Story               ", edit_user_path(current_user.permalink), :method => :get, class: 'org_btn margin_top_30px' %>
+        </section>
+      <% end %>
+    <% end %>
+
+    <div class = "table_border_top margin_top_5px">
+      <% if @user.upcoming_openevents_as_host.count > 0 %>
+        <div class = "margin_top margin_bottom font_bold font_24px org_font font_cuprum">Join My Events</div>
+        <% @user.upcoming_openevents_as_host.each do |event| %>
+          <div class = "margin_top">
+            <% if signed_in? %>
+              <% if event.user_id == current_user.id %>
+                <div class = "mng_one_evt_smaller" style="background:url('/assets/<%= event.eventstatus %>corner.png') no-repeat top right white">
+                  <table><tr>
+                    <td>
+                      <% if event.eventphotos.empty? %>
+                            <div class="mng_evt_one_photo">
+                              <%= link_to image_tag('photo.png') + "Add Photo",  addphoto_to_event_path(event.permalink) %>
+                            </div>
+                        <% else %>
+                          <div class="mng_evt_one_photo" style="background:url(<%= event.eventphotos.first.eventpic.url(:thumb) %>) no-repeat center"> 
+                          </div> 
+                        <% end %>
+                    </td>
+
+                    <td class = "mng_evt_details_container_smaller">
+                      <div class = "mng_evt_name"><%= link_to event.event_name, hostevent_path(event.permalink) %></div>
+                        on <%= event.mealstarttime.time.strftime("%A, %b. %d, %Y @ %l:%M  %P") %>
+                          <% if !event.mustbookhoursinadvance.nil? %>
+                              <div class = "mng_evt_bookby">
+                                (must sign up <%= event.mustbookhoursinadvance %> hours in advance)
+                              </div>
+                            <% else %>
+                              <br>
+                            <% end %>  
+
+                        <div class = "mng_evt_btn_container">
+                          <% if event.eventstatus == "Open" %>
+                            <%= link_to " Manage Event ",  signup_requests_path(event.permalink), class: "btn btn-mini mng_evt_btn" %>
+                          <% else %>
+                            <%= link_to " Manage Event ",  step2_path(event.permalink), class: "btn btn-mini mng_evt_btn" %>
+                            &nbsp;  
+                            <%= link_to " Edit Menu ",  edit_hostevent_path(event.permalink), class: "btn btn-mini mng_evt_btn" %>
+                          <% end %>
+                        </div>
+                    </td>
+                    <td class = "mng_evt_status_container">
+                      <% if event.eventstatus == "Open" %>
+                        <%= link_to "Pending Requests: " +  event.signups.where("confirmation_status = ? and confirmation_host = ?", "Waiting", "0").sum(:guest_count).to_s, signup_requests_path(event.permalink)%>
+                        <%= link_to "Confirmed Guests: " + event.signups.where("confirmation_status = ?", "Confirmed").sum(:guest_count).to_s, signup_requests_path(event.permalink) %>
+                        <%= link_to "Attending Guests: " + event.signups.where("confirmation_status = ? and payment_status = ?", "Attending", "Captured").sum(:guest_count).to_s, signup_requests_path(event.permalink) %>
+                        <div class = "mng_evt_status">
+                          <% if event.signups.where("confirmation_status in ('Waiting', 'Confirmed', 'Attending')").count == 0 %>
+                            <%= link_to "Edit Event", hostevent_cancel_path(event.permalink), class: "btn btn-mini mng_evt_btn" %>
+                          <% else %>
+                            <%= link_to "Cancel Event", hostevent_cancel_path(event.permalink), class: "btn btn-mini mng_evt_btn" , :confirm => 'Are you sure you want to cancel the event? All guests will be notified and their requests will be considered denied. You will be charged a penalty of $1 per refunded guests who has already paid and 10% of the refunded amount. In addition, the settings for this event will be saved and ready to edit if you decide to reopen this event.' %>
+                          <% end %>
+                        </div>
+                      <% elsif event.hostevent_status_could_be_complete? %>
+                        <br>
+                              <div class = "mng_evt_status"><%= button_to "Open Event", hostevent_open_path(event.permalink), class: "btn btn-mini mng_evt_btn", confirm: "You cannot edit this event once it is open. Are you sure you want to open this event?" %></div>
+                            <% else %>
+                              <% if !event.hostevent_step1? %>
+                                <%= link_to edit_hostevent_path(event.permalink) do %>
+                            <font size="4"><%= event.hostevent_to_complete %> </font>
+                            <font size="1">more <%= 'step'.pluralize(event.hostevent_to_complete) %> >> </font> 
+                          <% end %> 
+                        <% elsif !event.hostevent_step2? %>
+                          <%= link_to step2_path(event.permalink) do %>
+                            <font size="4"><%= event.hostevent_to_complete %> </font>
+                            <font size="1">more <%= 'step'.pluralize(event.hostevent_to_complete) %> >> </font> 
+                          <% end %>
+                        <% else %>
+                          <%= link_to new_hostevent_eventphoto_path(event.permalink) do %>
+                            <font size="4"><%= event.hostevent_to_complete %> </font>
+                            <font size="1">more <%= 'step'.pluralize(event.hostevent_to_complete) %> >> </font> 
+                          <% end %>
+                        <% end %>
+                      <% end %>
+                    </td>
+                  </tr></table>
+                </div>
+              <% elsif !current_user.signups.find_by_hostevent_id(event.id).nil? %>
+                <div class = "mng_one_evt_smaller" style="background:url('/assets/<%= current_user.signups.find_by_hostevent_id(event.id).confirmation_status %>corner.png') no-repeat top right white">
+                  <table><tr>
+                    <td>
+                      <% if event.eventphotos.empty? %>
+                            <div class="mng_evt_one_photo">
+                              <%= image_tag('photo.png')%>
+                            </div>
+                        <% else %>
+                          <div class="mng_evt_one_photo" style="background:url(<%= event.eventphotos.first.eventpic.url(:thumb) %>) no-repeat center"> 
+                          </div> 
+                        <% end %>
+                    </td>
+
+                    <td class = "mng_evt_details_container">
+                      <div class = "mng_evt_name"><%= link_to event.event_name, hostevent_path(event.permalink) %></div>
+                        on <%= event.mealstarttime.time.strftime("%A, %b. %d, %Y @ %l:%M  %P") %>
+                        <div class = "mng_evt_bookby">
+                                (Cancellation Policy is <%= event.cancellationpolicy.cancellation_description %>)
+                        </div>
+                    </td>
+
+                    <td class = "mng_evt_status_container"> 
+                            <% if current_user.signups.find_by_hostevent_id(event.id).confirmation_status.to_s == "Withdrawn" %>
+                              <% if !event.confirmability? %>
+                                <%= form_for :signup, :url => signup_path(current_user.signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+                                  <%= f.hidden_field :confirmation_guest, :value => true %>
+                                  <%= f.hidden_field :confirmation_status, :value => "Confirmed"%>
+                                  <div class = "btn_w90px margin_left_5px"><div class = "org_btn"><%= f.submit "Sign Up Now", :class => "font_12px" %></div></div>
+                                <% end %>
+                              <% else %>
+                                <%= form_for :signup, :url => signup_path(current_user.signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+                                  <%= f.hidden_field :confirmation_guest, :value => true %>
+                                  <%= f.hidden_field :confirmation_host, :value => false %>
+                                  <%= f.hidden_field :confirmation_status, :value => "Waiting"%>
+                                  <div class = "btn_w90px margin_left_5px"><div class = "org_btn"><%= f.submit "Req To Join", :class => "font_12px" %></div></div>
+                                <% end %>
+                              <% end %>  
+                            <% else %>
+                              <%= form_for :signup, :url => signup_path(current_user.signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+                                  <%= f.hidden_field :confirmation_guest, :value => false %>
+                                  <%= f.hidden_field :confirmation_status, :value => "Withdrawn"%>
+                                  <div class = "btn_w90px margin_left_5px"><div class = "lightgray_btn"><%= f.submit "Withdraw", class: "font_12px" %></div></div>
+                              <% end %>
+                            <% end %>
+                    </td>
+                  </tr></table>
+                </div>
+              <% else %>
+                <div class = "mng_one_evt_smaller" style="background:url('/assets/Opencorner.png') no-repeat top right white">
+                  <table><tr>
+                    <td>
+                      <% if event.eventphotos.empty? %>
+                            <div class="mng_evt_one_photo">
+                              <%= image_tag('photo.png')%>
+                            </div>
+                        <% else %>
+                          <div class="mng_evt_one_photo" style="background:url(<%= event.eventphotos.first.eventpic.url(:thumb) %>) no-repeat center"> 
+                          </div> 
+                        <% end %>
+                    </td>
+
+                    <td class = "mng_evt_details_container">
+                      <div class = "mng_evt_name"><%= link_to event.event_name, hostevent_path(event.permalink) %></div>
+                        on <%= event.mealstarttime.time.strftime("%A, %b. %d, %Y @ %l:%M  %P") %>
+                        <div class = "mng_evt_bookby">
+                                (Cancellation Policy is <%= event.cancellationpolicy.cancellation_description %>)
+                        </div>
+                    </td>
+
+                    <td class = "mng_evt_status_container">
+                              <% if !event.confirmability? %>
+                                <!--%= form_for current_user.signups.find_by_hostevent_id(event.id) do |f| %-->
+                                <%= form_for :signup, :url => create_signup_path(event.permalink), :via => :post do |f| %>
+                                  <%= f.hidden_field :confirmation_guest, :value => true %>
+                                  <%= f.hidden_field :confirmation_status, :value => "Confirmed"%>
+                                  <div class = "btn_w90px margin_left_5px"><div class = "org_btn"><%= f.submit "Sign Up Now", :class => "font_12px" %></div></div>
+                                <% end %>
+                              <% else %>
+                                <!--%= form_for current_user.signups.find_by_hostevent_id(event.id) do |f| %-->
+                                <%= form_for :signup, :url => create_signup_path(event.permalink), :via => :post do |f| %>
+                                  <%= f.hidden_field :confirmation_guest, :value => true %>
+                                  <%= f.hidden_field :confirmation_host, :value => false %>
+                                  <%= f.hidden_field :confirmation_status, :value => "Waiting"%>
+                                  <div class = "btn_w90px margin_left_5px"><div class = "org_btn"><%= f.submit "Req To Join", :class => "font_12px" %></div></div>
+                                <% end %>
+                              <% end %>         
+                    </td>
+                  </tr></table>
+                </div>
+              <% end %>
+            <% else %>
+              <div class = "mng_one_evt_smaller" style="background:url('/assets/Opencorner.png') no-repeat top right white">
+                <table><tr>
+                  <td>
+                    <% if event.eventphotos.empty? %>
+                          <div class="mng_evt_one_photo">
+                            <%= image_tag('photo.png')%>
+                          </div>
+                      <% else %>
+                        <div class="mng_evt_one_photo" style="background:url(<%= event.eventphotos.first.eventpic.url(:thumb) %>) no-repeat center"> 
+                        </div> 
+                      <% end %>
+                  </td>
+
+                  <td class = "mng_evt_details_container">
+                    <div class = "mng_evt_name"><%= link_to event.event_name, hostevent_path(event.permalink) %></div>
+                      on <%= event.mealstarttime.time.strftime("%A, %b. %d, %Y @ %l:%M  %P") %>
+                      <div class = "mng_evt_bookby">
+                              (Cancellation Policy is <%= event.cancellationpolicy.cancellation_description %>)
+                      </div>
+                  </td>
+                </tr></table>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      <% else %>
+        <div class = "font_lightgray ital_font margin_top margin_bottom"> Currently I have no upcoming events. </div>
+        <% if signed_in? and @user.id == current_user.id %>
+          <%= button_to "              Create an Event              ", new_event_path, :method => :get, class: 'org_btn margin_top' %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class = "table_border_top margin_top_5px">
+      <% if @recipes.count > 0 %>
+        <div class = "margin_top margin_bottom font_bold font_24px org_font font_cuprum">Grub My Recipes </div>
+        <%= render 'shared/recipe_with_banner' %>
+      <% else %>
+        <% if signed_in? and @user.id == current_user.id %>
+          <div class = "font_lightgray ital_font margin_top margin_bottom"> Create a recipe with an image and add profile picture to be on the list of local chefs </div>
+          <%= button_to "              Create a Recipe              ", new_menuitem_path, :method => :get, class: 'org_btn margin_top' %>
+        <% else %>
+          <div class = "font_lightgray ital_font margin_top margin_bottom"> I do not have any recipes to share right now. </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class = "table_border_top margin_top_5px">
+      <% unless @signup_with_ratings.count == 0 %>
+        <div class = "margin_top margin_bottom font_bold font_24px org_font font_cuprum">See Reviews About My Events</div>
+
+        <div class = "margin_left_25px margin_bottom container_inline">
+          <div class = "margin_top font_josefin">Taste: 
+                            <% if @user.user_taste_rating == 0 %> 
+                                <span class = "font_12px ital_font"> no ratings </span>
+                            <% else %>
+                                <%= @user.user_taste_rating %>
+                            <% end %>
+          </div>
+
+                          <% unless @user.user_taste_rating == 0 %>
+                              <div class = "cmt_display_rating">                    
+                                  <% if @user.user_taste_rating >= 1 %>
+                                    <div class = "rating_star_on"></div>
+                                    <% if @user.user_taste_rating >= 2 %>
+                                      <div class = "rating_star_on"></div>
+                                      <% if @user.user_taste_rating >= 3 %>
+                                        <div class = "rating_star_on"></div>
+                                        <% if @user.user_taste_rating >= 4 %>
+                                          <div class = "rating_star_on"></div>
+                                          <% if @user.user_taste_rating >= 5 %>
+                                            <div class = "rating_star_on"></div>
+                                          <% elsif @user.user_taste_rating >=  4.5 %>
+                                            <div class = "rating_star_half_small"></div>
+                                            <% else %>
+                                              <div class = "rating_star_off"></div>
+                                            <% end %>
+                                        <% elsif @user.user_taste_rating >=  3.5 %>
+                                          <div class = "rating_star_half_small"></div>
+                                          <div class = "rating_star_off"></div>
+                                          <% else %>
+                                            <div class = "rating_star_off"></div>
+                                          <div class = "rating_star_off"></div>
+                                          <% end %>
+                                      <% elsif @user.user_taste_rating >=  2.5 %>
+                                        <div class = "rating_star_half_small"></div>
+                                        <div class = "rating_star_off"></div>
+                                        <div class = "rating_star_off"></div>
+                                        <% else %>
+                                          <div class = "rating_star_off"></div>
+                                        <div class = "rating_star_off"></div>
+                                        <div class = "rating_star_off"></div>
+                                        <% end %>
+                                    <% elsif @user.user_taste_rating >=  1.5 %>
+                                      <div class = "rating_star_half_small"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <% else %>
+                                        <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <% end %>
+                                  <% elsif @user.user_taste_rating >=  0.5 %>
+                                    <div class = "rating_star_half_small"></div>
+                                    <div class = "rating_star_off"></div>
+                                    <div class = "rating_star_off"></div>
+                                    <div class = "rating_star_off"></div>
+                                    <div class = "rating_star_off"></div>
+                                  <% else %>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                  <% end %>
+                              </div>
+                          <% end %>
+        </div>
+
+        <div class = "margin_left_25px margin_bottom container_inline">
+          <div class = "margin_top font_josefin">Experience: 
+                            <% if @user.user_experience_rating == 0 %> 
+                                <span class = "font_12px ital_font"> no ratings </span>
+                            <% else %>
+                                <%= @user.user_experience_rating %>
+                            <% end %>
+          </div>
+
+                          <% unless @user.user_experience_rating == 0 %>
+                              <div class = "cmt_display_rating">                    
+                                  <% if @user.user_experience_rating >= 1 %>
+                                    <div class = "rating_star_on"></div>
+                                    <% if @user.user_experience_rating >= 2 %>
+                                      <div class = "rating_star_on"></div>
+                                      <% if @user.user_experience_rating >= 3 %>
+                                        <div class = "rating_star_on"></div>
+                                        <% if @user.user_experience_rating >= 4 %>
+                                          <div class = "rating_star_on"></div>
+                                          <% if @user.user_experience_rating >= 5 %>
+                                            <div class = "rating_star_on"></div>
+                                          <% elsif @user.user_experience_rating >=  4.5 %>
+                                            <div class = "rating_star_half_small"></div>
+                                            <% else %>
+                                              <div class = "rating_star_off"></div>
+                                            <% end %>
+                                        <% elsif @user.user_experience_rating >=  3.5 %>
+                                          <div class = "rating_star_half_small"></div>
+                                          <div class = "rating_star_off"></div>
+                                          <% else %>
+                                            <div class = "rating_star_off"></div>
+                                          <div class = "rating_star_off"></div>
+                                          <% end %>
+                                      <% elsif @user.user_experience_rating >=  2.5 %>
+                                        <div class = "rating_star_half_small"></div>
+                                        <div class = "rating_star_off"></div>
+                                        <div class = "rating_star_off"></div>
+                                        <% else %>
+                                          <div class = "rating_star_off"></div>
+                                        <div class = "rating_star_off"></div>
+                                        <div class = "rating_star_off"></div>
+                                        <% end %>
+                                    <% elsif @user.user_experience_rating >=  1.5 %>
+                                      <div class = "rating_star_half_small"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <% else %>
+                                        <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <% end %>
+                                  <% elsif @user.user_experience_rating >=  0.5 %>
+                                    <div class = "rating_star_half_small"></div>
+                                    <div class = "rating_star_off"></div>
+                                    <div class = "rating_star_off"></div>
+                                    <div class = "rating_star_off"></div>
+                                    <div class = "rating_star_off"></div>
+                                  <% else %>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                  <% end %>
+                              </div>
+                          <% end %>
+        </div>
+
+        <div id = "cmts_abt_user_evts"><%= render 'rating_comments' %></div> 
+      <% else %>
+        <div class = "font_lightgray ital_font margin_top margin_bottom"> No one has rated me yet. </div>
+      <% end %>
+    </div>
+
+    <% if @past_evts.count > 0 %>
+      <div class = 'table_border_top margin_top_5px'>
+        <div class = 'org_btn margin_bottom margin_top'><%= button_to "See My Past Events", show_mypastevents_path(@user.permalink), :method => :get %></div>
+      </div>
+    <% end %>
+
+  </div>
+</div>
+<% end %>

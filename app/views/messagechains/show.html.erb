@@ -1,0 +1,81 @@
+<% provide(:title, 'Message') %>
+
+<div class = "span4"> 
+  <div class = "font_josefin font_18px">
+    <% unless @chain.title.nil? %>
+      <%= @chain.title.humanize %>
+    <% end %>
+  </div>
+  <% unless @chain.hostevent.nil? %><div class = "margin_top margin_bottom margin_right font_lightgray">
+    <%= link_to "About Event: #{@evt.event_name}", hostevent_path(@evt.permalink) %>
+  </div><% end %>
+</div>
+
+<div class = "span7">
+  <div class="accordion" id="msg_list">
+    <% @messages.each do |m| %>
+      <div class="accordion-group mgs_chain_box msg_border_color">
+        <div class="accordion-heading">
+
+            <div class = "msg_pic_box">
+              <% if User.find(m.sender_id).active_status? %>
+                        <%= link_to image_tag(User.find(m.sender_id).avatar.url(:thumb)), user_path(User.find(m.sender_id).permalink)%>
+              <% else %>
+                        <div class = "margin_top margin_left">
+                          <i class="icon-remove icon-3x icon-border"></i> 
+                          <div class = "margin_top_5px font_10px font_lightgray"> de-activated</div>
+                        </div>
+              <% end %>
+            </div>
+
+            <div class = "msg_detail_content">
+              <% if m.sender_id == current_user.id %>
+                <div class = "msg_fromto ital_font font_lightgray"><%= link_to user_path(User.find(m.receiver_id).permalink) do %>
+                  To: <%= User.find(m.receiver_id).name_deactivation_consider %>
+                <% end %></div>
+              <% else %>
+                <div class = "msg_fromto ital_font font_lightgray"><%= link_to user_path(User.find(m.sender_id).permalink) do %>
+                  From: <%= User.find(m.sender_id).name_deactivation_consider %>
+                <% end %></div>
+              <% end %>
+              
+              <div class = "msg_date">
+                <div class = 'mi_sub_small'><%= m.created_at.strftime("%b %d, %Y") %></div>
+                <div class = "font_lightgray">
+                  <% if User.find(m.sender_id).active_status? and User.find(m.receiver_id).active_status? %>
+                    <%= link_to image_tag('reply.png'), m.msg_collapse(m), :data => {:toggle=>"collapse", :parent => "#msg_list"}%>
+                  <% end %>
+                </div>
+                <div class = 'font_lightgray margin_top_5px'><%= link_to ' ', m, :method => :delete, class: "icon-trash" %> </div>
+              </div>
+
+              <div class = "msg_content_color margin_bottom">
+                <%= h(m.message_content).gsub(/\n/, '<br/>').html_safe %>
+              </div>
+            </div>
+        </div>
+        
+        <%= content_tag :div, :id => m.msg_collapse_inner(m), :class=>"accordion-body collapse" do %>
+          <div class="accordion-inner">
+            <%= form_for(@reply, :validate => true) do |f| %>
+              <% if m.sender_id == current_user.id %>
+                <%= f.text_area :message_content, :rows => 4, :placeholder => "Message Again" %>
+                <%= f.hidden_field :receiver_id, :value => User.find(m.receiver_id).permalink %>
+              <% else %>
+                <%= f.text_area :message_content, :rows => 4, :placeholder => "Reply" %>
+                <%= f.hidden_field :receiver_id, :value => User.find(m.sender_id).permalink %>
+                <%= f.hidden_field :replied_to_msg_id, :value => m.id %>
+              <% end %>
+
+              <%= f.hidden_field :messagechain_id, :value => @chain.permalink %>
+
+              <div class = 'org_btn margin_top'><%= f.submit "Reply" %></div>
+            <% end %>
+          </div>
+        <% end %>
+        
+      </div>
+    <% end %>
+
+  </div>
+</div>

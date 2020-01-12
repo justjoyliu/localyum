@@ -1,0 +1,43 @@
+<!-- <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- <!DOCTYPE html> -->
+<html>
+  <head><title></title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <link href='http://fonts.googleapis.com/css?family=Josefin+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  </head>
+
+  <body style="font-family: 'Josefin Sans', sans-serif;line-height: 24px;text-align: center;">
+    <table width="100%" border="0" id="background-table" style="background-color: #f19231;padding: 20px;">
+      <tbody>
+        <tr><td id="logo" style="font-size: 16px;color: #ffffff;">LOCAL YUM</td></tr>
+        <tr><td>
+          <table width="100%" border="0" id="background-table-content" style="background-color: #ffffff;padding: 20px;border-spacing: 0px;">
+            <tbody>
+              <tr><td><h1 style="font-size: 18px;font-weight: bold;margin: 10px 0 20px 0;">We are sorry to let you know <%= @evt.event_name.titlecase %> was cancelled by the host. </h1></td></tr>
+              
+              <% if @signup.payment_amt.nil? or  @signup.payment_amt == 0%>
+                <tr><td style="padding: 10px 20px;vertical-align: top;">
+                  You did not make any contributions to this event for us to refund.
+                </td></tr>
+              <% else %>
+                <tr><td style="background-color: #fcf7df;padding: 10px 20px;margin-bottom: 10px;vertical-align: top;">
+                  You contributed <%= number_to_currency(@signup.payment_amt.to_f/100.00) %> to this event in the past. <br>
+                  We have refunded <%= number_to_currency(@refund.to_f/100.00) %> back onto your credit card ending in ****-<%= @signup.card_last_4 %> according to the cancellation policy.
+                </td></tr>
+              <% end %>
+
+              <tr><td style="padding-top: 25px;">You can view other events by the host <%= link_to "here", user_url(User.find(@evt.user_id).permalink) %>.</td></tr>
+
+              <tr><td class="margin_top" style="padding-top: 25px;">Hope you can find an event to your liking in the future!</td></tr>
+              <tr><td class="margin_top_20px" style="padding-top: 20px;">
+                Warmest regards,
+                <br> Local Yum
+              </td></tr>
+            </tbody>
+          </table>
+        </td></tr>
+      </tbody>
+    </table>
+  </body>
+</html>

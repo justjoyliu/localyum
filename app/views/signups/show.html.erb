@@ -1,0 +1,198 @@
+<% provide(:title, "Contribute to Event") %> 
+
+<div class="container">
+  <div class = "margin_left span5 margin_right">
+    <div class = "white_container padding_around_10 center font_josefin">
+      <div class = "margin_top font_bold font_22px"><%= @evt.event_name %></div>
+      <div class = "margin_top table_border_bottom padding_bottom"><%= @evt.mealstarttime.time.strftime("%A, %b. %d, %Y @ %l:%M %P") %> </div>
+
+      <div class = "margin_top padding_top">
+        <div class = 'font_18px font_bold'>$<%= number_with_precision(@evt.price * @signup.guest_count, :precision => 2) %> for <%=pluralize(@signup.guest_count, 'Seat') %> </div>
+        <% if @signup.own_group_flag? %>
+          <div class = 'font_16px font_bold'>at Your Own Table </div>
+        <% else %>
+          <div class = 'font_16px font_bold'>at the Communal Table </div>
+        <% end %>
+        
+        <% if @evt.tip_included? %><div class = 'font_16px font_bold'>including Gratuity</div><% end %>
+        ($<%= number_with_precision(@evt.price, :precision => 2) %> per seat)
+      </div>
+      <% if @evt.charitypolicy.nil? %>
+        <div class = "table_border_bottom margin_top padding_bottom">
+          <div class = 'font_18px font_bold'><%= number_to_currency(@evt.event_guest_servicing_fee * @signup.guest_count) %> Local Yum Servicing Fee</div>
+          (<%= number_to_currency(@evt.event_guest_servicing_fee) %> per seat)
+        </div>
+      <% else %>
+        <div class = "margin_top">
+          <div class = 'font_18px font_bold'>$<%= number_to_currency(@evt.event_guest_servicing_fee * @signup.guest_count) %> Local Yum Servicing Fee</div>
+          (<%= number_to_currency(@evt.event_guest_servicing_fee) %> per seat)
+        </div>
+        <div class = "table_border_bottom margin_top padding_bottom font_bold">(Contributing <%= @evt.charitypolicy.charityname %>)</div>
+      <% end %>
+
+      <div class = "margin_top font_16px"> Menu </div>
+      <div class = "margin_top table_border_bottom padding_bottom">
+                    <% if @evt.event_all_appetizers.size > 0 %>
+                      <span class = "width_100px"> <%= pluralize(@evt.event_all_appetizers.size, 'Appetizer') %></span>
+                      <% end %>
+                    <% if @evt.event_all_soups.size > 0 %>
+                      <span class = "width_100px"><%= pluralize(@evt.event_all_soups.size, 'Soup') %></span>
+                      <% end %>
+                    <% if @evt.event_all_salads.size > 0 %>
+                      <span class = "width_100px"><%= pluralize(@evt.event_all_salads.size, 'Salad')%></span>
+                      <% end %>
+                    <% if @evt.event_all_mains.size > 0 %>
+                      <span class = "width_100px"><%= pluralize(@evt.event_all_mains.size, 'Main') %></span>
+                      <% end %>
+                    <% if @evt.event_all_sides.size > 0 %>
+                      <span class = "width_100px"><%= pluralize(@evt.event_all_sides.size, 'Side') %></span>
+                      <% end %>
+                    <% if @evt.event_all_cheeses.size > 0 %>
+                      <span class = "width_100px"><%= pluralize(@evt.event_all_cheeses.size, 'Cheese') %></span>
+                      <% end %>
+                    <% if @evt.event_all_desserts.size > 0 %>
+                      <span class = "width_100px"><%= pluralize(@evt.event_all_desserts.size, 'Dessert') %></span>
+                      <% end %>
+      </div>
+      
+      <% if !@evt.requestsforguests.empty? or @evt.age_21plus? %>
+        <div class = "margin_top font_16px"> Requests from Chef </div>
+        <div class = "margin_bottom_5px margin_top_5px font_12px margin_left margin_right padding_left padding_right"> If you do not agree with the requests, please withdraw your seat. There will be no penalties if you withdraw before contributing. </div>
+        <% if @evt.age_21plus? %>
+          <div class = 'margin_top_15px margin_left margin_right padding_left padding_right'>You must be 21+ in order to attend the event. Please remember to bring your id when coming to the event.</div>
+        <% end %>
+        <div class = "margin_top table_border_bottom padding_bottom"><%= h(@evt.requestsforguests).gsub(/\n/, '<br/>').html_safe %></div>
+      <% end %>  
+
+      <div class = "margin_top">
+        <table class = "font_12px align_left width_90p align_top">
+          <tr>
+              <td class = "width_100px">Cancellation:</td>
+              <td class = 'padding_bottom'>
+                <div><%= @evt.cancellationpolicy.cancellation_description %></div>
+                <div>
+                  <% if @evt.cancellationpolicy.refund_percent_2 == 100 %>
+                    <div>100% of seat price will be refunded if withdrawn before the event.</div>
+                    <div>No contributions will be refunded after the event.</div>
+                  <% else %>
+                    <div>
+                      <%= @evt.cancellationpolicy.refund_percent_1 %>% of seat price will be refunded if withdrawn 
+                      <% if @evt.cancellationpolicy.hrs_before_1 <= 72 %><%= @evt.cancellationpolicy.hrs_before_1 %>hours 
+                      <% else %> <%= @evt.cancellationpolicy.hrs_before_1/24 %>days <% end %>
+                        before the event. 
+                    </div>
+
+                    <% if @evt.cancellationpolicy.hrs_before_2 == 0 %>
+                      <div><%= @evt.cancellationpolicy.refund_percent_2 %>% of seat price will be refunded if withdrawn less than <%= @evt.cancellationpolicy.hrs_before_1 %>hours before the event.</div>
+                      <div>No contributions will be refunded after the event.</div>
+                    <% else %>
+                      <div>
+                        <%= @evt.cancellationpolicy.refund_percent_2 %>% of seat price will be refunded if withdrawn between <%= @evt.cancellationpolicy.hrs_before_2 %> hours and <%= @evt.cancellationpolicy.hrs_before_1 %> hours before the event. 
+                      </div>
+                      <div>No contributions will be refunded less than <%= @evt.cancellationpolicy.hrs_before_2 %> hours before the event.</div>
+                    <% end %>
+                  <% end %>
+                  
+                  <div>The service fee is non-refundable.</div>
+                </div>
+              </td>
+          </tr>
+
+          <% if !@evt.extracomments.empty? %>
+                <tr>
+                  <td>Comments: </td>
+                  <td class = 'padding_bottom'><%= h(@evt.extracomments).gsub(/\n/, '<br/>').html_safe %></td>
+                </tr> 
+          <% end %> 
+
+          <tr class = 'padding_top'>
+            <td class = "width_100px"> Extra Note: </td>
+            <td class = 'padding_bottom'>The host does reserve some flexibility in changing the menu if he/she cannot find all the ingredients and will replace with a similar item. Please let them know in advance if you are allergic to any ingredients and the chef will do their best to accomendate.</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class = "span6">
+    <% if @signup.payment_status == 'Failed' %>
+      <div class = 'org_font font_18px white_container padding_around_10 margin_bottom'>
+        Your last contribution attempt failed. <%= @signup.pay_failure_msg %>
+      </div>
+    <% end %>
+    
+    <% if @cards.length > 0 %><% @cards.each do |c_id, v| %>
+    <div class = 'link_font_darkgray font_josefin'>
+      <div class = "white_container padding_around_10 margin_bottom table_border_bottom">
+        <div class = "width_200px">
+          <span class = "margin_right margin_left_5px"><%= image_tag(v[:association] + '.png', :size => "36x36", :alt => v[:association]) %></span>
+          xxxx-<%= v[:last4] %> 
+          <span class = "margin_left font_lightgray"> exp. <%= v[:exp_month] %>/<%= v[:exp_year] %></span> 
+        </div>
+        <div class = "margin_left_20px padding_left v_center width_200px"><div class = "org_btn"><%= button_to("Contribute " + number_to_currency(@evt_price.to_f/100) + " With This", {:controller => "signups", :action => "pay_for_seat", :permalink => @signup.permalink, :saved_card_id => c_id}, :confirm => "You are committing to an one time credit card charge of " + number_to_currency(@evt_price.to_f/100) + ". The servicing fee to process this contribution in non-refundable. Please refer to the cancellation policy on this page for further details. Would you like to continue and secure your seat?" ) %></div></div>
+      </div>
+    </div>
+    <% end %><div class = "table_border_bottom margin_bottom_20px">&nbsp;</div><% end %>
+
+
+    <form action="/pay_for_seat" method="POST" id="payment-form">
+      <div class = "org_btn margin_top_5px"><button type="submit">CONTRIBUTION $ <%= number_with_precision(@evt_price.to_f/100, :precision => 2) %> WITH THIS CARD</button></div>
+
+      <div class = "white_container padding_around_10 font_lightgray font_josefin">
+      <span class="red_font margin_bottom payment-errors"></span>
+      <%= hidden_field_tag 'permalink', @signup.permalink %>
+      <!-- <input type="text" size="20" data-stripe="number"/> -->
+      <!-- <input name="cardholder" placeholder="Cardholder Name" type="text" size="30"/> -->
+      <!-- <input name="billingzip" placeholder="Billing Zip Code" type="text" size="10"/> -->
+
+      <input data-stripe="country" type="hidden" value="US" />
+      <input placeholder="Cardholder Full Name (First Last or First Middle Last)" type="text" size="30" data-stripe="name"/>
+
+      <div class = "hover_over_to_display_div link_font_darkgray">
+        <div class = 'width_60p'>
+          <input placeholder="Credit Card Number" size="30" type="text" data-stripe="number"/>
+        </div>
+        <div class = 'width_39p'><input placeholder="CVV" type="text" size="4" data-stripe="cvc"/></div>
+        <div class = "hidden_until_hover"><%= image_tag 'cvv.jpg' %></div>
+      </div>
+      
+      <div class = "table_border_bottom padding_bottom">
+        <div class = "width_60p">
+          <span class = "font_lightgray">Expiration Month / Year: &nbsp; &nbsp; </span>
+          <select class = "width_100px" data-stripe="exp-month">
+            <option value="01" selected="selected">01</option>
+            <option value="02">02</option>
+            <option value="03">03</option>
+            <option value="04">04</option>
+            <option value="05">05</option>
+            <option value="06">06</option>
+            <option value="07">07</option>
+            <option value="08">08</option>
+            <option value="09">09</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+          </select> 
+        </div>
+        <div class = "width_39p">
+          <span class = "light_gray_font"> / <!-- &nbsp; --></span>
+          <div class = "width_160px"><%= select_year Date.today, {:start_year => Date.today.year, :end_year => (Date.today.year+15)}, :data => {:stripe=>"exp-year"} %></div>
+        </div>
+      </div>
+      
+      
+      <!-- <input placeholder="Expiration MM" type="text" size="2" data-stripe="exp-month"/> -->
+      <!-- <input placeholder="Expiration YYYY" type="text" size="4" data-stripe="exp-year"/> -->
+      <div class = "margin_top">
+        <input placeholder="Billing Address" type="text" size="10" data-stripe="address_line1"/>
+        <!-- <input placeholder="Billing Address Line 2 (if any)" type="text" size="10" data-stripe="address_line2"/> -->
+        <input placeholder="Billing City" type="text" size="10" data-stripe="address_city"/>
+        <input placeholder="Billing State (Abbreviation)" type="text" size="10" data-stripe="address_state"/>
+        <input placeholder="Billing Zip Code" type="text" size="10" data-stripe="address_zip"/>
+      </div>
+      </div>
+    </form>
+  </div>
+   
+</div>
+

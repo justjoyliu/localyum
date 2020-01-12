@@ -1,0 +1,11 @@
+<div class = "center">
+	<a href="<%= user_path(current_user) %>">
+	  <%= image_tag current_user.avatar.url(:thumb)%>
+	</a>
+	<h1>
+	  <%= current_user.name %>
+	</h1>
+	<div>
+	  <%= link_to "View My Profile", current_user %>
+	</div>
+</div>

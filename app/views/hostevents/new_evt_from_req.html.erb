@@ -1,0 +1,120 @@
+<% provide(:title, 'Propose Event') %>
+
+<div class = 'org_font font_cuprum center margin_bottom_20px padding_left padding_right font_bold' style='font-size:24px'>Propose an Event for the Host that Features "<%= Menuitem.find(@req.menuitem_id).name.titleize %>"
+</div>
+
+<div class = "span8 margin_right margin_top white_container padding_around">
+
+  <%= form_for(@hostevent, :url => create_evt_from_req_path(@req.permalink)) do |f| %>  
+    <%= f.hidden_field :event_name, :value => "Proposal from " + current_user.name + " for an Event Featuring " + Menuitem.find(@req.menuitem_id).name.titleize %>
+
+    <div class = "margin_left margin_top row">
+        <div class = "span2">
+          <div id = "date">
+            <div class = 'font_bold'>Event Date</div>
+             <%= f.text_field :startdate, :placeholder => "yyyy-mm-dd"%>
+          </div>
+        </div>
+        <div class = "span2">
+          <div class = 'font_bold'>Start Time</div>
+          <%= f.time_select :mealstarttime, { :default => Time.now.change(:hour => 19), :simple_time_select => true, :minute_interval => 30, :time_separator => "", :start_hour => 8, :end_hour => 23 } %>
+        </div>
+        <div class = "span3">
+          <div class = 'font_bold'>Cuisine Type</div>
+          <%= select("hostevent", "eventcategory_id", Eventcategory.all.collect {|p| [ p.categorytype, p.id] }) %>
+        </div>
+    </div>
+
+      <div class = "margin_left margin_top row">
+        <div class = "span2">
+          <div class = 'font_bold'>Price Per Guest</div>
+          <div class="input-prepend">
+            <span class="add-on">$</span>
+            <%= f.text_field :price, :class => "price_input" %> 
+          </div>
+        </div>
+
+        <div class = 'span5'>
+          <div class = 'font_bold'>Location</div>
+          <% if @req.req_addressuser_id.nil? %>
+            <%= select("hostevent", "addressuser_id", current_user.addressusers.where("allow_booking_flag = 1 and line1 is not null").collect {|p| [ p.address_city_state_nickname, p.id ] }, :include_blank => 'Host Provided Venue') %>
+          <% else %>
+            <%= select("hostevent", "addressuser_id", current_user.addressusers.where("allow_booking_flag = 1 and line1 is not null").collect {|p| [ p.address_city_state_nickname, p.id ] }, :selected => @req.req_addressuser_id) %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class = "row margin_top margin_left">
+        <div class = "span2">
+          <div class = 'font_bold'>Max. guests</div>
+          <%= f.text_field :maxguests, :placeholder => "(optional)" %>     
+
+          <div class = 'font_bold'>Sign up cut off</div>
+          <%= f.text_field :mustbookhoursinadvance, :placeholder => "(optional) hrs" %>   
+        </div>
+
+        <div class = 'span5'>
+          <div class = 'font_bold'>Request for Guests</div>
+          <div><%= f.text_area :requestsforguests, rows: 4, placeholder: "(optional) this would be the space to list any special requests, such as house rules you may have, contact before arrival, etc." %></div>
+        </div>
+      </div>
+
+      <div class = "row margin_top margin_left">
+        <div class = "span2">
+          <div class = 'font_bold'>Options</div> 
+          <div><%= f.check_box  :tip_included %><span class = 'margin_left'> Gratuitiy Included </span></div>
+          <div><%= f.check_box  :local_ingredients_optin %><span class = 'margin_left'> Local Ingredients</span></div>
+        </div>
+
+        <div class = 'span5'>
+          <div class = 'font_bold'>Chef's Comments (only viewable to host)</div>
+          <div><%= f.text_area :chef_comment, rows: 3, placeholder: "(optional) this would be the space to include contact information and special requests for hosts" %></div>
+        </div>
+      </div>
+
+      <div class = 'margin_top_20px margin_left_20px margin_right_20px padding_right_20px'><div class = 'org_btn'><%= f.submit "Propose Event with Details Above and Continue to Set Up Menu" %></div></div>
+    
+  <% end %>
+</div>
+
+<div class = "margin_left span3">
+
+  <div class = "padding_around margin_top margin_bottom_20px white_container">
+    <div class = 'font_bold margin_bottom org_font font_16px'><%= link_to "Request From " + User.find(@req.user_id).name.titleize, user_path(User.find(@req.user_id).permalink) %></div>
+
+    <div class = 'font_bold margin_bottom_5px'>Date</div>
+    <% if @req.req_date.blank? %>
+        <div class = 'margin_bottom'>N/A</div>
+      <% else %>
+        <div class = 'margin_bottom'><%= @req.req_date %></div>
+      <% end %>
+
+    <div class = 'font_bold margin_bottom_5px'>Estimated Guests</div>
+    <% if @req.est_guests.blank? %>
+        <div class = 'margin_bottom'>N/A</div>
+      <% else %>
+        <div class = 'margin_bottom'><%= @req.est_guests %></div>
+      <% end %>
+
+    <div class = 'font_bold margin_bottom_5px'>Price Range</div>
+    <% if @req.price_range.blank? %>
+        <div class = 'margin_bottom'>N/A</div>
+      <% else %>
+        <div class = 'margin_bottom'><%= @req.price_range %></div>
+      <% end %>
+
+    <div class = 'font_bold margin_bottom_5px'>Location</div>
+    <% if @req.req_addressuser_id.blank? %>
+        <div class = 'margin_bottom'>Offsite</div>
+      <% else %>
+        <div class = 'margin_bottom'><%= Addressuser.find(@req.req_addressuser_id).address_city_state_nickname %></div>
+      <% end %>
+
+    <div class = 'font_bold margin_bottom_5px'>Request Detail</div>
+    <% if @req.req_detail.blank? %>
+        <div class = 'margin_bottom'>N/A</div>
+      <% else %>
+        <div class = 'margin_bottom'><%= h(@req.req_detail).gsub(/\n/, '<br/>').html_safe %></div>
+      <% end %>
+  </div> 
+</div>

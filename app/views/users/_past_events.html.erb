@@ -1,0 +1,486 @@
+<!--%= will_paginate @upcoming_hostevents %-->
+<% if signed_in? and current_user.id == @user.id %>
+	<% @all_events.each do |event| %>
+	<% if !event.event_start_date_upcoming? %>
+		<% if event.user_id == current_user.id %>
+			<% if event.eventstatus == "Open" %>
+				<div class = "mng_one_evt" style="background:url('/assets/Completedcorner.png') no-repeat top right white">
+				<table><tr>
+					<td>
+						<% if event.eventphotos.empty? %>
+					        <div class="mng_evt_one_photo">
+					        	<%= link_to image_tag('photo.png'), hostevent_path(event.permalink), { :title => "Click Here To View Event Details" } %>
+					        </div>
+					    <% else %>
+					    	<div class="mng_evt_one_photo" style="background:url(<%= event.eventphotos.first.eventpic.url(:thumb) %>) no-repeat center"> 
+					    	</div> 
+					    <% end %>
+					</td>
+					<% if event.event_attend_count < 1 %>
+						<td class = "mng_evt_details_container">
+							<div class = "mng_evt_name">
+								<%= link_to event.event_name.titleize, hostevent_path(event.permalink), { :title => "Click Here To View Event Details" } %>
+							</div>
+					  		was on <%= event.mealstarttime.time.strftime("%A, %b. %d, %Y @ %l:%M  %P") %>
+
+						  	<p class = "font_12px">Unfortunately, no one attended this event.</p>
+						</td>
+						<td class = "mng_evt_status_container">
+							<div class = "btn_w100px margin_top_5px"><div class = "lightgray_btn">
+								<%= button_to "Delete", hostevent_path(event.permalink), :method => :delete, class: "font_12px" %>
+							</div></div>
+						</td>
+					<% else %>
+						<td class = "mng_evt_details_container">
+							<div class = "mng_evt_name">
+								<%= link_to event.event_name.titleize, hostevent_path(event.permalink), { :title => "Click Here To View Event Details" } %>
+							</div>
+					  		was on <%= event.mealstarttime.time.strftime("%A, %b. %d, %Y @ %l:%M  %P") %>
+
+						    <div class = "mng_evt_btn_container font_josefin font_14px">
+						    	<!--%= link_to "Taste Rating: ", hostevent_path(event.permalink)%-->
+					    		<table width = 100% ><tr>
+						    		<td>Taste: <%= event.event_taste_rating_text %>
+					    				<table width = 65% ><tr>					    				
+							                <% if event.event_taste_rating >= 1 %>
+							                	<td><div class = "rating_star_on"></td>
+							                	<% if event.event_taste_rating >= 2 %>
+							                		<td><div class = "rating_star_on"></td>
+							                		<% if event.event_taste_rating >= 3 %>
+								                		<td><div class = "rating_star_on"></td>
+								                		<% if event.event_taste_rating >= 4 %>
+									                		<td><div class = "rating_star_on"></td>
+									                		<% if event.event_taste_rating >= 5 %>
+									                			<td><div class = "rating_star_on"></td>
+										                	<% elsif event.event_taste_rating >=  4.5 %>
+											                	<td><div class = "rating_star_half"></td>
+										                  	<% else %>
+										                  		<td><div class = "rating_star_off"></td>
+										                  	<% end %>
+									                	<% elsif event.event_taste_rating >=  3.5 %>
+										                	<td><div class = "rating_star_half"></td>
+										                	<td><div class = "rating_star_off"></td>
+									                  	<% else %>
+									                  		<td><div class = "rating_star_off"></td>
+										                	<td><div class = "rating_star_off"></td>
+									                  	<% end %>
+								                	<% elsif event.event_taste_rating >=  2.5 %>
+									                	<td><div class = "rating_star_half"></td>
+									                	<td><div class = "rating_star_off"></td>
+									                	<td><div class = "rating_star_off"></td>
+								                  	<% else %>
+								                  		<td><div class = "rating_star_off"></td>
+									                	<td><div class = "rating_star_off"></td>
+									                	<td><div class = "rating_star_off"></td>
+								                  	<% end %>
+							                	<% elsif event.event_taste_rating >=  1.5 %>
+								                	<td><div class = "rating_star_half"></td>
+								                	<td><div class = "rating_star_off"></td>
+								                	<td><div class = "rating_star_off"></td>
+								                	<td><div class = "rating_star_off"></td>
+							                  	<% else %>
+							                  		<td><div class = "rating_star_off"></td>
+								                	<td><div class = "rating_star_off"></td>
+								                	<td><div class = "rating_star_off"></td>
+								                	<td><div class = "rating_star_off"></td>
+							                  	<% end %>
+							                <% elsif event.event_taste_rating >=  0.5 %>
+							                	<td><div class = "rating_star_half"></td>
+							                	<td><div class = "rating_star_off"></td>
+							                	<td><div class = "rating_star_off"></td>
+							                	<td><div class = "rating_star_off"></td>
+							                	<td><div class = "rating_star_off"></td>
+							                <% else %>
+							                  	<td><div class = "rating_star_off"></td>
+							                  	<td><div class = "rating_star_off"></td>
+							                  	<td><div class = "rating_star_off"></td>
+							                  	<td><div class = "rating_star_off"></td>
+							                  	<td><div class = "rating_star_off"></td>
+							                <% end %>
+						    			</tr></table>
+						    			<!-- Taste: <span class = "rating_stars_to_text">not rated</span> -->
+						    			<!-- <div class = "rating_stars"></div> -->
+					    			</td>
+						    		
+						    		<td>Experience: <%= event.event_experience_rating_text %>
+					    				<table width = 65% ><tr>					    				
+							                <% if event.event_experience_rating >= 1 %>
+							                	<td><div class = "rating_star_on"></td>
+							                	<% if event.event_experience_rating >= 2 %>
+							                		<td><div class = "rating_star_on"></td>
+							                		<% if event.event_experience_rating >= 3 %>
+								                		<td><div class = "rating_star_on"></td>
+								                		<% if event.event_experience_rating >= 4 %>
+									                		<td><div class = "rating_star_on"></td>
+									                		<% if event.event_experience_rating >= 5 %>
+									                			<td><div class = "rating_star_on"></td>
+										                	<% elsif event.event_experience_rating >=  4.5 %>
+											                	<td><div class = "rating_star_half"></td>
+										                  	<% else %>
+										                  		<td><div class = "rating_star_off"></td>
+										                  	<% end %>
+									                	<% elsif event.event_experience_rating >=  3.5 %>
+										                	<td><div class = "rating_star_half"></td>
+										                	<td><div class = "rating_star_off"></td>
+									                  	<% else %>
+									                  		<td><div class = "rating_star_off"></td>
+										                	<td><div class = "rating_star_off"></td>
+									                  	<% end %>
+								                	<% elsif event.event_experience_rating >=  2.5 %>
+									                	<td><div class = "rating_star_half"></td>
+									                	<td><div class = "rating_star_off"></td>
+									                	<td><div class = "rating_star_off"></td>
+								                  	<% else %>
+								                  		<td><div class = "rating_star_off"></td>
+									                	<td><div class = "rating_star_off"></td>
+									                	<td><div class = "rating_star_off"></td>
+								                  	<% end %>
+							                	<% elsif event.event_experience_rating >=  1.5 %>
+								                	<td><div class = "rating_star_half"></td>
+								                	<td><div class = "rating_star_off"></td>
+								                	<td><div class = "rating_star_off"></td>
+								                	<td><div class = "rating_star_off"></td>
+							                  	<% else %>
+							                  		<td><div class = "rating_star_off"></td>
+								                	<td><div class = "rating_star_off"></td>
+								                	<td><div class = "rating_star_off"></td>
+								                	<td><div class = "rating_star_off"></td>
+							                  	<% end %>
+							                <% elsif event.event_experience_rating >=  0.5 %>
+							                	<td><div class = "rating_star_half"></td>
+							                	<td><div class = "rating_star_off"></td>
+							                	<td><div class = "rating_star_off"></td>
+							                	<td><div class = "rating_star_off"></td>
+							                	<td><div class = "rating_star_off"></td>
+							                <% else %>
+							                  	<td><div class = "rating_star_off"></td>
+							                  	<td><div class = "rating_star_off"></td>
+							                  	<td><div class = "rating_star_off"></td>
+							                  	<td><div class = "rating_star_off"></td>
+							                  	<td><div class = "rating_star_off"></td>
+							                <% end %>
+						    			</tr></table>
+					    			</td>
+					    		</tr></table>
+					    		<!-- <div class = "rating_stars"></div>
+	    						Your Rating: <span class = "rating_stars_to_text">not set</span> -->
+						  	</div>
+						</td>
+						<td class = "mng_evt_status_container">
+							<div><%= link_to "Attended: " + event.event_attend_count.to_s, hostevent_ratings_path(event.permalink)%></div>
+							<div class = "heigh_30px">
+								<!--% if !event.payout_status.nil? and event.payout_status == "paid" %-->
+								<% if !event.payout_status.nil? and event.host_net_earnings_cents > 0 %>
+									<div>Earning: <%= number_to_currency(event.host_net_earnings_cents.to_f/100) %></div>
+									<% if !event.charitypolicy.nil? %>
+								    	<div> Donation: <%= number_to_currency(event.event_charity_contributions.to_f/100) %></div>
+								    <% end %>
+								<% else %>
+									<div>Earning: <%= number_to_currency(event.event_host_earnings.to_f/100) %></div>
+									<% if !event.charitypolicy.nil? %>
+								    	<div> Donation: <%= number_to_currency(event.event_charity_contributions.to_f/100) %></div>
+								    <% end %>
+							    <% end %>
+							</div>
+							
+						    <!--%= link_to "Ratings + Comments",  hostevent_ratings_path(event.permalink), class: "btn btn-mini mng_evt_btn margin_top" %-->
+							<div class = "btn_w100px margin_top_5px"><div class = "org_btn">
+								<%= button_to "Ratings Details", hostevent_ratings_path(event.permalink), class: "font_12px" %>
+							</div></div>
+
+						</td>
+					<% end %>
+
+				</tr></table>
+			<% else %>
+				<div class = "mng_one_evt" style="background:url('/assets/Cancelledcorner.png') no-repeat top right white">
+				  <table><tr>
+					<td>
+						<% if event.eventphotos.empty? %>
+					        <div class="mng_evt_one_photo">
+					        	<%= image_tag('photo.png') %>
+					        </div>
+					    <% else %>
+					    	<div class="mng_evt_one_photo" style="background:url(<%= event.eventphotos.first.eventpic.url(:thumb) %>) no-repeat center"> 
+					    	</div> 
+					    <% end %>
+					</td>
+
+					<td class = "mng_evt_details_container">
+						<div class = "mng_evt_name"><%= event.event_name %></div>
+				  		Set up for <%= event.mealstarttime.time.strftime("%A, %b. %d, %Y @ %l:%M  %P") %>
+				  		<div> Event was never opened </div>
+					</td>
+
+					<td class = "mng_evt_status_container">
+						<div class = "btn_w100px margin_top_5px"><div class = "lightgray_btn">
+							<%= button_to "Delete", hostevent_path(event.permalink), :method => :delete, class: "font_12px" %>
+						</div></div>
+					</td>
+					
+				  </tr></table>
+			<% end %>
+		<% else %>
+			<div class = "mng_one_evt" style="background:url('/assets/Attendedcorner.png') no-repeat top right white">
+				<table><tr>
+					<td>
+						<% if event.eventphotos.empty? %>
+					        <div class="mng_evt_one_photo">
+					        	<%= image_tag('photo.png') %>
+					        </div>
+					    <% else %>
+					    	<div class="mng_evt_one_photo" style="background:url(<%= event.eventphotos.first.eventpic.url(:thumb) %>) no-repeat center"> 
+					    	</div> 
+					    <% end %>
+					</td>
+
+					<td class = "mng_evt_details_container">
+						<div class = "mng_evt_name"><%= link_to event.event_name.titleize, hostevent_path(event.permalink), { :title => "Click Here To View Event Details" } %></div>
+				  		attended on <%= event.mealstarttime.time.strftime("%A, %b. %d, %Y @ %l:%M  %P") %>
+
+					    <div class = "mng_evt_btn_container">
+					    	<div class = "font_josefin font_16px"> Rate this event 
+						    	<table width = 100% class = "font_14px"><tr>
+							    	<% if @attended_signups.find_by_hostevent_id(event.id).taste_rating.nil? %>
+							    		<td>Taste: not rated
+						    				<table width = 65% class = "font_14px"><tr>
+							    				<td><%= form_for :signup, :url => signup_path(@attended_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+								                  <%= f.hidden_field :taste_rating, :value => 1 %>
+								                  <div class = "rating_star_off"><%= f.submit "" %></div>
+								                <% end %></td>
+								                <td><%= form_for :signup, :url => signup_path(@attended_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+								                  <%= f.hidden_field :taste_rating, :value => 2 %>
+								                  <div class = "rating_star_off"><%= f.submit "" %></div>
+								                <% end %></td>
+								                <td><%= form_for :signup, :url => signup_path(@attended_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+								                  <%= f.hidden_field :taste_rating, :value => 3 %>
+								                  <div class = "rating_star_off"><%= f.submit "" %></div>
+								                <% end %></td>
+								                <td><%= form_for :signup, :url => signup_path(@attended_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+								                  <%= f.hidden_field :taste_rating, :value => 4 %>
+								                  <div class = "rating_star_off"><%= f.submit "" %></div>
+								                <% end %></td>
+								                <td><%= form_for :signup, :url => signup_path(@attended_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+								                  <%= f.hidden_field :taste_rating, :value => 5 %>
+								                  <div class = "rating_star_off"><%= f.submit "" %></div>
+								                <% end %></td>
+							    	<% else %>
+							    		<td>Taste: <%= @attended_signups.find_by_hostevent_id(event.id).taste_rating %>
+						    				<table width = 65% class = "font_14px"><tr>
+							    				<td><%= form_for :signup, :url => signup_path(@attended_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+								                  <%= f.hidden_field :taste_rating, :value => 1 %>
+								                  <% if @attended_signups.find_by_hostevent_id(event.id).taste_rating < 1 %><div class = "rating_star_off">
+								                  <% else %> <div class = "rating_star_on"><% end %><%= f.submit "" %></div>
+								                <% end %></td>
+								                <td><%= form_for :signup, :url => signup_path(@attended_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+								                  <%= f.hidden_field :taste_rating, :value => 2 %>
+								                  <% if @attended_signups.find_by_hostevent_id(event.id).taste_rating < 2 %><div class = "rating_star_off">
+								                  <% else %> <div class = "rating_star_on"><% end %><%= f.submit "" %></div>
+								                <% end %></td>
+								                <td><%= form_for :signup, :url => signup_path(@attended_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+								                  <%= f.hidden_field :taste_rating, :value => 3 %>
+								                  <% if @attended_signups.find_by_hostevent_id(event.id).taste_rating < 3 %><div class = "rating_star_off">
+								                  <% else %> <div class = "rating_star_on"><% end %><%= f.submit "" %></div>
+								                <% end %></td>
+								                <td><%= form_for :signup, :url => signup_path(@attended_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+								                  <%= f.hidden_field :taste_rating, :value => 4 %>
+								                  <% if @attended_signups.find_by_hostevent_id(event.id).taste_rating < 4 %><div class = "rating_star_off">
+								                  <% else %> <div class = "rating_star_on"><% end %><%= f.submit "" %></div>
+								                <% end %></td>
+								                <td><%= form_for :signup, :url => signup_path(@attended_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+								                  <%= f.hidden_field :taste_rating, :value => 5 %>
+								                  <% if @attended_signups.find_by_hostevent_id(event.id).taste_rating < 5 %><div class = "rating_star_off">
+								                  <% else %> <div class = "rating_star_on"><% end %><%= f.submit "" %></div>
+								                <% end %></td>
+							    	<% end %>
+							    		</tr></table>
+						    			<!-- Taste: <span class = "rating_stars_to_text">not rated</span> -->
+						    			<!-- <div class = "rating_stars"></div> -->
+						    		</td>
+							    	<% if @attended_signups.find_by_hostevent_id(event.id).experience_rating.nil? %>
+							    		<td> Experience: not rated
+						    				<table width = 65% class = "font_14px"><tr>
+							    				<td><%= form_for :signup, :url => signup_path(@attended_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+								                  <%= f.hidden_field :experience_rating, :value => 1 %>
+								                  <div class = "rating_star_off"><%= f.submit "" %></div>
+								                <% end %></td>
+								                <td><%= form_for :signup, :url => signup_path(@attended_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+								                  <%= f.hidden_field :experience_rating, :value => 2 %>
+								                  <div class = "rating_star_off"><%= f.submit "" %></div>
+								                <% end %></td>
+								                <td><%= form_for :signup, :url => signup_path(@attended_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+								                  <%= f.hidden_field :experience_rating, :value => 3 %>
+								                  <div class = "rating_star_off"><%= f.submit "" %></div>
+								                <% end %></td>
+								                <td><%= form_for :signup, :url => signup_path(@attended_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+								                  <%= f.hidden_field :experience_rating, :value => 4 %>
+								                  <div class = "rating_star_off"><%= f.submit "" %></div>
+								                <% end %></td>
+								                <td><%= form_for :signup, :url => signup_path(@attended_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+								                  <%= f.hidden_field :experience_rating, :value => 5 %>
+								                  <div class = "rating_star_off"><%= f.submit "" %></div>
+								                <% end %></td>
+							    	<% else %>
+							    		<td>Experience: <%= @attended_signups.find_by_hostevent_id(event.id).experience_rating %>
+						    				<table width = 65% class = "font_14px"><tr>
+							    				<td><%= form_for :signup, :url => signup_path(@attended_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+								                  <%= f.hidden_field :experience_rating, :value => 1 %>
+								                  <% if @attended_signups.find_by_hostevent_id(event.id).experience_rating < 1 %><div class = "rating_star_off">
+								                  <% else %> <div class = "rating_star_on"><% end %><%= f.submit "" %></div>
+								                <% end %></td>
+								                <td><%= form_for :signup, :url => signup_path(@attended_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+								                  <%= f.hidden_field :experience_rating, :value => 2 %>
+								                  <% if @attended_signups.find_by_hostevent_id(event.id).experience_rating < 2 %><div class = "rating_star_off">
+								                  <% else %> <div class = "rating_star_on"><% end %><%= f.submit "" %></div>
+								                <% end %></td>
+								                <td><%= form_for :signup, :url => signup_path(@attended_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+								                  <%= f.hidden_field :experience_rating, :value => 3 %>
+								                  <% if @attended_signups.find_by_hostevent_id(event.id).experience_rating < 3 %><div class = "rating_star_off">
+								                  <% else %> <div class = "rating_star_on"><% end %><%= f.submit "" %></div>
+								                <% end %></td>
+								                <td><%= form_for :signup, :url => signup_path(@attended_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+								                  <%= f.hidden_field :experience_rating, :value => 4 %>
+								                  <% if @attended_signups.find_by_hostevent_id(event.id).experience_rating < 4 %><div class = "rating_star_off">
+								                  <% else %> <div class = "rating_star_on"><% end %><%= f.submit "" %></div>
+								                <% end %></td>
+								                <td><%= form_for :signup, :url => signup_path(@attended_signups.find_by_hostevent_id(event.id).permalink), :via => :put do |f| %>
+								                  <%= f.hidden_field :experience_rating, :value => 5 %>
+								                  <% if @attended_signups.find_by_hostevent_id(event.id).experience_rating < 5 %><div class = "rating_star_off">
+								                  <% else %> <div class = "rating_star_on"><% end %><%= f.submit "" %></div>
+								                <% end %></td>			
+							    	<% end %>
+							    		</tr></table>
+						    			<!-- Experience: <span class = "rating_stars_to_text">not rated</span> -->
+						    			<!-- <div class = "rating_stars"></div>-->
+						    		</td>
+						    	</tr></table>
+					    	</div>					
+					  		<!--%= link_to " View Event ",  hostevent_path(event.permalink), class: "btn btn-mini mng_evt_btn" %-->
+					  		<!--%= @attended_signups.find_by_hostevent_id(event.id).confirmation_status %-->
+						  	<% unless @attended_signups.find_by_hostevent_id(event.id).taste_rating.nil? && @attended_signups.find_by_hostevent_id(event.id).experience_rating.nil? %>
+						  		<div class="accordion" id="cmt_for_rating"> 
+					                <div class="accordion-group add_cmt_rating_container">
+					                  <div class="accordion-heading margin_top">
+					                  	<% unless Message.find_by_signup_id(@attended_signups.find_by_hostevent_id(event.id).id).nil? %>
+					                      <!--%= link_to "Add Another Rating Comment #{image_tag('send_message.png', size:"20x20")}".html_safe, @attended_signups.find_by_hostevent_id(event.id).signup_collapse, :data => {:toggle=>"collapse", :parent => "#cmt_for_rating"}, :class=>"btn btn-signin btn-block font_12px" %-->
+					                      <div class = "org_btn">
+			                                  <%= "Add Another Rating Comment #{image_tag('send_message.png', size:"20x20")}".html_safe %>
+			                                  <div class = "btn_image"><%= link_to image_tag('white.png', width: '100%', height: '100%'), @attended_signups.find_by_hostevent_id(event.id).signup_collapse, :data => {:toggle=>"collapse", :parent => "#cmt_for_rating"} %></div>
+			                              </div>
+					                     <% else %>
+					                     	<div class = "org_btn">
+			                                  <%= "Add Rating Comment #{image_tag('send_message.png', size:"20x20")}".html_safe %>
+			                                  <div class = "btn_image"><%= link_to image_tag('white.png', width: '100%', height: '100%'), @attended_signups.find_by_hostevent_id(event.id).signup_collapse, :data => {:toggle=>"collapse", :parent => "#cmt_for_rating"} %></div>
+			                                </div>
+					                     <% end %>
+					                  </div>
+
+					                  <%= content_tag :div, :id => @attended_signups.find_by_hostevent_id(event.id).signup_collapse_inner, :class=>"accordion-body collapse" do %>
+								          <div class="accordion-inner">
+								            <%= form_for(@messagechain, :validate => true) do |f| %>
+						                        <%= f.fields_for @cmt do |m| %>
+						                          <%= m.text_area :message_content, :rows => 4, :placeholder => "Rating Comment" %>
+						                          <%= m.hidden_field :first_flag, :value => true %>
+						                          <%= m.hidden_field :order_id, :value => 0 %>
+						                          <%= m.hidden_field :public_flag, :value => true %>
+						                        <% end %>
+						                        <%= f.hidden_field :hostevent, :value => event.permalink %>
+						                        <%= f.hidden_field :signup, :value => @attended_signups.find_by_hostevent_id(event.id).permalink %>						          
+						                        <div class = 'org_btn'><%= f.submit "      Add      " %></div>
+						                      <% end %>
+								          </div>
+								        <% end %>
+					                </div>
+					            </div>
+					        <% end %>
+					  	</div>
+					</td>
+					<td class = "mng_evt_status_container center">
+						<%= link_to image_tag(event.host.avatar.url(:thumb), class: "img-circle", size: "60x60"), user_path(User.find(event.user_id).permalink), class: "margin_top" %>
+						<% if @attended_signups.find_by_hostevent_id(event.id).dispute_flag? %>
+							<div class = "margin_top margin_left_20px btn_w100px"><div class = "org_btn">
+								<%= button_to "Remove Dispute",  {:controller => "signups", :action => "dispute_event", :hostevent_id => event.permalink, :dispute => 0}, :class => "font_12px" %>
+							</div></div>
+						<% elsif event.mealstarttime >= (Date.today - 48.hours) %>
+							<div class = "margin_top margin_left_20px btn_w100px"><div class = "lightgray_btn">
+								<%= button_to "Dispute Event",  {:controller => "signups", :action => "dispute_event", :hostevent_id => event.permalink, :dispute => 1}, :class => "font_12px", :confirm => "By opening this dispute, the earnings from this Event will be withheld from the Host and you are agreeing to respond promptly to Local Yum's emails to further understand and help resolve the issue." %>
+							</div></div>
+						<% end %>
+					</td>
+				</tr></table>
+		<% end %>
+	<% end %>
+	</div>
+	<% end %>
+<% else %>
+  <% @all_events.each do |hostevent| %>
+	<% if hostevent.menuitems.where('menupic_file_name is not null').count > 0 %>
+	    <div class="single_evt_container" style="background:url(<%= hostevent.menuitems.where('menupic_file_name is not null').first.menupic.url(:index_search) %>) no-repeat center"> 
+	      <div class="single_evt_details">
+	            <%= link_to image_tag('white.png', :width => 300, :height => 200), hostevent_path(hostevent.permalink) %>
+	            <div class = "evt_display_overlap">
+	              <div class = "evt_name">
+	                <%= link_to hostevent.event_name.truncate(40), hostevent_path(hostevent.permalink) %>
+	              </div>
+
+	              <div class = "evt_desc link_font_black">
+	                <%= link_to hostevent.mealstarttime.time.strftime("%a . %b . %d . %Y "), hostevent_path(hostevent.permalink) %> 
+	                <br> <%= link_to hostevent.mealstarttime.time.strftime("%I : %M %p"), hostevent_path(hostevent.permalink) %>
+	                <br> <%= link_to hostevent.addressuser.city.to_s + ", " + hostevent.addressuser.state.to_s, hostevent_path(hostevent.permalink) %>
+	                <br> $ <%= link_to number_with_precision(hostevent.price, :precision => 2), hostevent_path(hostevent.permalink) %>
+	              </div>
+	            </div>
+	      </div>
+	    </div>
+	  <% elsif hostevent.eventphotos.count == 0 %>
+	      <div class="single_evt_container"> 
+	        <div class="single_evt_details">
+	            <%= link_to image_tag('white.png', width: '300', height: '200'), hostevent_path(hostevent.permalink) %>
+	              
+
+	              <!-- <p class = "evt_more"> -->
+	                <!--%= link_to '', hostevent_path(hostevent.permalink), :class => "icon-plus-sign icon-white" %-->
+	              <!-- </p> -->
+
+	            <div class = "evt_display_overlap">
+	              <div class = "evt_name">
+	                <%= link_to hostevent.event_name.truncate(50), hostevent_path(hostevent.permalink) %>
+	              </div>
+
+	              <div class = "evt_desc link_font_black">
+	                <%= link_to hostevent.mealstarttime.time.strftime("%a . %b . %d . %Y "), hostevent_path(hostevent.permalink) %> 
+	                <br> <%= link_to hostevent.mealstarttime.time.strftime("%I : %M %p"), hostevent_path(hostevent.permalink) %>
+	                <br> <%= link_to hostevent.addressuser.city.to_s + ", " + hostevent.addressuser.state.to_s, hostevent_path(hostevent.permalink) %>
+	                <br> $ <%= link_to number_with_precision(hostevent.price, :precision => 2), hostevent_path(hostevent.permalink) %>
+	              </div>
+	            </div>
+	          </div>
+	      </div>
+	  <% else %>
+	    <div class="single_evt_container" style="background:url(<%= hostevent.eventphotos.first.eventpic.url(:index_search) %>) no-repeat center"> 
+	      <div class="single_evt_details">
+	            <%= link_to image_tag('white.png', :width => 300, :height => 200), hostevent_path(hostevent.permalink) %>
+	              
+
+	              <!-- <p class = "evt_more"> -->
+	                <!--%= link_to '', hostevent_path(hostevent.permalink), :class => "icon-plus-sign icon-white" %-->
+	              <!-- </p> -->
+
+	            <div class = "evt_display_overlap">
+	              <div class = "evt_name">
+	                <%= link_to hostevent.event_name.truncate(50), hostevent_path(hostevent.permalink) %>
+	              </div>
+
+	              <div class = "evt_desc link_font_black">
+	                <%= link_to hostevent.mealstarttime.time.strftime("%a . %b . %d . %Y "), hostevent_path(hostevent.permalink) %> 
+	                <br> <%= link_to hostevent.mealstarttime.time.strftime("%I:%M %p"), hostevent_path(hostevent.permalink) %>
+	                <br> <%= link_to hostevent.addressuser.city.to_s + ", " + hostevent.addressuser.state.to_s, hostevent_path(hostevent.permalink) %>
+	                <br> $ <%= link_to number_with_precision(hostevent.price, :precision => 2), hostevent_path(hostevent.permalink) %>
+	              </div>
+	            </div>
+	      </div>
+	    </div>
+	  <% end %>
+  <% end %>
+<% end %>
+<%= will_paginate @all_events %>

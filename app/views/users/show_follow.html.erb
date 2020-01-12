@@ -1,0 +1,36 @@
+<% provide(:title, @title) %>
+
+<% if !current_user.active_status? %>
+    <div class = "font_lightgray margin_top center">
+      <div class = "font_20px"> This account is closed. </div>
+      <div class = "font_20px margin_top"> You can no longer view this user's information. </div>
+    </div>
+<% else %>
+
+<div class="row">
+  <% if @users.any? %>
+    <div class="span9">
+      <h3 class = "table_border_bottom padding_bottom"> Favorite Chef's Events
+      </h3>
+      
+      <% if @hostevents.any? %><%= render 'shared/events_with_banner' %>
+      <% else %> <div class = "font_lightgray font_16px"> There are no events from favorited chefs at this time</div>
+      <% end %>
+    </div>
+    <div class = "margin_left_20px width_200px">
+      <div class = "margin_top font_20px font_bold font_lightgray table_border_bottom padding_bottom"> Recipes </div>
+      <div class = 'center margin_top_20px'>
+        <% if @recipes.any? %><%= render 'shared/recipe_with_banner' %>
+        <% else %> <div class = "font_lightgray font_16px"> There are no recipes from favorited chefs</div>
+        <% end %>
+      </div>
+    </div>
+  <% else %>
+      <div class = "font_lightgray margin_top center font_20px">
+        <div> There are no chefs you are following right now. </div>
+        <div class = "margin_top"> Consider exploring events in your area to follow chefs and see their future events here.</div>
+      </div>
+  <% end %>
+</div>
+
+<% end %>

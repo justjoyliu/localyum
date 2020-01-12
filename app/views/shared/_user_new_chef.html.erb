@@ -1,0 +1,18 @@
+
+    <%= form_for(User.new) do |b| %>
+      <%= b.text_field :name, :placeholder => "Business Name" %>
+      <%= b.email_field :email, :placeholder => "Email", class: 'email_icon' %>
+      <%= b.password_field :password, :placeholder => "Password (min. 6 characters)", class: 'password_icon' %>
+      <%= b.password_field :password_confirmation, :placeholder => "Confirm Password", class: 'password_icon' %>
+      <%= b.hidden_field :yummer_flag, :value => 0 %>
+      <%= b.hidden_field :host_flag, :value => 1 %>
+      <%= b.hidden_field :chef_flag, :value => 1 %>
+      <%= b.hidden_field :allow_offsite_request_flag, :value => 1 %>
+
+	   <div class="privacy_policy_text">By creating an account, you agree to our 
+	    	<a href="/terms.html" target="_blank" rel="nofollow">Terms of Service </a>
+	   .</div>
+
+      <br>
+      <div class = "org_btn font_bold"><%= b.submit "Create a Free Account"%></div>
+    <% end %>

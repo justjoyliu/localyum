@@ -1,0 +1,14 @@
+<% unless user.avatar_file_name.nil? %>
+	<div class = 'height_190px container_inline no_overflow align_top'><div class = "recipe_banner_container">
+        <div class = "white_container_no_border" >
+            <%= image_tag user.avatar.url(:medium), :size => '145x145', :alt => user.name %>
+
+            <div class = "single_menuitem_details">
+                <%= link_to image_tag('white.png', width: '145', height: '145'), user_path(user.permalink) %>
+                <div class = "menuitem_desc_text">
+                    <%= link_to user.name.titlecase.truncate(40), user_path(user.permalink) %>
+                </div>
+            </div>
+        </div>
+  </div></div>
+<% end %>

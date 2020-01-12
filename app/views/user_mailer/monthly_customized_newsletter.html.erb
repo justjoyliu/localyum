@@ -1,0 +1,215 @@
+<!-- <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> -->
+<!-- <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> -->
+<!-- <!DOCTYPE html> -->
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+  <head><title></title>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+    <link href='http://fonts.googleapis.com/css?family=Josefin+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+    <style type="text/css">
+    	body{
+    		font-family: 'Josefin Sans', sans-serif;
+    		line-height: 24px;
+    		/*text-align: center;*/
+    	}
+    
+      h1{
+        font-size: 18px;
+        font-weight: bold;
+        margin: 10px 0 20px 0;
+      }
+
+      #background-table { 
+        background-color: #f19231; 
+        padding: 20px;
+      }
+      
+      #background-table-content { 
+        background-color: #ffffff; 
+        /*padding: 20px;*/
+        border-spacing: 0px;
+        /*border-collapse: collapse;*/
+      }
+
+      #logo{
+        font-size: 16px;
+        color: #ffffff;
+      }
+
+      .highight_content{
+        background-color: #fcf7df;
+        padding: 10px 20px 10px 20px;
+        font-weight: bold;
+        vertical-align: top;
+        font-size: 18px;
+      }
+
+      .big_font{
+        font-size: 28px;
+        line-height: 36px;
+        vertical-align: top;
+        padding-left: 40px;
+        width: 30px;
+      }
+
+      .reg_content{
+        padding: 5px 10px 5px 10px;
+        vertical-align: top;
+      }
+
+      .margin_top{
+        padding-top: 25px;
+      }
+
+      .margin_top_20px{
+        padding-top: 20px;
+      }
+
+      .table_border_top{
+        border-top: 1px solid #c1c1c1;
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+
+    </style>
+  </head>
+  <body style="font-family: 'Josefin Sans', sans-serif;line-height: 24px;">    
+    <table width="100%" border="0" id="background-table" style="background-color: #f19231;padding: 20px;">
+      <tbody>
+        <tr><td id="logo" style="font-size: 16px;color: #ffffff;">Upcoming Local Yum Events</td></tr>
+        <tr><td>
+          <table width="100%" border="0" id="background-table-content" style="background-color: #ffffff;border-spacing: 0px;">
+            <tbody class="padding_around">
+              <% if @requested_recipes.length > 0 %> 
+                <tr><td colspan="2" class="highight_content" style="background-color: #fcf7df;padding: 10px 20px 10px 20px;font-weight: bold;vertical-align: top;font-size: 18px;">For the Chef in You</td></tr>
+                <% @requested_recipes.each do |r| %>
+                  <tr>
+                    <td class="big_font" style="font-size: 28px;line-height: 36px;vertical-align: top;padding-left: 40px;width: 30px;"><%= r[1] %></td>
+                    <td> 
+                      <%= "foodie".pluralize(r[1]) %> requested a tasting for <br>
+                      <%= link_to Menuitem.find(r[0]).name, menuitem_url(Menuitem.find(r[0]).permalink) %>
+                    </td>
+                  </tr>
+                <% end %>
+                <tr><td colspan="2"> <br></td></tr>
+              <% end %>
+              
+              <% if @req_menuitem_hostevent.length > 0 or @fav_chef_evts.length > 0 or @otherevents.length > 0 %> 
+                <tr><td colspan="2" class="highight_content" style="background-color: #fcf7df;padding: 10px 20px 10px 20px;font-weight: bold;vertical-align: top;font-size: 18px;">For the Taster in You</td></tr>
+                <% if @req_menuitem_hostevent.length > 0 %> 
+                  <tr><td class="big_font" style="font-size: 28px;line-height: 36px;vertical-align: top;padding-left: 40px;width: 30px;"><%= @req_menuitem_hostevent.length %></td>
+                    <td> 
+                      <%= "event".pluralize(@req_menuitem_hostevent.length) %> featuring a recipe you requested <br>
+                    </td>
+                  </tr>
+                  <% @req_menuitem_hostevent.each do |r| %>
+                    <tr>
+                      <td> </td>
+                      <td style="padding: 0px 10px 0px 0px;"> 
+                        <%= link_to Hostevent.find(r[1]).event_name.titleize + " featuring " + Menuitem.find(r[0]).name + " on " + Hostevent.find(r[1]).mealstarttime.time.strftime("%a, %b. %d @ %I:%M %p"), hostevent_url(Hostevent.find(r[1]).permalink) %>
+                      </td>
+                    </tr>
+                  <% end %>
+                  <tr><td colspan="2"> <br></td></tr>
+                <% end %>
+                
+                <% if @fav_chef_evts.length > 0 %> 
+                  <tr><td class="big_font" style="font-size: 28px;line-height: 36px;vertical-align: top;padding-left: 40px;width: 30px;"><%= @fav_chef_evts.length %></td>
+                    <td> 
+                      <%= "event".pluralize(@fav_chef_evts.length) %> from your favorite chefs <br>
+                    </td>
+                  </tr>
+                  <% @fav_chef_evts.each do |e| %>
+                    <tr>
+                      <td> </td>
+                      <td style="padding: 0px 10px 0px 0px;"> 
+                        <%= link_to e.event_name.titleize + " on " + e.mealstarttime.strftime("%a, %b. %d @ %I:%M %p"), hostevent_url(e.permalink) %>
+                      </td>
+                    </tr>
+                  <% end %>
+                  <tr><td colspan="2"> <br></td></tr>
+                <% end %>
+
+                <% if @otherevents.length > 0 %><tr><td colspan="2" style="padding:15px 0px 10px ; font-weight: bold; font-size: 15px; text-align: center;">Check out these events in your community!</td></tr>
+                  <% @otherevents.count(:group => "metroarea").each do |e| %>
+                    <!-- <tr><td colspan="2" style="text-align: center;"> -->
+                      <!--%= link_to e[1].to_s + " " + "event".pluralize(e[1]) + " in " + e[0].gsub(/_/, ' ').html_safe, events_url(:metroarea => e[0])%-->
+                    <!-- </td></tr>  -->
+                    <% @otherevents.where("metroarea = ?", e[0]).order(:mealstarttime).each do |evt| %>
+                      <tr><td colspan="2" style="text-align: center; padding:5px;">
+                        <% if evt.eventphotos.count > 0 %>
+                          <div style="margin-bottom:5px; margin-top:10px;"><%= link_to image_tag(evt.eventphotos.first.eventpic.url(:index_search)),hostevent_url(evt.permalink) %></div>
+                        <% elsif evt.menuitems.where('menupic_file_name is not null').count > 0 %>
+                          <div style="margin-bottom:5px; margin-top:10px;"><%= link_to image_tag(evt.menuitems.where('menupic_file_name is not null').first.menupic.url(:index_search)),hostevent_url(evt.permalink) %></div>
+                        <% end %>
+
+                        <div><%= link_to evt.event_name.truncate(60) + " on " + evt.mealstarttime.time.strftime("%a, %b, %d"), hostevent_url(evt.permalink) %></div>
+                      </td></tr> 
+                    <% end %>
+                  <% end %>
+                  <tr><td colspan="2"> <br></td></tr>
+                <% end %>
+              <% end %>
+
+              <% if @upcoming_attending.length > 0 or @upcoming_hosting.length > 0 %> 
+                <tr><td colspan="2" class="highight_content" style="background-color: #fcf7df;padding: 10px 20px 10px 20px;font-weight: bold;vertical-align: top;font-size: 18px;">Events Waiting for You</td></tr>
+                <% if @upcoming_attending.length > 0 %> 
+                  <tr><td class="big_font" style="font-size: 28px;line-height: 36px;vertical-align: top;padding-left: 40px;width: 30px;"><%= @upcoming_attending.length %></td>
+                    <td> 
+                      <%= "event".pluralize(@upcoming_attending.length) %> attending <br>
+                    </td>
+                  </tr>
+                  <% @upcoming_attending.each do |a| %>
+                    <% if Signup.where("hostevent_id = ? and user_id = ?", a.id, @user.id).first.confirmation_status == "Confirmed" %>
+                      <tr>
+                        <td> </td>
+                        <td style="padding: 0px 10px 0px 0px;"> 
+                          <%= link_to a.event_name.titleize + " on " + a.mealstarttime.time.strftime("%a, %b. %d @ %I:%M %p") + " (MAKE CONTRIBUTION TO SECURE YOUR SEAT)", signup_url(Signup.where("hostevent_id = ? and user_id = ?", a.id, @user.id).first.permalink) %>
+                        </td>
+                      </tr>
+                    <% else %>
+                      <tr>
+                        <td> </td>
+                        <td style="padding: 0px 10px 0px 0px;"> 
+                          <%= link_to a.event_name.titleize + " on " + a.mealstarttime.time.strftime("%a, %b. %d @ %I:%M %p"), hostevent_url(a.permalink) %>
+                        </td>
+                      </tr>
+                    <% end %>
+                  <% end %>
+                <% end %>
+
+                <% if @upcoming_hosting.length > 0 %> 
+                  <tr><td class="big_font" style="font-size: 28px;line-height: 36px;vertical-align: top;padding-left: 40px; padding-top: 10px; width: 30px;"><%= @upcoming_hosting.length %></td>
+                    <td> 
+                      <%= "event".pluralize(@upcoming_hosting.length) %> hosting <br>
+                    </td>
+                  </tr>
+                  <% @upcoming_hosting.each do |a| %>
+                      <tr>
+                        <td> </td>
+                        <td style="padding: 0px 10px 10px 0px;"> 
+                          <%= link_to a.event_name.titleize + " on " + a.mealstarttime.time.strftime("%a, %b. %d @ %I:%M %p") + " (" +  Signup.where("hostevent_id = ? and confirmation_status = 'Waiting'", a.id).count.to_s + " requests waiting your confirmation, " + Signup.where("hostevent_id = ? and confirmation_status = 'Confirmed'", a.id).count.to_s + " pending guest contribution, " + Signup.where("hostevent_id = ? and confirmation_status = 'Attending'", a.id).count.to_s + " paid attending guests)", signup_requests_url(a.permalink) %>
+                        </td>
+                      </tr>
+                  <% end %>
+                <% end %>
+              <% end %>
+
+              <tr><td colspan="2" style="padding: 30px 20px 20px 20px; text-align: center;">
+                <div style="padding-top: 20px; border-top: 1px solid #c1c1c1; ">Hope you will leave these events not only with a full stomach, <br> but also with having a great social experience!
+                </div>
+              </td></tr>
+
+              <tr><td colspan="2" style="padding: 20px; font-size:11px;">
+                We respect your privacy and hope you enjoy these messages. If you would no longer like to receive these emails, you can safely and easily <%= link_to "unsubscribe here", new_unsubscribe_url %>.
+              </td></tr>
+            </tbody>
+          </table>
+        </td></tr>
+      </tbody>
+    </table>
+  </body>
+</html>

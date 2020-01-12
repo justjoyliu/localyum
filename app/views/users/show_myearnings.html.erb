@@ -1,0 +1,149 @@
+<% provide(:title, "My Event Earnings") %>
+<!--% javascript "pagination" %-->
+<div class="container">
+
+<% if @host_completed.count == 0 %>
+  <br><h2> You have no earnings. None of your events have completed yet. </h2><br>
+<% else %>
+  <div class = "margin_left span7 margin_right">
+    <div class = "white_container_border font_16px font_josefin padding_around">
+      <table class ="table_border_none width_100p">
+        <tbody>
+          <tr>
+            <td class = 'align_left'>Total Revenue:</td>
+            <td><%= number_to_currency((@tot_revenue + @potential_revenue).to_f/100) %></td>
+          </tr>
+          <tr class = "padding_top">
+            <td class = 'align_left'>Transfers Completed (Pending):</td>
+            <td><%= number_to_currency(@paid_out_amt.to_f/100) %> (<%= number_to_currency(@pending_amt.to_f/100) %>)</td>
+          </tr>
+          <tr class = "padding_top">
+            <td class = 'align_left'>Deductions: <div class = "container_inline v_center width_60px"><i class="icon-info-sign popright" rel="popover" data-title="Failed Transfers Fee: <%= number_to_currency(@failed.to_f/100) %>; Cancelled Events Penalty: <%= number_to_currency(@payout[:penalty_from_cancelled_events].to_f/100) %>"></i></div></td>
+            <td><%= number_to_currency((@failed + @payout[:penalty_from_cancelled_events]).to_f/100) %></td>
+          </tr>
+          <tr class = "padding_top">
+            <td class = 'align_left'>Funds on Hold:</td>
+            <td><%= number_to_currency(@potential_revenue.to_f/100) %></td>
+          </tr>
+          <tr>
+            <td colspan = '2' class = 'center align_top font_12px font_lightgray margin_left margin_right padding_bottom_15px'>(Earnings from events will be held for 48 hours in case a guest raises a dispute.)</td>
+          </tr>
+
+          <tr>
+            <td class = 'font_bold align_left'>Available Balance Ready for Withdraw:</td>
+            <td class = 'font_bold'><%= number_to_currency(@payout[:payout].to_f/100) %></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <table class="margin_top_20px table table-hover font_12px link_font_black">
+      <thead class = 'font_14px'>
+        <tr>
+          <th width = "120px"> Event </th>
+          <th> Earning </th>
+          <th> Donation </th>
+          <th> Status </th>
+          <th> Payout Date </th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @host_completed.each do |event| %>
+          <% unless event.signups.where("confirmation_status in ('Attending', 'Withdrawn')").count == 0 %>
+            <tr>
+              <td>
+                <div class = 'font_bold hover_underline'><%= link_to event.event_name.to_s.truncate(18), hostevent_ratings_path(event.permalink) %></div>
+                <div><%= event.mealstarttime.time.strftime("%b. %d, %Y") %> </div>
+                <% if current_user.id == event.user_id and current_user.id == event.chef_id %>
+                  <div>was chef and host </div>
+                <% elsif current_user.id == event.user_id %>
+                  <div>was host (chef receives payout) </div>
+                <% elsif current_user.id == event.chef_id %>
+                  <div>was chef </div>
+                <% end %>
+              </td>
+              
+              <% if event.signups.where("confirmation_status in ('Attending', 'Withdrawn')").count == 0 %>
+                <td class = 'center'>$0</td>
+              <% elsif event.host_net_earnings_cents == 0 %>
+                <td class = 'center'><%= number_to_currency(event.event_host_earnings.to_f/100) %></td>
+              <% else %>
+                <td class = 'center'><%= number_to_currency(event.host_net_earnings_cents.to_f/100) %></td>
+              <% end %>
+              
+              <% if event.charitypolicy_id.nil? %>
+                <td class = 'center'>$0</td>
+              <% else %>
+                <td class = 'center'><%= number_to_currency(event.host_charity_cents.to_f/100) %></td>
+              <% end %>
+
+              <% if event.signups.where("confirmation_status in ('Attending') and dispute_flag = 1").count > 0 %>
+                <td>Guest Dispute</td>
+                <td>N/A</td>
+              <% elsif event.payout_status.nil? %>
+                <% if (Date.today - 48.hours) <= event.mealstarttime %>
+                  <td>On Hold</td>
+                  <td>N/A</td>
+                <% else %>
+                  <td>Available</td>
+                  <td>N/A</td>
+                <% end %>
+              <% else %>
+                <td><%= event.payout_status.titleize %></td>
+                <td><%= event.payout_date.to_s %></td>
+              <% end %>
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class = "span4">
+    <% unless @current_bank_acct.nil?%>
+      <div class = "padding_bottom margin_bottom table_border_bottom">
+        <div class = "org_btn margin_top_5px word_wrap_container"><%= button_to "Withdraw to Bank Account On File", {:controller => "users", :action => "create_bank_acct", :method => :get, :withdraw_method => "existing_ach"} %></div>
+        <div class = "white_container padding_around_10 font_lightgray font_josefin">
+          <div>Bank on File: <%= @current_bank_acct.bank_name.titleize %></div>
+          <div class = "margin_top_5px">Ending in: <%= @current_bank_acct.last4 %> </div>
+        </div>
+      </div>
+    <% end %>
+
+    <div class = "table_border_bottom">
+      <div class = "white_container padding_top_15px padding_left padding_right margin_bottom"><form action="/create_bank_acct" method="POST" id="bank-form">
+        <span class="field_with_errors bank-errors margin_bottom"></span>
+        <!-- <input type="text" size="20" data-stripe="number"/> -->
+        <!-- <input name="cardholder" placeholder="Cardholder Name" type="text" size="30"/> -->
+        <!-- <input name="billingzip" placeholder="Billing Zip Code" type="text" size="10"/> -->
+        
+        <input placeholder="Legal Full Name (No Prefix or Suffix)" type="text" size="30" name="name"/>
+        <select name="entity_type">
+          <option value="individual" selected="selected">Account Type: Individual</option>
+          <option value="corporation">Account Type: Business</option>
+        </select>
+        <!-- <input placeholder="Tax ID (SSN or EIN)" type="text" size="10" name="taxid"/> -->
+        <input data-stripe="country" name="country" type="hidden" value="US" />
+        <input placeholder="Routing Number" type="text" size="20" data-stripe="routing_number"/>
+        <input placeholder="Account Number" type="text" size="20" data-stripe="account_number"/>
+        <% if @payout.nil? or @payout[:payout] <= 0 %>
+          <input name="withdraw_method" type="hidden" value="update_bank_info" />
+          <div class = "org_btn margin_top_5px"><button type="submit">Update Bank Account Information</button></div>
+        <% else %>
+          <input name="withdraw_method" type="hidden" value="ach" />
+          <div class = "org_btn margin_top_5px"><button type="submit">Withdraw To New Bank Account</button></div>
+        <% end %>
+      </form></div>
+    </div>
+
+    <div class = "margin_top white_container padding_top_15px padding_left padding_right margin_bottom"><form action="/create_bank_acct" method="POST">
+      <input placeholder="PayPal Email Account" type="text" size="40" name="paypal_email"/>
+      <input name="withdraw_method" type="hidden" value="paypal" />
+      <div class = "org_btn margin_top_5px"><button type="submit">Withdraw To PayPal Account</button></div>
+      <div class = "font_lightgray font_12px center">By choosing PayPal withdraw, you are agreeing to fee of $5 + 10% of transfer amount </div>
+    </form></div>
+  </div>
+<% end %>
+</div>
+
+

@@ -1,0 +1,12 @@
+<% if signed_in? %>
+  <div class = 'padding_around font_cuprum' style='background:white;'>
+    <h2>Send us any questions, comments, suggestions, or just say hello. We would love to hear from you.</h2>
+      <%= form_for(:contact_form, url: email_ly_path) do |c| %>    
+        <%= c.hidden_field :name, :value => current_user.name %>
+        <%= c.hidden_field :email, :value => current_user.email %>
+        <%= c.text_area :message, :rows => 3, :placeholder => "Message" %>
+        <div class = "org_btn margin_top"> <%= c.submit "Send" %> </div>
+      <% end %>
+  </div>
+  
+<% end %>

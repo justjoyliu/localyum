@@ -1,0 +1,797 @@
+<% provide(:title, "Edit Event") %> 
+
+<div class="row margin_bottom_20px">
+  <div class="span6">
+
+      <div class = "page_tagline_big">
+        Make your event fantastic.
+      </div>
+
+      <div class="event_nav_bar margin_top"><div class="btn-group">
+          <% if @hostevent.hostevent_step2? %>
+            <%= link_to "1: Basic", edit_basic_path(@hostevent.permalink), :class => "btn_complete" %>
+            <% else %>
+              <%= link_to "1: Basic", edit_basic_path(@hostevent.permalink), :class => "btn_incomplete" %>
+            <% end %>
+
+          <% if @hostevent.hostevent_step1? %>
+            <%= link_to "2: Menu", edit_hostevent_path(@hostevent.permalink), :class => "btn_complete_active" %>
+            <% else %>
+              <%= link_to "2: Menu", edit_hostevent_path(@hostevent.permalink), :class => "btn_incomplete_active" %>
+            <% end %>
+          
+          <% if @hostevent.hostevent_step3? %>
+            <%= link_to "3: Photos", addphoto_to_event_path(@hostevent.permalink), :class => "btn_complete" %>
+            <% else %>
+              <%= link_to "3: Photos", addphoto_to_event_path(@hostevent.permalink), :class => "btn_incomplete" %>
+            <% end %>
+      </div></div>
+  </div>
+  <div class = 'span6'>
+    <div class = "margin_top_20px"> 
+          <!-- Event Status:  -->
+          <!--%= @hostevent.eventstatus %-->
+
+          <div class = 'btn_w150px margin_bottom margin_right'><div class = "green_btn"><%= button_to "Continue to Add Photo", addphoto_to_event_path(@hostevent.permalink) %></div></div>
+
+          <% if @hostevent.chef_id != @hostevent.user_id and @hostevent.chef_id == current_user.id and @hostevent.hostevent_step1? %>
+            <div class = 'btn_w150px margin_bottom'><div class = "org_btn"><%= button_to "Preview Event", hostevent_path(@hostevent.permalink), :method => :get %></div></div>
+            <div class = 'margin_bottom' style = 'width:314px;'><div class = "org_btn"><%= button_to "Send Proposed Event to Host", propose_evt_path(@hostevent.permalink) %></div></div>
+          <% elsif @hostevent.hostevent_status_could_be_complete? %>
+            <%if @hostevent.eventstatus != "Open" %>
+              <div class = 'btn_w150px margin_bottom'><div class = "org_btn"><%= button_to "Open Event", hostevent_open_path(@hostevent.permalink), confirm: "You cannot edit the time, price, policies, cuisine theme, and name once it is open. Are you sure you want to open this event?" %></div></div> 
+            <% else %>
+              <div class = 'btn_w150px margin_bottom'><div class = "org_btn"><%= button_to "Go to Event Page", hostevent_path(@hostevent.permalink), :method => :get %></div></div>
+            <% end %>
+          <% else %>
+            <p> <div class = "highlight"> <%= @hostevent.hostevent_to_complete %> </div> <div class = "small_text"> more detail to complete </div> </p>
+          <% end %>
+    </div>
+  </div>
+</div>
+<div class = "row">
+  <% if @hostevent.chef_id == current_user.id %>
+    <% if @hostevent.menuitems.count > 0 %>
+      <div class = "span6">
+        <div class="accordion" id="menuitems_list">
+            <% @hostevent.menuitems.each do |eventmenuitem| %>
+              <div class="accordion-group white_container">
+                <div class="accordion-heading">
+                  <%= link_to eventmenuitem.course + ": " +eventmenuitem.name, eventmenuitem.menuitem_collapse(eventmenuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"accordion-toggle"%>
+                </div>
+                <%= content_tag :div, :id => eventmenuitem.menuitem_collapse_inner(eventmenuitem), :class=>"accordion-body collapse" do %>
+                  <div class="accordion-inner">
+                    <div class = "menu_item_description">
+                      <div class = "pull-right"> 
+                        <%= link_to "Remove Dish", :controller => "hostevents", :action => "disassociate_menuitem", :permalink => @hostevent.permalink, :menu => eventmenuitem.permalink %>
+                      </div>
+
+                      <br>
+                      <%= form_for(eventmenuitem, :html => { :multipart => true }, :validate => true, :url => url_for(:controller => "menuitems", :action => "update_from_evt", :hostevent_id_from => @hostevent.permalink, :permalink => eventmenuitem.permalink )) do |f| %>
+                        <table class="table table-hover">
+                          <tr>
+                              <td><%= f.label :menupic, "Change Photo (<5MB)" %><br>
+                              </td>
+                              <td>
+                                <%= f.file_field :menupic %>
+                                <%= image_tag eventmenuitem.menupic.url(:thumb), size: "100x100" %>
+                              </td>
+                          </tr> 
+
+                          <tr>
+                            <td><%= f.label :course, "Course" %></td>
+                            <td><%= f.select("course", eventmenuitem.course_select {|p| [ p.course] }, selected: eventmenuitem.course) %></td>
+                          </tr>
+
+                          <tr>
+                            <td><%= f.label :recipeview, "Recipe View Option" %></td>
+                            <td><%= f.select("recipeview", eventmenuitem.recipe_view_select {|p| [ p.recipeview] }, selected: eventmenuitem.recipeview) %></td>
+                          </tr>
+
+                          <tr>
+                            <td><%= f.label :description, "Description" %></td>
+                            <td><%= f.text_area :description, :rows => 3, placeholder: "optional" %></td>
+                          </tr>
+                          
+                          <tr>
+                            <td><%= f.label :ingredient, "Ingredients" %></td>
+                            <td><%= f.text_area :ingredient, rows: 3, placeholder: "optional, but highly recommended noting ingredients that guests could be allergic to" %></td>
+                          </tr>
+
+                          <tr>
+                            <td><%= f.label :recipe, "Recipe" %></td>
+                            <td><%= f.text_area :recipe, rows: 5, placeholder: "optional" %></td>
+                          </tr>
+
+                          <tr>
+                            <td><%= f.label :notes, "Extra Notes" %></td>
+                            <td><%= f.text_area :notes, rows: 2, placeholder: "optional, ideal place to provide background or hint if this dish is extra spicy" %></td>
+                          </tr> 
+                          
+                        </table>
+                        <div class = "org_btn">
+                          <!--%= f.submit "      Save Changes      ", class: "btn btn-mini btn-signin", :controller => "menuitems", :action => "edit"%-->
+                          <%= f.submit "      Save Changes      "%>
+                        </div>
+                        <br>
+                      <% end %>
+
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+        </div>
+      </div>
+    <% end %>      
+    <div class = 'span6'>
+      <% if !@recipebox_menuitem_notused.empty? %>
+            <div class = "white_container padding_top_15px padding_left_20px padding_right_20px margin_bottom_20px">
+                <%= form_for(@hostevent, :url => hostevent_path(@hostevent.permalink), :via => :put) do |f| %>
+                  <!--%= f.options_from_collection_for_select(@recipebox_menuitem, :id, :name)%-->
+                  <%= select_tag "recipebox_menuitem_id", options_from_collection_for_select(@recipebox_menuitem_notused, "id", "name") %>
+                 <!--%= select("recipebox_menuitem", "menuitem_ids", @recipebox_menuitem {|p| [ p.name, p.id] }) %-->
+                  <div class = "org_btn margin_top_20px"><%= f.submit "      Add      " %></div>
+                <% end %>
+            </div>
+          <% end %>
+
+          <%= render :partial => 'newmenu', :object => @hostevent.menuitems %>
+    </div>  
+  <% else %>
+    <div class = 'white_container span8 padding_around'>
+
+    
+        <div class = "menuitem_details_title">  Menu (<%= @hostevent.eventcategory.categorytype %>) </div>
+
+        <% if @hostevent.event_all_appetizers.size > 0 %>
+          <div class = "menuitem_details_course"> <%= "Appetizer".pluralize(@hostevent.event_all_appetizers.size) %></div>
+          
+          <div class="accordion" id="menuitems_list">
+              <% @hostevent.event_all_appetizers.each do |menuitem| %>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                      <table>
+                        <tr>
+                          <td><%= image_tag menuitem.menupic.url(:thumb), size: "100x100" %></td>
+                          <td class = "link_font_black menuitem_details_name"> 
+                            <!--%= link_to menuitem.name.strip.titlecase, menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"accordion-toggle"%-->
+                            <%= menuitem.name.strip.titlecase %>
+                            <div class = "menuitem_details_desc"><%= menuitem.description %></div>
+                          </td>
+                          <td>
+                            <% if menuitem.menuitem_optional_field? %> 
+                              <div class = "menuitem_details_desc_icon">
+                                <%= link_to '', menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"icon-plus-sign" %>
+                              </div>
+                            <% end %>
+                          </td>  
+                        </tr>
+                      </table>
+                    </div>
+                  
+                    <%= content_tag :div, :id => menuitem.menuitem_collapse_inner(menuitem), :class=>"accordion-body collapse" do %>
+                    <div class="accordion-inner">
+                      <div class = "menu_item_description">
+                       
+                          <table class="table table-hover">
+                            <% if !menuitem.ingredient.blank? %> 
+                              <tr>
+                                <td>Ingredients</td>
+                                <td><%= h(menuitem.ingredient).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                              <% end %>
+                            <% if menuitem.recipeview == 'Only Friends Attending Event' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                
+                                <% if !@user_signup.nil? && @user_signup.confirmation_status.to_s == "Attending"%>
+                                  <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                                <% elsif !@hostevent.confirmability? %>
+                                  <td class = "intensity_sub">Viewable once you sign up</td>
+                                <% else %>
+                                  <td class = "intensity_sub">Viewable when chef confirms a sign up</td>
+                                <% end %>
+                              </tr>
+                            <% elsif menuitem.recipeview == 'Everyone' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                            <% end %>
+                            
+                            <% if !menuitem.notes.blank? %> 
+                              <tr>
+                                <td>Extra Notes</td>
+                                <td><%= menuitem.notes %></td>
+                              </tr>
+                              <% end %>
+                          </table>
+
+                      </div>
+                    </div>
+                    <% end %>
+                </div>
+              <% end %>
+          </div> 
+        <% end %>
+
+        <% if @hostevent.event_all_soups.size > 0 %>
+          <div class = "menuitem_details_course"> <%= "Soup".pluralize(@hostevent.event_all_soups.size) %></div>     
+
+          <div class="accordion" id="menuitems_list">
+              <% @hostevent.event_all_soups.each do |menuitem| %>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                      <table>
+                        <tr>
+                          <td><%= image_tag menuitem.menupic.url(:thumb), size: "100x100" %></td>
+                          <td class = "link_font_black menuitem_details_name"> 
+                                <%= menuitem.name.strip.titlecase %>
+                            <div class = "menuitem_details_desc"><%= menuitem.description %></div>
+                          </td>
+                          <td>
+                            <% if menuitem.menuitem_optional_field? %> 
+                              <div class = "menuitem_details_desc_icon">
+                                <%= link_to '', menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"icon-plus-sign" %>
+                              </div>
+                            <% end %>
+                          </td>  
+                        </tr>
+                      </table>
+                    </div>
+                  
+                    <%= content_tag :div, :id => menuitem.menuitem_collapse_inner(menuitem), :class=>"accordion-body collapse" do %>
+                    <div class="accordion-inner">
+                      <div class = "menu_item_description">
+                       
+                          <table class="table table-hover">
+                            <% if !menuitem.ingredient.blank? %> 
+                              <tr>
+                                <td>Ingredients</td>
+                                <td><%= h(menuitem.ingredient).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                              <% end %>
+
+                            <% if menuitem.recipeview == 'Only Friends Attending Event' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                
+                                <% if !@user_signup.nil? && @user_signup.confirmation_status.to_s == "Attending"%>
+                                  <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                                <% elsif !@hostevent.confirmability? %>
+                                  <td class = "intensity_sub">Viewable once you sign up</td>
+                                <% else %>
+                                  <td class = "intensity_sub">Viewable when chef confirms a sign up</td>
+                                <% end %>
+                              </tr>
+                            <% elsif menuitem.recipeview == 'Everyone' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                            <% end %>
+
+                            <% if !menuitem.notes.blank? %> 
+                              <tr>
+                                <td>Extra Notes</td>
+                                <td><%= menuitem.notes %></td>
+                              </tr>
+                              <% end %>
+                          </table>
+
+                      </div>
+                    </div>
+                    <% end %>
+                </div>
+              <% end %>
+          </div>   
+        <% end %>
+
+        <% if @hostevent.event_all_salads.size > 0 %>
+          <div class = "menuitem_details_course"> <%= "Salad".pluralize(@hostevent.event_all_salads.size) %></div>     
+
+          <div class="accordion" id="menuitems_list">
+              <% @hostevent.event_all_salads.each do |menuitem| %>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                      <table>
+                        <tr>
+                          <td><%= image_tag menuitem.menupic.url(:thumb), size: "100x100" %></td>
+                          <td class = "link_font_black menuitem_details_name"> 
+                                <%= menuitem.name.strip.titlecase %>
+                            <div class = "menuitem_details_desc"><%= menuitem.description %></div>
+                          </td>
+                          <td>
+                            <% if menuitem.menuitem_optional_field? %> 
+                              <div class = "menuitem_details_desc_icon">
+                                <%= link_to '', menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"icon-plus-sign" %>
+                              </div>
+                            <% end %>
+                          </td>  
+                        </tr>
+                      </table>
+                    </div>
+                  
+                    <%= content_tag :div, :id => menuitem.menuitem_collapse_inner(menuitem), :class=>"accordion-body collapse" do %>
+                    <div class="accordion-inner">
+                      <div class = "menu_item_description">
+                       
+                          <table class="table table-hover">
+                            <% if !menuitem.ingredient.blank? %> 
+                              <tr>
+                                <td>Ingredients</td>
+                                <td><%= h(menuitem.ingredient).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                              <% end %>
+                            
+                            <% if menuitem.recipeview == 'Only Friends Attending Event' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                
+                                <% if !@user_signup.nil? && @user_signup.confirmation_status.to_s == "Attending"%>
+                                  <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                                <% elsif !@hostevent.confirmability? %>
+                                  <td class = "intensity_sub">Viewable once you sign up</td>
+                                <% else %>
+                                  <td class = "intensity_sub">Viewable when chef confirms a sign up</td>
+                                <% end %>
+                              </tr>
+                            <% elsif menuitem.recipeview == 'Everyone' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                            <% end %>
+
+                            <% if !menuitem.notes.blank? %> 
+                              <tr>
+                                <td>Extra Notes</td>
+                                <td><%= menuitem.notes %></td>
+                              </tr>
+                              <% end %>
+                          </table>
+
+                      </div>
+                    </div>
+                    <% end %>
+                </div>
+              <% end %>
+          </div>   
+        <% end %>
+
+        <% if @hostevent.event_all_mains.size > 0 %>
+          <div class = "menuitem_details_course"> <%= "Main".pluralize(@hostevent.event_all_mains.size) %></div>     
+
+          <div class="accordion" id="menuitems_list">
+              <% @hostevent.event_all_mains.each do |menuitem| %>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                      <table>
+                        <tr>
+                          <td><%= image_tag menuitem.menupic.url(:thumb), size: "100x100" %></td>
+                          <td class = "link_font_black menuitem_details_name"> 
+                                <%= menuitem.name.strip.titlecase %>
+                            <div class = "menuitem_details_desc"><%= menuitem.description %></div>
+                          </td>
+                          <td>
+                            <% if menuitem.menuitem_optional_field? %> 
+                              <div class = "menuitem_details_desc_icon">
+                                <%= link_to '', menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"icon-plus-sign" %>
+                              </div>
+                            <% end %>
+                          </td>  
+                        </tr>
+                      </table>
+                    </div>
+                  
+                    <%= content_tag :div, :id => menuitem.menuitem_collapse_inner(menuitem), :class=>"accordion-body collapse" do %>
+                    <div class="accordion-inner">
+                      <div class = "menu_item_description">
+                       
+                          <table class="table table-hover">
+                            <% if !menuitem.ingredient.blank? %> 
+                              <tr>
+                                <td>Ingredients</td>
+                                <td><%= h(menuitem.ingredient).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                              <% end %>
+                            
+                            <% if menuitem.recipeview == 'Only Friends Attending Event' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                
+                                <% if !@user_signup.nil? && @user_signup.confirmation_status.to_s == "Attending"%>
+                                  <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                                <% elsif !@hostevent.confirmability? %>
+                                  <td class = "intensity_sub">Viewable once you sign up</td>
+                                <% else %>
+                                  <td class = "intensity_sub">Viewable when chef confirms a sign up</td>
+                                <% end %>
+                              </tr>
+                            <% elsif menuitem.recipeview == 'Everyone' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                            <% end %>
+
+                            <% if !menuitem.notes.blank? %> 
+                              <tr>
+                                <td>Extra Notes</td>
+                                <td><%= menuitem.notes %></td>
+                              </tr>
+                              <% end %>
+                          </table>
+
+                      </div>
+                    </div>
+                    <% end %>
+                </div>
+              <% end %>
+          </div>   
+        <% end %>
+
+        <% if @hostevent.event_all_sides.size > 0 %>
+          <div class = "menuitem_details_course"> <%= "Side".pluralize(@hostevent.event_all_sides.size) %></div>     
+
+          <div class="accordion" id="menuitems_list">
+              <% @hostevent.event_all_sides.each do |menuitem| %>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                      <table>
+                        <tr>
+                          <td><%= image_tag menuitem.menupic.url(:thumb), size: "100x100" %></td>
+                          <td class = "link_font_black menuitem_details_name"> 
+                                <%= menuitem.name.strip.titlecase %>
+                            <div class = "menuitem_details_desc"><%= menuitem.description %></div>
+                          </td>
+                          <td>
+                            <% if menuitem.menuitem_optional_field? %> 
+                              <div class = "menuitem_details_desc_icon">
+                                <%= link_to '', menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"icon-plus-sign" %>
+                              </div>
+                            <% end %>
+                          </td>  
+                        </tr>
+                      </table>
+                    </div>
+                  
+                    <%= content_tag :div, :id => menuitem.menuitem_collapse_inner(menuitem), :class=>"accordion-body collapse" do %>
+                    <div class="accordion-inner">
+                      <div class = "menu_item_description">
+                       
+                          <table class="table table-hover">
+                            <% if !menuitem.ingredient.blank? %> 
+                              <tr>
+                                <td>Ingredients</td>
+                                <td><%= h(menuitem.ingredient).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                              <% end %>
+                            
+                            <% if menuitem.recipeview == 'Only Friends Attending Event' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                
+                                <% if !@user_signup.nil? && @user_signup.confirmation_status.to_s == "Attending"%>
+                                  <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                                <% elsif !@hostevent.confirmability? %>
+                                  <td class = "intensity_sub">Viewable once you sign up</td>
+                                <% else %>
+                                  <td class = "intensity_sub">Viewable when chef confirms a sign up</td>
+                                <% end %>
+                              </tr>
+                            <% elsif menuitem.recipeview == 'Everyone' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                            <% end %>
+
+                            <% if !menuitem.notes.blank? %> 
+                              <tr>
+                                <td>Extra Notes</td>
+                                <td><%= menuitem.notes %></td>
+                              </tr>
+                              <% end %>
+                          </table>
+
+                      </div>
+                    </div>
+                    <% end %>
+                </div>
+              <% end %>
+          </div>   
+        <% end %>
+
+        <% if @hostevent.event_all_cheeses.size > 0 %>
+          <div class = "menuitem_details_course"> <%= "Cheese".pluralize(@hostevent.event_all_cheeses.size) %></div>     
+
+          <div class="accordion" id="menuitems_list">
+              <% @hostevent.event_all_cheeses.each do |menuitem| %>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                      <table>
+                        <tr>
+                          <td><%= image_tag menuitem.menupic.url(:thumb), size: "100x100" %></td>
+                          <td class = "link_font_black menuitem_details_name"> 
+                                <%= menuitem.name.strip.titlecase %>
+                            <div class = "menuitem_details_desc"><%= menuitem.description %></div>
+                          </td>
+                          <td>
+                            <% if menuitem.menuitem_optional_field? %> 
+                              <div class = "menuitem_details_desc_icon">
+                                <%= link_to '', menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"icon-plus-sign" %>
+                              </div>
+                            <% end %>
+                          </td>  
+                        </tr>
+                      </table>
+                    </div>
+                  
+                    <%= content_tag :div, :id => menuitem.menuitem_collapse_inner(menuitem), :class=>"accordion-body collapse" do %>
+                    <div class="accordion-inner">
+                      <div class = "menu_item_description">
+                       
+                          <table class="table table-hover">
+                            <% if !menuitem.ingredient.blank? %> 
+                              <tr>
+                                <td>Ingredients</td>
+                                <td><%= h(menuitem.ingredient).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                              <% end %>
+                            
+                            <% if menuitem.recipeview == 'Only Friends Attending Event' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                
+                                <% if !@user_signup.nil? && @user_signup.confirmation_status.to_s == "Attending"%>
+                                  <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                                <% elsif !@hostevent.confirmability? %>
+                                  <td class = "intensity_sub">Viewable once you sign up</td>
+                                <% else %>
+                                  <td class = "intensity_sub">Viewable when chef confirms a sign up</td>
+                                <% end %>
+                              </tr>
+                            <% elsif menuitem.recipeview == 'Everyone' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                            <% end %>
+
+                            <% if !menuitem.notes.blank? %> 
+                              <tr>
+                                <td>Extra Notes</td>
+                                <td><%= menuitem.notes %></td>
+                              </tr>
+                              <% end %>
+                          </table>
+
+                      </div>
+                    </div>
+                    <% end %>
+                </div>
+              <% end %>
+          </div>   
+        <% end %>
+
+        <% if @hostevent.event_all_desserts.size > 0 %>
+          <div class = "menuitem_details_course"> <%= "Dessert".pluralize(@hostevent.event_all_desserts.size) %></div>     
+
+          <div class="accordion" id="menuitems_list">
+              <% @hostevent.event_all_desserts.each do |menuitem| %>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                      <table>
+                        <tr>
+                          <td><%= image_tag menuitem.menupic.url(:thumb), size: "100x100" %></td>
+                          <td class = "link_font_black menuitem_details_name"> 
+                                <%= menuitem.name.strip.titlecase %>
+                            <div class = "menuitem_details_desc"><%= menuitem.description %></div>
+                          </td>
+                          <td>
+                            <% if menuitem.menuitem_optional_field? %> 
+                              <div class = "menuitem_details_desc_icon">
+                                <%= link_to '', menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"icon-plus-sign" %>
+                              </div>
+                            <% end %>
+                          </td>  
+                        </tr>
+                      </table>
+                    </div>
+                  
+                    <%= content_tag :div, :id => menuitem.menuitem_collapse_inner(menuitem), :class=>"accordion-body collapse" do %>
+                    <div class="accordion-inner">
+                      <div class = "menu_item_description">
+                       
+                          <table class="table table-hover">
+                            <% if !menuitem.ingredient.blank? %> 
+                              <tr>
+                                <td>Ingredients</td>
+                                <td><%= h(menuitem.ingredient).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                              <% end %>
+                            
+                            <% if menuitem.recipeview == 'Only Friends Attending Event' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                
+                                <% if !@user_signup.nil? && @user_signup.confirmation_status.to_s == "Attending"%>
+                                  <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                                <% elsif !@hostevent.confirmability? %>
+                                  <td class = "intensity_sub">Viewable once you sign up</td>
+                                <% else %>
+                                  <td class = "intensity_sub">Viewable when chef confirms a sign up</td>
+                                <% end %>
+                              </tr>
+                            <% elsif menuitem.recipeview == 'Everyone' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                            <% end %>
+                            
+                            <% if !menuitem.notes.blank? %> 
+                              <tr>
+                                <td>Extra Notes</td>
+                                <td><%= menuitem.notes %></td>
+                              </tr>
+                              <% end %>
+                          </table>
+
+                      </div>
+                    </div>
+                    <% end %>
+                </div>
+              <% end %>
+          </div>   
+        <% end %>
+        
+        <% if @hostevent.event_all_wines.size > 0 %>
+          <div class = "menuitem_details_course"> <%= "Wine".pluralize(@hostevent.event_all_wines.size) %></div>
+          
+          <div class="accordion" id="menuitems_list">
+              <% @hostevent.event_all_wines.each do |menuitem| %>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                      <table>
+                        <tr>
+                          <td><%= image_tag menuitem.menupic.url(:thumb), size: "100x100" %></td>
+                          <td class = "link_font_black menuitem_details_name"> 
+                            <!--%= link_to menuitem.name.strip.titlecase, menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"accordion-toggle"%-->
+                            <%= menuitem.name.strip.titlecase %>
+                            <div class = "menuitem_details_desc"><%= menuitem.description %></div>
+                          </td>
+                          <td>
+                            <% if menuitem.menuitem_optional_field? %> 
+                              <div class = "menuitem_details_desc_icon">
+                                <%= link_to '', menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"icon-plus-sign" %>
+                              </div>
+                            <% end %>
+                          </td>  
+                        </tr>
+                      </table>
+                    </div>
+                  
+                    <%= content_tag :div, :id => menuitem.menuitem_collapse_inner(menuitem), :class=>"accordion-body collapse" do %>
+                    <div class="accordion-inner">
+                      <div class = "menu_item_description">
+                       
+                          <table class="table table-hover">
+                            <% if !menuitem.ingredient.blank? %> 
+                              <tr>
+                                <td>Ingredients</td>
+                                <td><%= h(menuitem.ingredient).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                              <% end %>
+                            <% if menuitem.recipeview == 'Only Friends Attending Event' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                
+                                <% if !@user_signup.nil? && @user_signup.confirmation_status.to_s == "Attending"%>
+                                  <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                                <% elsif !@hostevent.confirmability? %>
+                                  <td class = "intensity_sub">Viewable once you sign up</td>
+                                <% else %>
+                                  <td class = "intensity_sub">Viewable when chef confirms a sign up</td>
+                                <% end %>
+                              </tr>
+                            <% elsif menuitem.recipeview == 'Everyone' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                            <% end %>
+                            
+                            <% if !menuitem.notes.blank? %> 
+                              <tr>
+                                <td>Extra Notes</td>
+                                <td><%= menuitem.notes %></td>
+                              </tr>
+                              <% end %>
+                          </table>
+
+                      </div>
+                    </div>
+                    <% end %>
+                </div>
+              <% end %>
+          </div> 
+        <% end %>
+
+        <% if @hostevent.event_all_activity.size > 0 %>
+          <div class = "menuitem_details_course"> <%= "Activity".pluralize(@hostevent.event_all_activity.size) %></div>     
+
+          <div class="accordion" id="menuitems_list">
+              <% @hostevent.event_all_activity.each do |menuitem| %>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                      <table>
+                        <tr>
+                          <td><%= image_tag menuitem.menupic.url(:thumb), size: "100x100" %></td>
+                          <td class = "link_font_black menuitem_details_name"> 
+                                <%= menuitem.name.strip.titlecase %>
+                            <div class = "menuitem_details_desc"><%= menuitem.description %></div>
+                          </td>
+                          <td>
+                            <% if menuitem.menuitem_optional_field? %> 
+                              <div class = "menuitem_details_desc_icon">
+                                <%= link_to '', menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"icon-plus-sign" %>
+                              </div>
+                            <% end %>
+                          </td>  
+                        </tr>
+                      </table>
+                    </div>
+                  
+                    <%= content_tag :div, :id => menuitem.menuitem_collapse_inner(menuitem), :class=>"accordion-body collapse" do %>
+                    <div class="accordion-inner">
+                      <div class = "menu_item_description">
+                       
+                          <table class="table table-hover">
+                            <% if !menuitem.ingredient.blank? %> 
+                              <tr>
+                                <td>Ingredients</td>
+                                <td><%= h(menuitem.ingredient).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                              <% end %>
+                            
+                            <% if menuitem.recipeview == 'Only Friends Attending Event' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                
+                                <% if !@user_signup.nil? && @user_signup.confirmation_status.to_s == "Attending"%>
+                                  <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                                <% elsif !@hostevent.confirmability? %>
+                                  <td class = "intensity_sub">Viewable once you sign up</td>
+                                <% else %>
+                                  <td class = "intensity_sub">Viewable when chef confirms a sign up</td>
+                                <% end %>
+                              </tr>
+                            <% elsif menuitem.recipeview == 'Everyone' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                            <% end %>
+                            
+                            <% if !menuitem.notes.blank? %> 
+                              <tr>
+                                <td>Extra Notes</td>
+                                <td><%= menuitem.notes %></td>
+                              </tr>
+                              <% end %>
+                          </table>
+
+                      </div>
+                    </div>
+                    <% end %>
+                </div>
+              <% end %>
+          </div>   
+        <% end %>
+
+    </div>
+  <% end %> 
+</div>

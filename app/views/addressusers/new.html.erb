@@ -1,0 +1,44 @@
+<div class="row">
+  <div class="span6">
+    <%= form_for(@addressuser, :url => url_for(:controller => "addressusers", :action => "create", :hostevent_id => @hostevent.permalink)) do |f| %>  
+                  <%= render 'shared/error_messages', object: f.object %>
+                  <div class = "margin_bottom margin_top">
+                      <%= f.text_field :nickname, :placeholder => "(optional: for your later reference only)" %>   
+                    </div>
+
+                    <div class = "margin_bottom">
+                      <%= f.text_field :line1, placeholder: "Address Line 1" %>   
+                    </div>
+
+                    <div class = "margin_bottom">
+                      <%= f.text_field :city, :placeholder => "City" %>
+                    </div>
+                    
+                    <div class = "margin_bottom">
+                      <%= f.select("state", @addressuser.us_states_abrev {|p| [ p.state] }, placeholder: "State" ) %>
+                    </div>
+
+                    <div class = "margin_bottom">
+                      <%= f.text_field :zip5, placeholder:"Zip Code" %>
+                    </div>
+
+                    <div class = "margin_bottom">
+                      <%= f.select("metroarea", @addressuser.target_metro {|p| [p[0], p[1]] }) %>
+                    </div>
+
+                    <div class = "margin_bottom">
+                      <%= f.text_field :neighborhood, placeholder: "Neighborhood" %>
+                    </div>
+
+                    <div class = "margin_bottom">
+                      <%= f.select("private_flag", [['Commercial Property', 0], ['Private Residence', 1]]) %>
+                    </div>
+
+                    <div class = 'margin_bottom_5px'>
+                        <%= f.check_box  :allow_booking_flag %><span class = 'margin_left'>Allowed for event requests</span>
+                    </div>
+
+                    <div class = "org_btn"><%= f.submit "   Add New Address   " %></div>
+                <% end %>
+  </div>
+</div>

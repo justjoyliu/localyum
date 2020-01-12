@@ -1,0 +1,31 @@
+<!-- <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"> -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- <!DOCTYPE html> -->
+<html>
+  <head><title></title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <link href='http://fonts.googleapis.com/css?family=Josefin+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  </head>
+
+	<body style="font-family: 'Josefin Sans', sans-serif;line-height: 24px;text-align: center;">
+    <table width="100%" border="0" id="background-table" style="background-color: #f19231;padding: 20px;">
+      <tbody>
+        <tr><td id="logo" style="font-size: 16px;color: #ffffff;">LOCAL YUM</td></tr>
+        <tr><td>
+          <table width="100%" border="0" id="background-table-content" style="background-color: #ffffff;padding: 20px;border-spacing: 0px;">
+            <tbody>
+              <tr><td><h1 style="font-size: 18px;font-weight: bold;margin: 10px 0 20px 0;">We are happy to bring news of a seat request for your "<%= @evt.event_name.titlecase %>" event! </h1></td></tr>
+              <tr><td style="background-color: #fcf7df;padding: 10px 20px;margin-bottom: 10px;vertical-align: top;">You can confirm or deny the request by clicking <%= link_to "this link", signup_requests_url(@evt.permalink) %> and signing in.</td></tr>
+
+              <tr><td class="margin_top" style="padding-top: 25px;">Hope you meet great people at this event!</td></tr>
+              <tr><td class="margin_top_20px" style="padding-top: 20px;">
+                Warmest regards,
+                <br> Local Yum
+              </td></tr>
+            </tbody>
+          </table>
+        </td></tr>
+      </tbody>
+    </table>
+  </body>
+</html>

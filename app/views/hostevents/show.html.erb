@@ -1,0 +1,1745 @@
+<% if @hostevent.nil? %>
+  <br>
+      <h2>
+        The chef has cancelled this event.
+      </h2>
+  <br>
+<% elsif !@hostevent.event_start_date_upcoming? && @hostevent.eventstatus != "Open" %>
+        <br>
+        <h2>
+          The host has cancelled this event.
+        </h2>
+        <br>
+<% elsif !@hostevent.evt_open? and (!signed_in? or (current_user.id != @hostevent.user_id and current_user.id != @hostevent.chef_id)) %>
+      <br>
+      <h2>
+        The host has not opened the event for sign up yet.
+      </h2>
+      <br>
+      <% if !signed_in? %>
+        <div class = 'org_font font_cuprum center padding_top margin_bottom_20px' style='font-size:22px'>If you are the host or chef of this event, please sign in to preview the event.</div>
+      <% end %>
+<% elsif !@chef.active_status? %>
+      <div class = "font_lightgray margin_top center">
+        <div class = "font_20px"> Unfortunately the host's account is closed. </div>
+        <div class = "font_20px margin_top"> You can no longer view this event's details. </div>
+      </div>
+<% else %>
+  <% provide(:title, @hostevent.event_name.to_s + ' | A LocalYum.me dining experience') %>
+
+  <div class="row">
+    <% if signed_in? and !@hostevent.evt_open? %>
+      <% if current_user.id == @hostevent.chef_id and @hostevent.chef_id != @hostevent.user_id and @hostevent.eventstatus != "Open" %>
+        <div class = 'margin_bottom_20px margin_left_20px margin_right_20px'><div class = "org_btn"><%= button_to "Send Proposed Event to Host", propose_evt_path(@hostevent.permalink) %></div></div>
+        <div class = 'org_font font_cuprum center padding_top margin_bottom_20px table_border_bottom padding_bottom' style='font-size:28px'> Preview of Event </div>
+      <% elsif current_user.id  == @hostevent.user_id and @hostevent.eventstatus != "Open"%>
+        <div class = 'margin_bottom_20px margin_left_20px margin_right_20px'><div class = "org_btn"><%= button_to "Edit Details", edit_basic_path(@hostevent.permalink) %></div></div>
+        <div class = 'margin_bottom_20px margin_left_20px margin_right_20px'><div class = "org_btn"><%= button_to "Edit Menu", edit_hostevent_path(@hostevent.permalink)%></div></div>
+        <div class = 'margin_bottom_20px margin_left_20px margin_right_20px'><div class = "org_btn">
+          <%= button_to "Open Event", hostevent_open_path(@hostevent.permalink), confirm: "You cannot edit the event details once it is open. Are you sure you want to open this event?" %>
+        </div></div>
+        <div class = 'org_font font_cuprum center padding_top margin_bottom_20px table_border_bottom padding_bottom' style='font-size:28px'> Preview of Event </div>
+      <% elsif current_user.id == @hostevent.chef_id and @hostevent.chef_id != @hostevent.user_id and !@hostevent.chef_confirm? %>
+        <div class = 'margin_bottom_20px margin_left_20px margin_right_20px'><div class = "org_btn"><%= button_to "Confirm Event", chef_confirm_evt_path(@hostevent.permalink) %></div></div>
+        <div class = 'org_font font_cuprum center padding_top margin_bottom_20px table_border_bottom padding_bottom' style='font-size:28px'> Preview of Event </div>
+      <% elsif !@hostevent.chef_confirm? %>
+        <div class = 'org_font font_cuprum center margin_bottom_20px padding_bottom' style='font-size:24px'> We are still waiting for the chef's confirmation to enable signup. </div>
+        <div class = 'org_font font_cuprum center padding_top margin_bottom_20px table_border_bottom padding_bottom' style='font-size:28px'> Preview of Event </div>
+      <% end %>
+    <% end %>
+    <div class = 'font_josefin font_bold font_26px margin_left_20px margin_right_20px margin_bottom'><%= @hostevent.event_name %></div>
+    <div class="span8">
+      <% if @hostevent.eventphotos.count + @hostevent.menuitems.where('menupic_file_name is not null').count > 0 %><div>
+        <div class="flexslider">
+          <div class="flex-viewport">
+              <ul class="slides">
+                <% @hostevent.eventphotos.each do |evtphoto| %>
+                  <li>
+                    <%= image_tag evtphoto.eventpic.url(:main), :size => "800x440"%>
+                  </li>
+                <% end %>
+                <% @hostevent.menuitems.where('menupic_file_name is not null').each do |miphoto| %>
+                  <li>
+                    <%= image_tag miphoto.menupic.url(:main), :size => "800x440"%>
+                  </li>
+                <% end %>
+              </ul>
+          </div>
+          <% if @hostevent.eventphotos.count + @hostevent.menuitems.where('menupic_file_name is not null').count > 1 %>
+              <ul class="flex-direction-nav">
+                <li><a class="flex-prev" href="#">Previous</a></li>
+                <li><a class="flex-next" href="#">Next</a></li>
+              </ul>
+          <% end %>
+        </div>
+      </div><% end %>
+        
+      <% if @hostevent.event_start_date_upcoming? or (signed_in? and current_user.id == @hostevent.user_id) %>
+        <div class = 'margin_top'>
+          <div class = "menuitem_details_title padding_top_15px"> Details </div>
+          <table class="table table-hover" style="word-wrap:break-word; table-layout: fixed;">
+              <tr>
+                  <td class = "trow_label">Courses: </td>
+                  <td>
+                    <% if @hostevent.event_all_appetizers.size > 0 %>
+                      <span class = "menuitem_summary_container"> <%= pluralize(@hostevent.event_all_appetizers.size, 'Appetizer') %></span>
+                      <% end %>
+                    <% if @hostevent.event_all_soups.size > 0 %>
+                      <span class = "menuitem_summary_container"><%= pluralize(@hostevent.event_all_soups.size, 'Soup') %></span>
+                      <% end %>
+                    <% if @hostevent.event_all_salads.size > 0 %>
+                      <span class = "menuitem_summary_container"><%= pluralize(@hostevent.event_all_salads.size, 'Salad')%></span>
+                      <% end %>
+                    <% if @hostevent.event_all_mains.size > 0 %>
+                      <span class = "menuitem_summary_container"><%= pluralize(@hostevent.event_all_mains.size, 'Main') %></span>
+                      <% end %>
+                    <% if @hostevent.event_all_sides.size > 0 %>
+                      <span class = "menuitem_summary_container"><%= pluralize(@hostevent.event_all_sides.size, 'Side') %></span>
+                      <% end %>
+                    <% if @hostevent.event_all_cheeses.size > 0 %>
+                      <span class = "menuitem_summary_container"><%= pluralize(@hostevent.event_all_cheeses.size, 'Cheese') %></span>
+                      <% end %>
+                    <% if @hostevent.event_all_desserts.size > 0 %>
+                      <span class = "menuitem_summary_container"><%= pluralize(@hostevent.event_all_desserts.size, 'Dessert') %></span>
+                      <% end %>
+                    <% if @hostevent.event_all_wines.size > 0 %>
+                      <span class = "menuitem_summary_container"><%= pluralize(@hostevent.event_all_wines.size, 'Beverage') %></span>
+                      <% end %>
+                    <% if @hostevent.event_all_activity.size > 0 %>
+                      <span class = "menuitem_summary_container"><%= pluralize(@hostevent.event_all_activity.size, 'Activity') %></span>
+                      <% end %>
+                  </td>
+              </tr> 
+              
+              <% if signed_in? %>
+                <% if current_user.id == @hostevent.user_id or current_user.id == @hostevent.chef_id %>
+                  <tr>
+                    <td class = "trow_label">Address: 
+                      <div class = "intensity_sub"> Only visible to paid guests if address is set to private</div>
+                    </td>
+                    <td>
+                      <div><%= @hostevent.addressuser.line1 %></div>
+                      <div><%= @hostevent.addressuser.city + ", " + @hostevent.addressuser.state + " " + @hostevent.addressuser.zip5 %>  </div>
+                    </td>
+                  </tr> 
+
+                  <tr>
+                    <td class = "trow_label">Contact Info:
+                      <div class = "intensity_sub"> Only visible to paid guests </div>
+                    </td>
+                    <td><%= @hostevent.bestwaytocontact %></td>
+                  </tr> 
+
+                  <tr>
+                    <td class = "trow_label">Chef's Comment</td>
+                    <td>
+                      <% if @hostevent.chef_comment.blank? %>N/A
+                      <% else %><%= h(@hostevent.chef_comment).gsub(/\n/, '<br/>').html_safe %>
+                      <% end %>
+                    </td>
+                  </tr>
+                <% elsif !@user_signup.nil? %>
+                  <% if @user_signup.confirmation_status.to_s == "Attending" %>
+                    <tr>
+                      <td class = "trow_label">Address: </td>
+                      <td>
+                        <div><%= @hostevent.addressuser.line1 %></div>
+                        <div><%= @hostevent.addressuser.city + ", " + @hostevent.addressuser.state + " " + @hostevent.addressuser.zip5 %>  </div>
+                      </td>
+                    </tr> 
+
+                    <tr>
+                      <td class = "trow_label">Contact Info: </td>
+                      <td><%= @hostevent.bestwaytocontact %></td>
+                    </tr> 
+                  <% else %>
+                    <tr>
+                      <td class = "trow_label">Address: </td>
+                      <td class = "intensity_sub"> Information will be visible once you make your contribution for the event</td>
+                    </tr> 
+
+                    <tr>
+                      <td class = "trow_label">Contact Info: </td>
+                      <td class = "intensity_sub"> Information will be visible once you make your contribution for the event</td>
+                    </tr> 
+                  <% end %>
+                <% end %>
+              <% end %>
+
+              <% if !@hostevent.discussiontopics.to_s.empty? %>
+                <tr>
+                  <td class = "trow_label">Topics for Discussion: </td>
+                  <td><%= @hostevent.discussiontopics %></td>
+                </tr> 
+              <% end %>  
+              
+              <% if !@hostevent.requestsforguests.empty? %>
+                <tr>
+                  <td class = "trow_label">Requests from Host: </td>
+                  <td><%= h(@hostevent.requestsforguests).gsub(/\n/, '<br/>').html_safe %></td>
+                </tr> 
+              <% end %>  
+
+              <% if !@hostevent.extracomments.empty? %>
+                <tr>
+                  <td class = "trow_label">Comments: </td>
+                  <td><%= h(@hostevent.extracomments).gsub(/\n/, '<br/>').html_safe %></td>
+                </tr> 
+              <% end %> 
+
+              <% if !@hostevent.maxguests.nil? %>
+                <tr>
+                  <td class = "trow_label">Max. Guests: </td>
+                  <td><%= @hostevent.maxguests.to_s %></td>
+                </tr> 
+              <% end %> 
+
+              
+              <tr>
+                <td class = "trow_label">Cancellation Policy: </td>
+                <td class = "link_font_black">
+                  <%= link_to @hostevent.cancellationpolicy.cancellation_description, cancellation_policy_path %>
+                </td>
+              </tr> 
+          </table>
+        </div>
+      <% end %>
+
+      <div class = "menuitem_details_title padding_top_30px">  Menu (<%= @hostevent.eventcategory.categorytype %>) </div>
+
+        <% if @hostevent.event_all_appetizers.size > 0 %>
+          <div class = "menuitem_details_course"> <%= "Appetizer".pluralize(@hostevent.event_all_appetizers.size) %></div>
+          
+          <div class="accordion" id="menuitems_list">
+              <% @hostevent.event_all_appetizers.each do |menuitem| %>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                      <table>
+                        <tr>
+                          <td><%= image_tag menuitem.menupic.url(:thumb), size: "100x100" %></td>
+                          <td class = "link_font_black menuitem_details_name"> 
+                            <!--%= link_to menuitem.name.strip.titlecase, menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"accordion-toggle"%-->
+                            <%= menuitem.name.strip.titlecase %>
+                            <div class = "menuitem_details_desc"><%= menuitem.description %></div>
+                          </td>
+                          <td>
+                            <% if menuitem.menuitem_optional_field? %> 
+                              <div class = "menuitem_details_desc_icon">
+                                <%= link_to '', menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"icon-plus-sign" %>
+                              </div>
+                            <% end %>
+                          </td>  
+                        </tr>
+                      </table>
+                    </div>
+                  
+                    <%= content_tag :div, :id => menuitem.menuitem_collapse_inner(menuitem), :class=>"accordion-body collapse" do %>
+                    <div class="accordion-inner">
+                      <div class = "menu_item_description">
+                       
+                          <table class="table table-hover">
+                            <% if !menuitem.ingredient.blank? %> 
+                              <tr>
+                                <td>Ingredients</td>
+                                <td><%= h(menuitem.ingredient).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                              <% end %>
+                            <% if menuitem.recipeview == 'Only Friends Attending Event' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                
+                                <% if !@user_signup.nil? && @user_signup.confirmation_status.to_s == "Attending"%>
+                                  <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                                <% elsif !@hostevent.confirmability? %>
+                                  <td class = "intensity_sub">Viewable once you sign up</td>
+                                <% else %>
+                                  <td class = "intensity_sub">Viewable when chef confirms a sign up</td>
+                                <% end %>
+                              </tr>
+                            <% elsif menuitem.recipeview == 'Everyone' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                            <% end %>
+                            
+                            <% if !menuitem.notes.blank? %> 
+                              <tr>
+                                <td>Extra Notes</td>
+                                <td><%= menuitem.notes %></td>
+                              </tr>
+                              <% end %>
+                          </table>
+
+                      </div>
+                    </div>
+                    <% end %>
+                </div>
+              <% end %>
+          </div> 
+        <% end %>
+
+        <% if @hostevent.event_all_soups.size > 0 %>
+          <div class = "menuitem_details_course"> <%= "Soup".pluralize(@hostevent.event_all_soups.size) %></div>     
+
+          <div class="accordion" id="menuitems_list">
+              <% @hostevent.event_all_soups.each do |menuitem| %>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                      <table>
+                        <tr>
+                          <td><%= image_tag menuitem.menupic.url(:thumb), size: "100x100" %></td>
+                          <td class = "link_font_black menuitem_details_name"> 
+                                <%= menuitem.name.strip.titlecase %>
+                            <div class = "menuitem_details_desc"><%= menuitem.description %></div>
+                          </td>
+                          <td>
+                            <% if menuitem.menuitem_optional_field? %> 
+                              <div class = "menuitem_details_desc_icon">
+                                <%= link_to '', menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"icon-plus-sign" %>
+                              </div>
+                            <% end %>
+                          </td>  
+                        </tr>
+                      </table>
+                    </div>
+                  
+                    <%= content_tag :div, :id => menuitem.menuitem_collapse_inner(menuitem), :class=>"accordion-body collapse" do %>
+                    <div class="accordion-inner">
+                      <div class = "menu_item_description">
+                       
+                          <table class="table table-hover">
+                            <% if !menuitem.ingredient.blank? %> 
+                              <tr>
+                                <td>Ingredients</td>
+                                <td><%= h(menuitem.ingredient).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                              <% end %>
+
+                            <% if menuitem.recipeview == 'Only Friends Attending Event' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                
+                                <% if !@user_signup.nil? && @user_signup.confirmation_status.to_s == "Attending"%>
+                                  <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                                <% elsif !@hostevent.confirmability? %>
+                                  <td class = "intensity_sub">Viewable once you sign up</td>
+                                <% else %>
+                                  <td class = "intensity_sub">Viewable when chef confirms a sign up</td>
+                                <% end %>
+                              </tr>
+                            <% elsif menuitem.recipeview == 'Everyone' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                            <% end %>
+
+                            <% if !menuitem.notes.blank? %> 
+                              <tr>
+                                <td>Extra Notes</td>
+                                <td><%= menuitem.notes %></td>
+                              </tr>
+                              <% end %>
+                          </table>
+
+                      </div>
+                    </div>
+                    <% end %>
+                </div>
+              <% end %>
+          </div>   
+        <% end %>
+
+        <% if @hostevent.event_all_salads.size > 0 %>
+          <div class = "menuitem_details_course"> <%= "Salad".pluralize(@hostevent.event_all_salads.size) %></div>     
+
+          <div class="accordion" id="menuitems_list">
+              <% @hostevent.event_all_salads.each do |menuitem| %>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                      <table>
+                        <tr>
+                          <td><%= image_tag menuitem.menupic.url(:thumb), size: "100x100" %></td>
+                          <td class = "link_font_black menuitem_details_name"> 
+                                <%= menuitem.name.strip.titlecase %>
+                            <div class = "menuitem_details_desc"><%= menuitem.description %></div>
+                          </td>
+                          <td>
+                            <% if menuitem.menuitem_optional_field? %> 
+                              <div class = "menuitem_details_desc_icon">
+                                <%= link_to '', menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"icon-plus-sign" %>
+                              </div>
+                            <% end %>
+                          </td>  
+                        </tr>
+                      </table>
+                    </div>
+                  
+                    <%= content_tag :div, :id => menuitem.menuitem_collapse_inner(menuitem), :class=>"accordion-body collapse" do %>
+                    <div class="accordion-inner">
+                      <div class = "menu_item_description">
+                       
+                          <table class="table table-hover">
+                            <% if !menuitem.ingredient.blank? %> 
+                              <tr>
+                                <td>Ingredients</td>
+                                <td><%= h(menuitem.ingredient).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                              <% end %>
+                            
+                            <% if menuitem.recipeview == 'Only Friends Attending Event' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                
+                                <% if !@user_signup.nil? && @user_signup.confirmation_status.to_s == "Attending"%>
+                                  <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                                <% elsif !@hostevent.confirmability? %>
+                                  <td class = "intensity_sub">Viewable once you sign up</td>
+                                <% else %>
+                                  <td class = "intensity_sub">Viewable when chef confirms a sign up</td>
+                                <% end %>
+                              </tr>
+                            <% elsif menuitem.recipeview == 'Everyone' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                            <% end %>
+
+                            <% if !menuitem.notes.blank? %> 
+                              <tr>
+                                <td>Extra Notes</td>
+                                <td><%= menuitem.notes %></td>
+                              </tr>
+                              <% end %>
+                          </table>
+
+                      </div>
+                    </div>
+                    <% end %>
+                </div>
+              <% end %>
+          </div>   
+        <% end %>
+
+        <% if @hostevent.event_all_mains.size > 0 %>
+          <div class = "menuitem_details_course"> <%= "Main".pluralize(@hostevent.event_all_mains.size) %></div>     
+
+          <div class="accordion" id="menuitems_list">
+              <% @hostevent.event_all_mains.each do |menuitem| %>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                      <table>
+                        <tr>
+                          <td><%= image_tag menuitem.menupic.url(:thumb), size: "100x100" %></td>
+                          <td class = "link_font_black menuitem_details_name"> 
+                                <%= menuitem.name.strip.titlecase %>
+                            <div class = "menuitem_details_desc"><%= menuitem.description %></div>
+                          </td>
+                          <td>
+                            <% if menuitem.menuitem_optional_field? %> 
+                              <div class = "menuitem_details_desc_icon">
+                                <%= link_to '', menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"icon-plus-sign" %>
+                              </div>
+                            <% end %>
+                          </td>  
+                        </tr>
+                      </table>
+                    </div>
+                  
+                    <%= content_tag :div, :id => menuitem.menuitem_collapse_inner(menuitem), :class=>"accordion-body collapse" do %>
+                    <div class="accordion-inner">
+                      <div class = "menu_item_description">
+                       
+                          <table class="table table-hover">
+                            <% if !menuitem.ingredient.blank? %> 
+                              <tr>
+                                <td>Ingredients</td>
+                                <td><%= h(menuitem.ingredient).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                              <% end %>
+                            
+                            <% if menuitem.recipeview == 'Only Friends Attending Event' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                
+                                <% if !@user_signup.nil? && @user_signup.confirmation_status.to_s == "Attending"%>
+                                  <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                                <% elsif !@hostevent.confirmability? %>
+                                  <td class = "intensity_sub">Viewable once you sign up</td>
+                                <% else %>
+                                  <td class = "intensity_sub">Viewable when chef confirms a sign up</td>
+                                <% end %>
+                              </tr>
+                            <% elsif menuitem.recipeview == 'Everyone' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                            <% end %>
+
+                            <% if !menuitem.notes.blank? %> 
+                              <tr>
+                                <td>Extra Notes</td>
+                                <td><%= menuitem.notes %></td>
+                              </tr>
+                              <% end %>
+                          </table>
+
+                      </div>
+                    </div>
+                    <% end %>
+                </div>
+              <% end %>
+          </div>   
+        <% end %>
+
+        <% if @hostevent.event_all_sides.size > 0 %>
+          <div class = "menuitem_details_course"> <%= "Side".pluralize(@hostevent.event_all_sides.size) %></div>     
+
+          <div class="accordion" id="menuitems_list">
+              <% @hostevent.event_all_sides.each do |menuitem| %>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                      <table>
+                        <tr>
+                          <td><%= image_tag menuitem.menupic.url(:thumb), size: "100x100" %></td>
+                          <td class = "link_font_black menuitem_details_name"> 
+                                <%= menuitem.name.strip.titlecase %>
+                            <div class = "menuitem_details_desc"><%= menuitem.description %></div>
+                          </td>
+                          <td>
+                            <% if menuitem.menuitem_optional_field? %> 
+                              <div class = "menuitem_details_desc_icon">
+                                <%= link_to '', menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"icon-plus-sign" %>
+                              </div>
+                            <% end %>
+                          </td>  
+                        </tr>
+                      </table>
+                    </div>
+                  
+                    <%= content_tag :div, :id => menuitem.menuitem_collapse_inner(menuitem), :class=>"accordion-body collapse" do %>
+                    <div class="accordion-inner">
+                      <div class = "menu_item_description">
+                       
+                          <table class="table table-hover">
+                            <% if !menuitem.ingredient.blank? %> 
+                              <tr>
+                                <td>Ingredients</td>
+                                <td><%= h(menuitem.ingredient).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                              <% end %>
+                            
+                            <% if menuitem.recipeview == 'Only Friends Attending Event' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                
+                                <% if !@user_signup.nil? && @user_signup.confirmation_status.to_s == "Attending"%>
+                                  <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                                <% elsif !@hostevent.confirmability? %>
+                                  <td class = "intensity_sub">Viewable once you sign up</td>
+                                <% else %>
+                                  <td class = "intensity_sub">Viewable when chef confirms a sign up</td>
+                                <% end %>
+                              </tr>
+                            <% elsif menuitem.recipeview == 'Everyone' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                            <% end %>
+
+                            <% if !menuitem.notes.blank? %> 
+                              <tr>
+                                <td>Extra Notes</td>
+                                <td><%= menuitem.notes %></td>
+                              </tr>
+                              <% end %>
+                          </table>
+
+                      </div>
+                    </div>
+                    <% end %>
+                </div>
+              <% end %>
+          </div>   
+        <% end %>
+
+        <% if @hostevent.event_all_cheeses.size > 0 %>
+          <div class = "menuitem_details_course"> <%= "Cheese".pluralize(@hostevent.event_all_cheeses.size) %></div>     
+
+          <div class="accordion" id="menuitems_list">
+              <% @hostevent.event_all_cheeses.each do |menuitem| %>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                      <table>
+                        <tr>
+                          <td><%= image_tag menuitem.menupic.url(:thumb), size: "100x100" %></td>
+                          <td class = "link_font_black menuitem_details_name"> 
+                                <%= menuitem.name.strip.titlecase %>
+                            <div class = "menuitem_details_desc"><%= menuitem.description %></div>
+                          </td>
+                          <td>
+                            <% if menuitem.menuitem_optional_field? %> 
+                              <div class = "menuitem_details_desc_icon">
+                                <%= link_to '', menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"icon-plus-sign" %>
+                              </div>
+                            <% end %>
+                          </td>  
+                        </tr>
+                      </table>
+                    </div>
+                  
+                    <%= content_tag :div, :id => menuitem.menuitem_collapse_inner(menuitem), :class=>"accordion-body collapse" do %>
+                    <div class="accordion-inner">
+                      <div class = "menu_item_description">
+                       
+                          <table class="table table-hover">
+                            <% if !menuitem.ingredient.blank? %> 
+                              <tr>
+                                <td>Ingredients</td>
+                                <td><%= h(menuitem.ingredient).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                              <% end %>
+                            
+                            <% if menuitem.recipeview == 'Only Friends Attending Event' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                
+                                <% if !@user_signup.nil? && @user_signup.confirmation_status.to_s == "Attending"%>
+                                  <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                                <% elsif !@hostevent.confirmability? %>
+                                  <td class = "intensity_sub">Viewable once you sign up</td>
+                                <% else %>
+                                  <td class = "intensity_sub">Viewable when chef confirms a sign up</td>
+                                <% end %>
+                              </tr>
+                            <% elsif menuitem.recipeview == 'Everyone' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                            <% end %>
+
+                            <% if !menuitem.notes.blank? %> 
+                              <tr>
+                                <td>Extra Notes</td>
+                                <td><%= menuitem.notes %></td>
+                              </tr>
+                              <% end %>
+                          </table>
+
+                      </div>
+                    </div>
+                    <% end %>
+                </div>
+              <% end %>
+          </div>   
+        <% end %>
+
+        <% if @hostevent.event_all_desserts.size > 0 %>
+          <div class = "menuitem_details_course"> <%= "Dessert".pluralize(@hostevent.event_all_desserts.size) %></div>     
+
+          <div class="accordion" id="menuitems_list">
+              <% @hostevent.event_all_desserts.each do |menuitem| %>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                      <table>
+                        <tr>
+                          <td><%= image_tag menuitem.menupic.url(:thumb), size: "100x100" %></td>
+                          <td class = "link_font_black menuitem_details_name"> 
+                                <%= menuitem.name.strip.titlecase %>
+                            <div class = "menuitem_details_desc"><%= menuitem.description %></div>
+                          </td>
+                          <td>
+                            <% if menuitem.menuitem_optional_field? %> 
+                              <div class = "menuitem_details_desc_icon">
+                                <%= link_to '', menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"icon-plus-sign" %>
+                              </div>
+                            <% end %>
+                          </td>  
+                        </tr>
+                      </table>
+                    </div>
+                  
+                    <%= content_tag :div, :id => menuitem.menuitem_collapse_inner(menuitem), :class=>"accordion-body collapse" do %>
+                    <div class="accordion-inner">
+                      <div class = "menu_item_description">
+                       
+                          <table class="table table-hover">
+                            <% if !menuitem.ingredient.blank? %> 
+                              <tr>
+                                <td>Ingredients</td>
+                                <td><%= h(menuitem.ingredient).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                              <% end %>
+                            
+                            <% if menuitem.recipeview == 'Only Friends Attending Event' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                
+                                <% if !@user_signup.nil? && @user_signup.confirmation_status.to_s == "Attending"%>
+                                  <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                                <% elsif !@hostevent.confirmability? %>
+                                  <td class = "intensity_sub">Viewable once you sign up</td>
+                                <% else %>
+                                  <td class = "intensity_sub">Viewable when chef confirms a sign up</td>
+                                <% end %>
+                              </tr>
+                            <% elsif menuitem.recipeview == 'Everyone' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                            <% end %>
+                            
+                            <% if !menuitem.notes.blank? %> 
+                              <tr>
+                                <td>Extra Notes</td>
+                                <td><%= menuitem.notes %></td>
+                              </tr>
+                              <% end %>
+                          </table>
+
+                      </div>
+                    </div>
+                    <% end %>
+                </div>
+              <% end %>
+          </div>   
+        <% end %>
+        
+        <% if @hostevent.event_all_wines.size > 0 %>
+          <div class = "menuitem_details_course"> <%= "Wine".pluralize(@hostevent.event_all_wines.size) %></div>
+          
+          <div class="accordion" id="menuitems_list">
+              <% @hostevent.event_all_wines.each do |menuitem| %>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                      <table>
+                        <tr>
+                          <td><%= image_tag menuitem.menupic.url(:thumb), size: "100x100" %></td>
+                          <td class = "link_font_black menuitem_details_name"> 
+                            <!--%= link_to menuitem.name.strip.titlecase, menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"accordion-toggle"%-->
+                            <%= menuitem.name.strip.titlecase %>
+                            <div class = "menuitem_details_desc"><%= menuitem.description %></div>
+                          </td>
+                          <td>
+                            <% if menuitem.menuitem_optional_field? %> 
+                              <div class = "menuitem_details_desc_icon">
+                                <%= link_to '', menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"icon-plus-sign" %>
+                              </div>
+                            <% end %>
+                          </td>  
+                        </tr>
+                      </table>
+                    </div>
+                  
+                    <%= content_tag :div, :id => menuitem.menuitem_collapse_inner(menuitem), :class=>"accordion-body collapse" do %>
+                    <div class="accordion-inner">
+                      <div class = "menu_item_description">
+                       
+                          <table class="table table-hover">
+                            <% if !menuitem.ingredient.blank? %> 
+                              <tr>
+                                <td>Ingredients</td>
+                                <td><%= h(menuitem.ingredient).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                              <% end %>
+                            <% if menuitem.recipeview == 'Only Friends Attending Event' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                
+                                <% if !@user_signup.nil? && @user_signup.confirmation_status.to_s == "Attending"%>
+                                  <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                                <% elsif !@hostevent.confirmability? %>
+                                  <td class = "intensity_sub">Viewable once you sign up</td>
+                                <% else %>
+                                  <td class = "intensity_sub">Viewable when chef confirms a sign up</td>
+                                <% end %>
+                              </tr>
+                            <% elsif menuitem.recipeview == 'Everyone' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                            <% end %>
+                            
+                            <% if !menuitem.notes.blank? %> 
+                              <tr>
+                                <td>Extra Notes</td>
+                                <td><%= menuitem.notes %></td>
+                              </tr>
+                              <% end %>
+                          </table>
+
+                      </div>
+                    </div>
+                    <% end %>
+                </div>
+              <% end %>
+          </div> 
+        <% end %>
+
+        <% if @hostevent.event_all_activity.size > 0 %>
+          <div class = "menuitem_details_course"> <%= "Activity".pluralize(@hostevent.event_all_activity.size) %></div>     
+
+          <div class="accordion" id="menuitems_list">
+              <% @hostevent.event_all_activity.each do |menuitem| %>
+                <div class="accordion-group">
+                    <div class="accordion-heading">
+                      <table>
+                        <tr>
+                          <td><%= image_tag menuitem.menupic.url(:thumb), size: "100x100" %></td>
+                          <td class = "link_font_black menuitem_details_name"> 
+                                <%= menuitem.name.strip.titlecase %>
+                            <div class = "menuitem_details_desc"><%= menuitem.description %></div>
+                          </td>
+                          <td>
+                            <% if menuitem.menuitem_optional_field? %> 
+                              <div class = "menuitem_details_desc_icon">
+                                <%= link_to '', menuitem.menuitem_collapse(menuitem), :data => {:toggle=>"collapse", :parent => "#menuitems_list"},:class=>"icon-plus-sign" %>
+                              </div>
+                            <% end %>
+                          </td>  
+                        </tr>
+                      </table>
+                    </div>
+                  
+                    <%= content_tag :div, :id => menuitem.menuitem_collapse_inner(menuitem), :class=>"accordion-body collapse" do %>
+                    <div class="accordion-inner">
+                      <div class = "menu_item_description">
+                       
+                          <table class="table table-hover">
+                            <% if !menuitem.ingredient.blank? %> 
+                              <tr>
+                                <td>Ingredients</td>
+                                <td><%= h(menuitem.ingredient).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                              <% end %>
+                            
+                            <% if menuitem.recipeview == 'Only Friends Attending Event' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                
+                                <% if !@user_signup.nil? && @user_signup.confirmation_status.to_s == "Attending"%>
+                                  <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                                <% elsif !@hostevent.confirmability? %>
+                                  <td class = "intensity_sub">Viewable once you sign up</td>
+                                <% else %>
+                                  <td class = "intensity_sub">Viewable when chef confirms a sign up</td>
+                                <% end %>
+                              </tr>
+                            <% elsif menuitem.recipeview == 'Everyone' &&  !menuitem.recipe.blank? %> 
+                              <tr>
+                                <td>Recipe</td>
+                                <td><%= h(menuitem.recipe).gsub(/\n/, '<br/>').html_safe %></td>
+                              </tr>
+                            <% end %>
+                            
+                            <% if !menuitem.notes.blank? %> 
+                              <tr>
+                                <td>Extra Notes</td>
+                                <td><%= menuitem.notes %></td>
+                              </tr>
+                              <% end %>
+                          </table>
+
+                      </div>
+                    </div>
+                    <% end %>
+                </div>
+              <% end %>
+          </div>   
+        <% end %>
+      <div>
+        <div class = "menuitem_details_title margin_top padding_top_30px">Comments</div>
+          <% if signed_in? and current_user.active_status? %>
+            <div class = "margin_left margin_right margin_top">
+              <%= form_for(@messagechain, :validate => true) do |f| %>
+                <%= f.fields_for :messages do |m| %>
+                          <% if current_user.id == @hostevent.user_id %>
+                            <%= m.text_area :message_content, :rows => 2, :placeholder => "Comment (Because you are the host, this comment will also be sent as a message to all paid guests for this event.)" %>
+                          <% else %>
+                            <%= m.text_area :message_content, :rows => 2, :placeholder => "Comment" %>
+                          <%end%>
+                          <%= m.hidden_field :first_flag, :value => true %>
+                          <%= m.hidden_field :order_id, :value => 0 %>
+                          <%= m.hidden_field :public_flag, :value => true %>
+                <% end %>
+                <%= f.hidden_field :hostevent, :value => @hostevent.permalink %>
+                <div class = "org_btn"><%= f.submit "Add Comment" %></div>
+              <% end %>
+            </div>
+          <% end %>
+            
+            <% if @comment.count == 0 %>
+                <div class = "ital_font font_lightgray margin_top margin_left margin_right margin_bottom_20px">
+                  no comments at this time
+                </div>
+            <% else %>
+              <div class = "margin_left margin_right"><table class="table table-hover">
+                <% @comment.each do |c| %>
+                  <tr class = "event_comments_each">
+                    <td width = "90px">
+                      <% if User.find(c.sender_id).active_status? %>
+                        <%= link_to image_tag(User.find(c.sender_id).avatar.url(:thumb), size: "80x80"), user_path(User.find(c.sender_id).permalink) %>
+                      <% else %>
+                        <div class = "margin_top margin_left">
+                          <i class="icon-remove icon-3x icon-border"></i> 
+                          <div class = "margin_top_5px font_10px font_lightgray"> de-activated</div>
+                        </div>
+                      <% end %>
+                    </td>
+                    <td>
+                      <div class = "font_10px font_lightgray"><%= Message.where("messagechain_id = ? and order_id = ?", c.messagechain_id, c.order_id).first.created_at.strftime("%b %d, %Y") %></div>
+                      
+                      <% unless c.signup_id.nil? %>
+                        <div class = "font_12px font_josefin"> 
+                          <div class = "cmt_type_container">Taste</div>
+                            <% unless Signup.find(c.signup_id).taste_rating.nil? %>
+                              <div class = "cmt_display_rating">                    
+                                  <% if Signup.find(c.signup_id).taste_rating >= 1 %>
+                                    <div class = "rating_star_on"></div>
+                                    <% if Signup.find(c.signup_id).taste_rating >= 2 %>
+                                      <div class = "rating_star_on"></div>
+                                      <% if Signup.find(c.signup_id).taste_rating >= 3 %>
+                                        <div class = "rating_star_on"></div>
+                                        <% if Signup.find(c.signup_id).taste_rating >= 4 %>
+                                          <div class = "rating_star_on"></div>
+                                          <% if Signup.find(c.signup_id).taste_rating >= 5 %>
+                                            <div class = "rating_star_on"></div>
+                                          <% else %>
+                                            <div class = "rating_star_off"></div>
+                                          <% end %>
+                                        <% else %>
+                                          <div class = "rating_star_off"></div>
+                                          <div class = "rating_star_off"></div>
+                                        <% end %>
+                                      <% else %>
+                                        <div class = "rating_star_off"></div>
+                                        <div class = "rating_star_off"></div>
+                                        <div class = "rating_star_off"></div>
+                                      <% end %>
+                                    <% else %>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                    <% end %>
+                                  <% else %>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                  <% end %>
+                                </div>
+                            <% else %>
+                              <div class = "cmt_display_rating ital_font"> not rated </div>
+                            <% end %>
+                        </div> 
+                        <div class = "font_12px font_josefin"> 
+                          <div class = "cmt_type_container">Experience</div>
+                            <% unless Signup.find(c.signup_id).experience_rating.nil? %>
+                              <div class = "cmt_display_rating">                    
+                                  <% if Signup.find(c.signup_id).experience_rating >= 1 %>
+                                    <div class = "rating_star_on"></div>
+                                    <% if Signup.find(c.signup_id).experience_rating >= 2 %>
+                                      <div class = "rating_star_on"></div>
+                                      <% if Signup.find(c.signup_id).experience_rating >= 3 %>
+                                        <div class = "rating_star_on"></div>
+                                        <% if Signup.find(c.signup_id).experience_rating >= 4 %>
+                                          <div class = "rating_star_on"></div>
+                                          <% if Signup.find(c.signup_id).experience_rating >= 5 %>
+                                            <div class = "rating_star_on"></div>
+                                          <% else %>
+                                            <div class = "rating_star_off"></div>
+                                          <% end %>
+                                        <% else %>
+                                          <div class = "rating_star_off"></div>
+                                          <div class = "rating_star_off"></div>
+                                        <% end %>
+                                      <% else %>
+                                        <div class = "rating_star_off"></div>
+                                        <div class = "rating_star_off"></div>
+                                        <div class = "rating_star_off"></div>
+                                      <% end %>
+                                    <% else %>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                    <% end %>
+                                  <% else %>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                  <% end %>
+                                </div>
+                            <% else %>
+                              <div class = "cmt_display_rating ital_font"> not rated </div>
+                            <% end %>
+                        </div>    
+                      <% end %>
+
+                      <div>
+                        <%= h(c.message_content).gsub(/\n/, '<br/>').html_safe %>
+                      </div>
+                    </td>
+                  </tr>
+                <% end %>
+              </table> </div>
+            <% end %>
+          </div>
+    </div>
+
+    <aside class="span3_5"> 
+      <% if @hostevent.event_start_date_upcoming? %>
+        <section class = "date_container font_ubuntu">
+          <!--%= image_tag @hostevent.eventphotos.first.eventpic.url(:thumb)%-->
+          <div class = "font_20px margin_top_20px padding_around_10">
+            <%= @hostevent.mealstarttime.time.strftime("%A, %b. %d, %Y") %> 
+          </div>
+          <div class = "font_20px margin_bottom">
+            @ <%= @hostevent.mealstarttime.time.strftime("%l:%M  %P") %> 
+          </div>
+
+          <% if !@hostevent.mustbookhoursinadvance.nil? %>
+              <div class = "regular_mustbookhoursinadvance">
+                (must sign up <%= @hostevent.mustbookhoursinadvance %> hours in advance)
+              </div>
+          <% end %>  
+
+          <!--%= @hostevent.price %-->
+          <div class = "regular_price">
+            $<%= number_with_precision(@hostevent.price, :precision => 2) %> <font size="2"> per Person</font> 
+          </div>
+
+          <% if !@hostevent.charitypolicy_id.nil? %>
+            <div class = "regular_mustbookhoursinadvance">
+              (Contributing <%= @hostevent.charitypolicy.charityname %>)
+            </div>
+          <% end %> 
+        </section>
+
+        <% if @hostevent.tip_included? %>
+          <div class = "margin_left_20px padding_left margin_right font_lightgray font_12px margin_bottom">
+            <div class = 'v_top container_inline'><i class="icon-money icon-large"></i></div> 
+            <div class = 'width_80p margin_left'>Gratuity is included</div>
+          </div>
+        <% else %>
+          <div class = "margin_left_20px padding_left margin_right font_lightgray font_12px margin_bottom">
+            <div class = 'v_top container_inline'><i class="icon-minus icon-large"></i></div> 
+            <div class = 'width_80p margin_left'>Gratuity is not included</div>
+          </div>
+        <% end %>
+
+        <% if @hostevent.age_21plus? %>
+          <div class = "margin_left_20px padding_left margin_right font_lightgray font_12px margin_bottom">
+            <div class = 'v_top container_inline'><i class="icon-glass icon-large"></i></div> 
+            <div class = 'width_80p margin_left'>Must be 21+ to attend</div>
+          </div>
+        <% end %>
+
+        <% if @hostevent.clean_optin? %>
+          <div class = "margin_left_20px padding_left margin_right font_lightgray font_12px margin_bottom">
+            <div class = 'v_top container_inline'><i class="icon-certificate icon-large"></i></div> 
+            <div class = 'width_80p margin_left'>Host opt-in to prepare food in a good, clean, and safe environment</div>
+          </div>
+        <% end %>
+
+        <% if @hostevent.local_ingredients_optin? %>
+          <div class = "margin_left_20px padding_left margin_right font_lightgray font_12px margin_bottom">
+            <div class = 'v_top container_inline'><i class="icon-leaf icon-large"></i></div> 
+            <div class = 'width_80p margin_left'>Host opt-in to use local ingredients</div>
+          </div>
+        <% end %>
+
+        <% if signed_in? and @hostevent.user_id != current_user.id and @hostevent.evt_open? %>
+            <% if !@user_signup.nil? %>
+              <section class = "date_container font_josefin">
+                <div class = "font_18px font_josefin padding_left padding_right_20px table_border_bottom margin_bottom align_left margin_top"> 
+                  Sign Up Status
+                  <% if @user_signup.own_group_flag? %>
+                    <div class = 'font_16px'>for <%=pluralize(@user_signup.guest_count, 'Seat') %>  at Your Own Table </div>
+                  <% else %>
+                    <div class = 'font_16px'>for <%=pluralize(@user_signup.guest_count, 'Seat') %>  at the Communal Table </div>
+                  <% end %>
+                </div>
+
+                <div class = "margin_top margin_bottom">
+                  <% if @user_signup.confirmation_status.to_s == "Confirmed" %>
+                    <div class = "font_20px margin_top_20px font_bold">Host Confirmed </div>
+                    <div class = "font_16px margin_top margin_bottom link_font_black"><%= link_to "(need to contribute to secure seat)", signup_path(@user_signup.permalink), :method => :get %></div>
+                    <% if @user_signup.payment_status.to_s == "Failed" %>
+                      <div class = "font_lightgray font_14px center"> Contribution Attempt: $<%= number_with_precision((@user_signup.payment_amt.to_i)/100, :precision => 2) %></div>
+                      <div class = 'margin_top_5px center'><%= link_to "Failed Processing", signup_path(@user_signup.permalink), :method => :get, :class => 'red_font font_20px font_bold'%></div>
+                    <% end %>
+                  <% else %>
+                    <div class = "font_20px margin_top_20px font_bold"><%= @user_signup.confirmation_status %></div>
+                  <% end %>
+                </div>
+              </section>
+
+              <% if @user_signup.confirmation_status.to_s == "Withdrawn" %>
+                  <% if @hostevent.exceed_max_guests? %>
+                    <div class = "regular_mustbookhoursinadvance center">This event is sold out.</div>
+                    <%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                          <%= f.hidden_field :confirmation_guest, :value => true %>
+                          <%= f.hidden_field :confirmation_host, :value => false %>
+                          <%= f.hidden_field :confirmation_status, :value => "Waitlist"%>
+                          <div class = "btn_w280px">
+                            <div class = "org_btn"><%= f.submit "ADD TO WAITLIST"%></div>
+                            <div class = 'center margin_top_5px'> for 
+                              <div class = 'width_60px'><%= f.select(:guest_count, [1,2,3,4,5,6]) %> </div>
+                              guest(s)
+                            </div>
+                            <% if !@hostevent.addressuser.private_flag? %>
+                              <div class = 'center margin_top_5px width_80p margin_left_25px'> <%= f.select(:own_group_flag, [['at the Communal Table', 0], ['at your Own Table (min 4 guests)', 1]]) %> </div>
+                            <% else %>
+                              <div class = 'center margin_top_5px width_80p margin_left_25px'> at the Communal Table </div>
+                            <% end %>
+                          </div>
+                    <% end %>
+                      <!--%= button_to "EVENT IS FULL", @chef, :class => "btn btn-small btn-signin", :disabled => true%-->
+                  <% elsif @hostevent.past_mustbook_time?%>
+                    <div class = "regular_mustbookhoursinadvance center">
+                      <p>Sorry, you cannot sign up for this event anymore. The sign up time has passed. </p>
+                    </div>
+                    <!--%= button_to "         SIGN UP TIME HAS PASSED         ", root_path, :class => "btn btn-small btn-signin", :disabled => true%-->
+                  <% elsif !@hostevent.confirmability? %>
+                    <%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                      <%= f.hidden_field :confirmation_guest, :value => true %>
+                      <%= f.hidden_field :confirmation_status, :value => "Confirmed"%>
+                      <div class = "padding_top btn_w280px">
+                        <div class = "org_btn"><%= f.submit "TAKE A SEAT AGAIN"%></div>
+                        <div class = 'center margin_top_5px'> for 
+                          <div class = 'width_60px'><%= f.select(:guest_count, [1,2,3,4,5,6]) %> </div>
+                          guest(s)
+                        </div>
+                        <% if !@hostevent.addressuser.private_flag? %>
+                          <div class = 'center margin_top_5px width_80p margin_left_25px'> <%= f.select(:own_group_flag, [['at the Communal Table', 0], ['at your Own Table (min 4 guests)', 1]]) %> </div>
+                        <% else %>
+                          <div class = 'center margin_top_5px width_80p margin_left_25px'> at the Communal Table </div>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  <% else %>
+                      <%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                        <%= f.hidden_field :confirmation_guest, :value => true %>
+                        <%= f.hidden_field :confirmation_host, :value => false %>
+                        <%= f.hidden_field :confirmation_status, :value => "Waiting"%>
+                        <div class = "padding_top btn_w280px">
+                          <div class = "org_btn"><%= f.submit "REQUEST A SEAT AGAIN"%></div>
+                          <div class = 'center margin_top_5px'> for 
+                            <div class = 'width_60px'><%= f.select(:guest_count, [1,2,3,4,5,6]) %> </div>
+                            guest(s)
+                          </div>
+                          <% if !@hostevent.addressuser.private_flag? %>
+                            <div class = 'center margin_top_5px width_80p margin_left_25px'> <%= f.select(:own_group_flag, [['at the Communal Table', 0], ['at your Own Table (min 4 guests)', 1]]) %> </div>
+                          <% else %>
+                            <div class = 'center margin_top_5px width_80p margin_left_25px'> at the Communal Table </div>
+                          <% end %>
+                        </div>
+                      <% end %>
+                  <% end %>
+              <% elsif @user_signup.confirmation_status.to_s == "Declined"%>
+                <div class = "regular_mustbookhoursinadvance center">
+                  <p>Sorry, you cannot sign up for this event anymore</p>
+                </div>
+              <% elsif @user_signup.confirmation_status.to_s == "Confirmed"%>
+                <div class = "btn_w280px padding_top margin_bottom"><div class = "org_btn"><%= button_to "CONTRIBUTE TO EVENT", signup_path(@user_signup.permalink), :method => "get" %></div></div>
+                <%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                  <%= f.hidden_field :confirmation_guest, :value => false %>
+                  <%= f.hidden_field :confirmation_status, :value => "Withdrawn"%>
+                  <div class = "btn_w280px padding_top"><div class = "lightgray_btn"><%= f.submit "WITHDRAW"%></div></div>
+                <% end %>
+              <% else %>
+                <%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                  <%= f.hidden_field :confirmation_guest, :value => false %>
+                  <%= f.hidden_field :confirmation_status, :value => "Withdrawn"%>
+                  <div class = "btn_w280px padding_top"><div class = "lightgray_btn"><%= f.submit "WITHDRAW"%></div></div>
+                <% end %>
+              <% end %>
+            <% elsif @hostevent.exceed_max_guests? %>
+              <div class = "regular_mustbookhoursinadvance center">This event is sold out.
+              </div>
+              <%= form_for :signup, :url => create_signup_path(@hostevent.permalink), :via => :post do |f| %>
+                    <%= f.hidden_field :confirmation_guest, :value => true %>
+                    <%= f.hidden_field :confirmation_host, :value => false %>
+                    <%= f.hidden_field :confirmation_status, :value => "Waitlist"%>
+                    <div class = "btn_w280px">
+                      <div class = "org_btn"><%= f.submit "ADD TO WAITLIST"%></div>
+                      <div class = 'center margin_top_5px'> for 
+                        <div class = 'width_60px'><%= f.select(:guest_count, [1,2,3,4,5,6]) %> </div>
+                        guest(s)
+                      </div>
+                      <% if !@hostevent.addressuser.private_flag? %>
+                        <div class = 'center margin_top_5px width_80p margin_left_25px'> <%= f.select(:own_group_flag, [['at the Communal Table', 0], ['at your Own Table (min 4 guests)', 1]]) %> </div>
+                      <% else %>
+                        <div class = 'center margin_top_5px width_80p margin_left_25px'> at the Communal Table </div>
+                      <% end %>
+                    </div>
+              <% end %>
+            <% elsif @hostevent.past_mustbook_time? %>
+              <div class = "regular_mustbookhoursinadvance center">
+                  <p>Sorry, you cannot sign up for this event anymore. The sign up time has passed. </p>
+              </div>
+            <% elsif !@hostevent.confirmability? %>
+                  <%= form_for :signup, :url => create_signup_path(@hostevent.permalink), :via => :post do |f| %>
+                    <%= f.hidden_field :confirmation_guest, :value => true %>
+                    <%= f.hidden_field :confirmation_host, :value => true %>
+                    <%= f.hidden_field :confirmation_status, :value => "Confirmed"%>
+                    <div class = "padding_top btn_w280px">
+                      <div class = "org_btn"><%= f.submit "TAKE A SEAT"%></div>
+                      <div class = 'center margin_top_5px'> for 
+                        <div class = 'width_60px'><%= f.select(:guest_count, [1,2,3,4,5,6]) %> </div>
+                        guest(s)
+                      </div>
+                      <% if !@hostevent.addressuser.private_flag? %>
+                        <div class = 'center margin_top_5px width_80p margin_left_25px'> <%= f.select(:own_group_flag, [['at the Communal Table', 0], ['at your Own Table (min 4 guests)', 1]]) %> </div>
+                      <% else %>
+                        <div class = 'center margin_top_5px width_80p margin_left_25px'> at the Communal Table </div>
+                      <% end %>
+                    </div>
+                  <% end %>
+            <% else %>
+                  <!--%= button_to "                   I WANT TO JOIN                   ", users_path, :method => "get", :class => "btn btn-small btn-signin" %-->
+                  <%= form_for :signup, :url => create_signup_path(@hostevent.permalink), :via => :post do |f| %>
+                    <%= f.hidden_field :confirmation_guest, :value => true %>
+                    <%= f.hidden_field :confirmation_status, :value => "Waiting"%>
+                    <div class = "padding_top btn_w280px">
+                      <div class = "org_btn"><%= f.submit "REQUEST A SEAT"%></div>
+                      <div class = 'center margin_top_5px'> for 
+                        <div class = 'width_60px'><%= f.select(:guest_count, [1,2,3,4,5,6]) %> </div>
+                        guest(s)
+                      </div>
+                      <% if !@hostevent.addressuser.private_flag? %>
+                        <div class = 'center margin_top_5px width_80p margin_left_25px'> <%= f.select(:own_group_flag, [['at the Communal Table', 0], ['at your Own Table (min 4 guests)', 1]]) %> </div>
+                      <% else %>
+                        <div class = 'center margin_top_5px width_80p margin_left_25px'> at the Communal Table </div>
+                      <% end %>
+                    </div>
+                  <% end %>
+            <% end %>  
+        <% end %>
+        
+        <div class = "date_container"> 
+          <div class = "font_18px font_josefin padding_top_15px table_border_bottom align_left"> &nbsp;&nbsp;The Venue</div>
+          <% if !@hostevent.addressuser.private_flag? or (!@user_signup.nil? and @user_signup.confirmation_status.to_s == "Attending") %>
+            <% unless @hostevent.addressuser.latitude.nil? %>
+              <div class = "map_small">
+                <%= gmaps({"markers" => { "data" => @json }, "map_options" => { "zoom" => 12, "auto_zoom" => false }})%>
+              </div>
+              <%= yield :scripts %>
+            <% end %>
+                 
+            <div class = "font_bold margin_top_5px padding_bottom">
+               <div class = 'padding_around_10 font_josefin'><%= link_to @hostevent.addressuser.address_display_2lines.html_safe, @hostevent.addressuser.address_google_maps_link, :target => "_blank" %></div>
+            </div>
+          <% elsif !@hostevent.addressuser.lat_rand.nil? %>
+            <div class = "map_small">
+              <%= gmaps({"map_options" => { "zoom" => 12, "auto_zoom" => false },
+                "circles"    => { "data" => @venue_prox }
+                })%>
+                <!-- "markers" => { "data" => @json }, -->
+                <!--<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>-->
+            </div>
+            <%= yield :scripts %>
+             <div class = "font_bold font_12px margin_top_5px padding_bottom">
+               <div>Exact event address will appear</div>
+               <div>once sign up is confirmed</div>
+            </div>
+          <% else %>
+            <div class = "padding_around font_josefin"> <%= @hostevent.addressuser.city + ", " + @hostevent.addressuser.state %> </div>
+          <% end %>
+        </div>
+
+        <section class = "date_container">
+          <div class = "font_18px font_josefin padding_top table_border_bottom margin_bottom align_left"> &nbsp;&nbsp;Be Social & Spread the Word</div>
+
+          <div class = "padding_left_20px padding_bottom">
+            <!-- AddThis Button BEGIN https://www.addthis.com/get/sharing#.UgG_GmRxsaQ-->
+            <div class="addthis_toolbox addthis_default_style addthis_32x32_style">
+              <a class="addthis_button_facebook"></a>
+              <a class="addthis_button_twitter" addthis:title="Exploring a new dining experience #LocalYum" ></a>
+              <a class="addthis_button_pinterest_share" pi:pinit:description="Exploring a new dining experience #LocalYum"></a>
+              <a class="addthis_button_google_plusone_share"></a>
+              <a class="addthis_button_compact"></a>
+              <a class="addthis_counter addthis_bubble_style"></a>
+            </div>
+
+            <script type="text/javascript">var addthis_config = {"data_track_addressbar":true};</script>
+            <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5201bb850691bba8"></script>
+            <!-- AddThis Button END -->
+          </div>
+        </section>
+
+        <% if @people_attending.to_i > 1 %><section class = "price_container">
+          <div class = "font_josefin font_16px"><%= pluralize(@people_attending, 'person') %> attending so far</div>
+        </section><% end %>
+      <% else %>
+        <section class = "date_container font_ubuntu">
+          <div class = "font_20px margin_top_20px padding_around_10">
+            <%= @hostevent.mealstarttime.time.strftime("%A, %b. %d, %Y") %> 
+          </div>
+
+          <div class = "font_josefin font_bold font_18px padding_bottom"> 
+                          <div class = "center margin_top">Taste: 
+                            <% if @hostevent.event_taste_rating == 0 %> 
+                                <span class = "font_12px ital_font"> <%= @hostevent.event_taste_rating_text %></span>
+                              <% else %>
+                                <%= @hostevent.event_taste_rating_text %>
+                              <% end %>
+                          </div>
+
+                          <% unless @hostevent.event_taste_rating.nil? || @hostevent.event_taste_rating == 0 %>
+                              <div class = "cmt_display_rating">                    
+                                  <% if @hostevent.event_taste_rating >= 1 %>
+                                    <div class = "rating_star_on"></div>
+                                    <% if @hostevent.event_taste_rating >= 2 %>
+                                      <div class = "rating_star_on"></div>
+                                      <% if @hostevent.event_taste_rating >= 3 %>
+                                        <div class = "rating_star_on"></div>
+                                        <% if @hostevent.event_taste_rating >= 4 %>
+                                          <div class = "rating_star_on"></div>
+                                          <% if @hostevent.event_taste_rating >= 5 %>
+                                            <div class = "rating_star_on"></div>
+                                          <% elsif @hostevent.event_taste_rating >=  4.5 %>
+                                            <div class = "rating_star_half_small"></div>
+                                            <% else %>
+                                              <div class = "rating_star_off"></div>
+                                            <% end %>
+                                        <% elsif @hostevent.event_taste_rating >=  3.5 %>
+                                          <div class = "rating_star_half_small"></div>
+                                          <div class = "rating_star_off"></div>
+                                          <% else %>
+                                            <div class = "rating_star_off"></div>
+                                          <div class = "rating_star_off"></div>
+                                          <% end %>
+                                      <% elsif @hostevent.event_taste_rating >=  2.5 %>
+                                        <div class = "rating_star_half_small"></div>
+                                        <div class = "rating_star_off"></div>
+                                        <div class = "rating_star_off"></div>
+                                        <% else %>
+                                          <div class = "rating_star_off"></div>
+                                        <div class = "rating_star_off"></div>
+                                        <div class = "rating_star_off"></div>
+                                        <% end %>
+                                    <% elsif @hostevent.event_taste_rating >=  1.5 %>
+                                      <div class = "rating_star_half_small"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <% else %>
+                                        <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <% end %>
+                                  <% elsif @hostevent.event_taste_rating >=  0.5 %>
+                                    <div class = "rating_star_half_small"></div>
+                                    <div class = "rating_star_off"></div>
+                                    <div class = "rating_star_off"></div>
+                                    <div class = "rating_star_off"></div>
+                                    <div class = "rating_star_off"></div>
+                                  <% else %>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                  <% end %>
+                              </div>
+                          <% end %>
+
+                          <div class = "center margin_top">Experience: 
+                              <% if @hostevent.event_experience_rating == 0 %> 
+                                <span class = "font_12px ital_font"> <%= @hostevent.event_experience_rating_text %> </span>
+                              <% else %>
+                                <%= @hostevent.event_experience_rating_text %>
+                              <% end %>
+                          </div>
+                          <% unless @hostevent.event_experience_rating.nil? || @hostevent.event_experience_rating == 0 %>
+                              <div class = "cmt_display_rating">                    
+                                  <% if @hostevent.event_experience_rating >= 1 %>
+                                    <div class = "rating_star_on"></div>
+                                    <% if @hostevent.event_experience_rating >= 2 %>
+                                      <div class = "rating_star_on"></div>
+                                      <% if @hostevent.event_experience_rating >= 3 %>
+                                        <div class = "rating_star_on"></div>
+                                        <% if @hostevent.event_experience_rating >= 4 %>
+                                          <div class = "rating_star_on"></div>
+                                          <% if @hostevent.event_experience_rating >= 5 %>
+                                            <div class = "rating_star_on"></div>
+                                          <% elsif @hostevent.event_experience_rating >=  4.5 %>
+                                            <div class = "rating_star_half"></div>
+                                            <% else %>
+                                              <div class = "rating_star_off"></div>
+                                            <% end %>
+                                        <% elsif @hostevent.event_experience_rating >=  3.5 %>
+                                          <div class = "rating_star_half"></div>
+                                          <div class = "rating_star_off"></div>
+                                          <% else %>
+                                            <div class = "rating_star_off"></div>
+                                          <div class = "rating_star_off"></div>
+                                          <% end %>
+                                      <% elsif @hostevent.event_experience_rating >=  2.5 %>
+                                        <div class = "rating_star_half"></div>
+                                        <div class = "rating_star_off"></div>
+                                        <div class = "rating_star_off"></div>
+                                        <% else %>
+                                          <div class = "rating_star_off"></div>
+                                        <div class = "rating_star_off"></div>
+                                        <div class = "rating_star_off"></div>
+                                        <% end %>
+                                    <% elsif @hostevent.event_experience_rating >=  1.5 %>
+                                      <div class = "rating_star_half"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <% else %>
+                                        <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <% end %>
+                                  <% elsif @hostevent.event_experience_rating >=  0.5 %>
+                                    <div class = "rating_star_half"></div>
+                                    <div class = "rating_star_off"></div>
+                                    <div class = "rating_star_off"></div>
+                                    <div class = "rating_star_off"></div>
+                                    <div class = "rating_star_off"></div>
+                                  <% else %>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                      <div class = "rating_star_off"></div>
+                                  <% end %>
+                              </div>
+                          <% end %>
+          </div>
+        </section>
+
+
+        <% if signed_in? and current_user.active_status? %>
+          <% unless @user_signup.nil? || @user_signup.confirmation_status != "Attending" %>
+            <section class = "price_container">
+              <div class = "font_josefin font_16px padding_bottom"> 
+                <div class = "center margin_top font_bold"> My Taste Rating </div>
+                <% if @user_signup.taste_rating.nil? %>
+                    <div class = "font_12px ital_font"> (not reviewed yet) </div>
+                    <div class = "cmt_display_rating">
+                                <div class = "rating_star_off"><%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                                  <%= f.hidden_field :taste_rating, :value => 1 %>
+                                  <%= f.submit "" %>
+                                <% end %></div>
+                                <div class = "rating_star_off"><%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                                  <%= f.hidden_field :taste_rating, :value => 2 %>
+                                  <%= f.submit "" %>
+                                <% end %></div>
+                                <div class = "rating_star_off"><%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                                  <%= f.hidden_field :taste_rating, :value => 3 %>
+                                  <%= f.submit "" %>
+                                <% end %></div>
+                                <div class = "rating_star_off"><%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                                  <%= f.hidden_field :taste_rating, :value => 4 %>
+                                  <%= f.submit "" %>
+                                <% end %></div>
+                                <div class = "rating_star_off"><%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                                  <%= f.hidden_field :taste_rating, :value => 5 %>
+                                  <%= f.submit "" %>
+                                <% end %></div>
+                    </div>
+                <% else %>
+                    <div class = "cmt_display_rating">
+                                <% if @user_signup.taste_rating < 1 %><div class = "rating_star_off">
+                                  <% else %> <div class = "rating_star_on">
+                                  <% end %>
+                                  <%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                                    <%= f.hidden_field :taste_rating, :value => 1 %>
+                                    <%= f.submit "" %>
+                                <% end %></div>
+
+                                <% if @user_signup.taste_rating < 2 %><div class = "rating_star_off">
+                                  <% else %> <div class = "rating_star_on"><% end %>
+                                  <%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                                    <%= f.hidden_field :taste_rating, :value => 2 %>
+                                    <%= f.submit "" %>
+                                <% end %></div>
+
+                                <% if @user_signup.taste_rating < 3 %><div class = "rating_star_off">
+                                  <% else %> <div class = "rating_star_on"><% end %>
+                                  <%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                                    <%= f.hidden_field :taste_rating, :value => 3 %>
+                                    <%= f.submit "" %>
+                                <% end %></div>
+
+                                <% if @user_signup.taste_rating < 4 %><div class = "rating_star_off">
+                                  <% else %> <div class = "rating_star_on"><% end %>
+                                  <%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                                    <%= f.hidden_field :taste_rating, :value => 4 %>
+                                    <%= f.submit "" %>
+                                <% end %></div>
+
+                                <% if @user_signup.taste_rating < 5 %><div class = "rating_star_off">
+                                  <% else %> <div class = "rating_star_on"><% end %>
+                                  <%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                                    <%= f.hidden_field :taste_rating, :value => 5 %>
+                                    <%= f.submit "" %>
+                                <% end %></div>
+                    </div>
+                <% end %>
+              </div>
+
+              <div class = "font_josefin font_16px padding_bottom"> 
+                <div class = "center margin_top font_bold"> My Experience Rating </div>
+                <% if @user_signup.experience_rating.nil? %>
+                    <div class = "font_12px ital_font"> (not reviewed yet) </div>
+                    <div class = "cmt_display_rating">
+                                <div class = "rating_star_off"><%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                                  <%= f.hidden_field :experience_rating, :value => 1 %>
+                                  <%= f.submit "" %>
+                                <% end %></div>
+                                <div class = "rating_star_off"><%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                                  <%= f.hidden_field :experience_rating, :value => 2 %>
+                                  <%= f.submit "" %>
+                                <% end %></div>
+                                <div class = "rating_star_off"><%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                                  <%= f.hidden_field :experience_rating, :value => 3 %>
+                                  <%= f.submit "" %>
+                                <% end %></div>
+                                <div class = "rating_star_off"><%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                                  <%= f.hidden_field :experience_rating, :value => 4 %>
+                                  <%= f.submit "" %>
+                                <% end %></div>
+                                <div class = "rating_star_off"><%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                                  <%= f.hidden_field :experience_rating, :value => 5 %>
+                                  <%= f.submit "" %>
+                                <% end %></div>
+                      </div>
+                <% else %>
+                      <div class = "cmt_display_rating">
+                                <% if @user_signup.experience_rating < 1 %><div class = "rating_star_off">
+                                  <% else %> <div class = "rating_star_on">
+                                  <% end %>
+                                  <%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                                    <%= f.hidden_field :experience_rating, :value => 1 %>
+                                    <%= f.submit "" %>
+                                <% end %></div>
+
+                                <% if @user_signup.experience_rating < 2 %><div class = "rating_star_off">
+                                  <% else %> <div class = "rating_star_on"><% end %>
+                                  <%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                                    <%= f.hidden_field :experience_rating, :value => 2 %>
+                                    <%= f.submit "" %>
+                                <% end %></div>
+
+                                <% if @user_signup.experience_rating < 3 %><div class = "rating_star_off">
+                                  <% else %> <div class = "rating_star_on"><% end %>
+                                  <%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                                    <%= f.hidden_field :experience_rating, :value => 3 %>
+                                    <%= f.submit "" %>
+                                <% end %></div>
+
+                                <% if @user_signup.experience_rating < 4 %><div class = "rating_star_off">
+                                  <% else %> <div class = "rating_star_on"><% end %>
+                                  <%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                                    <%= f.hidden_field :experience_rating, :value => 4 %>
+                                    <%= f.submit "" %>
+                                <% end %></div>
+
+                                <% if @user_signup.experience_rating < 5 %><div class = "rating_star_off">
+                                  <% else %> <div class = "rating_star_on"><% end %>
+                                  <%= form_for :signup, :url => signup_path(@user_signup.permalink), :via => :put do |f| %>
+                                    <%= f.hidden_field :experience_rating, :value => 5 %>
+                                    <%= f.submit "" %>
+                                <% end %></div>
+                      </div>
+                <% end %>
+              </div>
+
+              <% unless @user_signup.taste_rating.nil? && @user_signup.experience_rating.nil? %>
+                <div class = "margin_left_20px margin_right">
+                  <div class="accordion" id="cmt_for_rating"> 
+                          <div class="accordion-group add_cmt_rating_container">
+                            <div class="accordion-heading">
+                              <% unless Message.find_by_signup_id(@user_signup.id).nil? %>
+                                <div class = "org_btn">
+                                  <div class = 'margin_top_5px'><%= "Add Another Rating Comment #{image_tag('send_message.png', size:"20x20")}".html_safe %></div>
+                                  <div class = "btn_image"><%= link_to image_tag('white.png', width: '100%', height: '100%'), @user_signup.signup_collapse, :data => {:toggle=>"collapse", :parent => "#cmt_for_rating"} %></div>
+                                </div>
+                               <% else %>
+                                <div class = "org_btn">
+                                  <%= "Add Rating Comment #{image_tag('send_message.png', size:"20x20")}".html_safe %>
+                                  <div class = "btn_image"><%= link_to image_tag('white.png', width: '100%', height: '100%'), @user_signup.signup_collapse, :data => {:toggle=>"collapse", :parent => "#cmt_for_rating"} %></div>
+                                </div>
+                               <% end %>
+                            </div>
+
+                            <%= content_tag :div, :id => @user_signup.signup_collapse_inner, :class=>"accordion-body collapse" do %>
+                              <div class="accordion-inner">
+                                <%= form_for(@rating_msg_c, :validate => true) do |f| %>
+                                    <%= f.fields_for @ratings_msg do |m| %>
+                                      <%= m.text_area :message_content, :rows => 4, :placeholder => "Rating Comment" %>
+                                      <%= m.hidden_field :first_flag, :value => true %>
+                                      <%= m.hidden_field :order_id, :value => 0 %>
+                                      <%= m.hidden_field :public_flag, :value => true %>
+                                    <% end %>
+                                    <%= f.hidden_field :hostevent, :value => @hostevent.permalink %>
+                                    <%= f.hidden_field :signup, :value => @user_signup.permalink %> 
+                                    <div class = "org_btn margin_top"><%= f.submit "      Add      " %></div>
+                                  <% end %>
+                              </div>
+                            <% end %>
+                          </div>
+                  </div>
+                </div>
+              <% end %>
+            </section>
+          <% end %>
+        <% end %>
+
+        <% if signed_in? and (@hostevent.user_id == current_user.id or @hostevent.chef_id == current_user.id) %> 
+          <section class = "date_container">
+            <div class = "center margin_top font_josefin font_16px padding_bottom"> <%= pluralize(@hostevent.event_attend_count, 'person') %> attended </div>
+          </section>
+          <div> &nbsp;</div>
+        <% end %>
+
+        <% if !@hostevent.charitypolicy.nil? %> 
+          <section class = "date_container">
+            <div class = "center margin_top font_josefin font_16px padding_bottom"> 
+              <% if signed_in? && current_user.id == @hostevent.user_id %>
+                Your Event Donated
+              <% else %> This Event Donated
+              <% end %>
+              <%= number_to_currency(@donation) %>
+            </div>
+          </section>
+
+          <div> &nbsp;</div>
+        <% end %>
+      <% end %>    
+
+      <% if signed_in? and current_user.active_status? and @hostevent.evt_open? %>
+        <!-- <div class = "btn_w280px margin_bottom_20px"> -->
+          <!-- <div class = "org_btn"> -->
+            <!--%= button_to "SHARE WITH FRIENDS", root_path, :method => "get" %-->
+        <!-- </div></div> -->
+        
+        <div class="accordion" id="invite"> 
+            <div class="accordion-group btn_w280px background_white">
+              <div class="accordion-heading">
+                <div class = "org_btn">
+                  <div class = 'margin_top_5px'>SEND INVITATION TO FRIENDS</div>
+                  <div class = "btn_image"><%= link_to image_tag('white.png', width: '100%', height: '100%'), "#invite_inside", :data => {:toggle=>"collapse", :parent => "#invite"} %></div>
+                </div>
+              </div>
+              <div id="invite_inside" class="accordion-body collapse">
+                      <div class="accordion-inner">
+
+                        <form action="/invite_to_event" method="post">
+                          <textarea cols="40" id="invite_guest_emails" name="hostevent[invite_guest_emails]" placeholder = "Emails (if you would like to send to multiple addresses, seperate each by , )" rows="4"></textarea>
+                          <%= hidden_field_tag :id, @hostevent.permalink %>
+                          <div class = "org_btn margin_top"><input name="commit" type="submit" value="Send" /></div>
+                        </form>
+                      </div>
+              </div>
+            </div>
+        </div>
+
+        <% if @hostevent.user_id != current_user.id and @hostevent.evt_open? %>
+          <div class="accordion" id="send_message_for_evt"> 
+            <div class="accordion-group btn_w280px background_white">
+              <div class="accordion-heading">
+                <div class = "org_btn">
+                  <div class = 'margin_top_5px'><%= "GET IN TOUCH &nbsp; #{image_tag('send_message.png')}".html_safe %></div>
+                  <div class = "btn_image"><%= link_to image_tag('white.png', width: '100%', height: '100%'), "#msg_for_evt", :data => {:toggle=>"collapse", :parent => "#send_message_for_evt"} %></div>
+                </div>
+              </div>
+              <div id="msg_for_evt" class="accordion-body collapse">
+                      <div class="accordion-inner">
+                        <%= form_for(@messagechain, :validate => true) do |f| %>
+                          <%= f.text_field :title, :placeholder => "Title" %>
+                          <%= f.fields_for :messages do |m| %>
+                            <%= m.text_area :message_content, :rows => 4, :placeholder => "Message" %>
+                            <%= m.hidden_field :first_flag, :value => true %>
+                            <%= m.hidden_field :order_id, :value => 0 %>
+                          <% end %>
+                          <%= f.hidden_field :receiver, :value => User.find(@hostevent.user_id).permalink %>
+                          <%= f.hidden_field :hostevent, :value => @hostevent.permalink %>
+                          <div class = "org_btn margin_top"><%= f.submit "      Send      " %></div>
+                        <% end %>
+                      </div>
+              </div>
+            </div>
+          </div>
+
+          
+          <div class = "width_280px"><%= render 'shared/follow_form' %></div>
+        <% elsif @hostevent.user_id == current_user.id %>
+          <% if @hostevent.event_start_date_upcoming? %><div class = "width_280px margin_bottom_20px"><div class = 'org_btn'><%= button_to "Manage Seat Requests / Edit Event", signup_requests_path(@hostevent.permalink) %></div></div>
+          <% else %>
+            <div class = "width_280px margin_bottom_20px"><div class = 'org_btn'><%= button_to "View Guest and Rating Details", hostevent_ratings_path(@hostevent.permalink) %></div></div>
+            <div class = "width_280px margin_bottom_20px"><div class = 'org_btn'><%= button_to "Add Photos to Event", addphoto_to_event_path(@hostevent.permalink) %></div></div>
+          <% end %>
+
+          <div class="accordion" id="copy_evt_btn"> 
+            <div class="accordion-group btn_w280px background_white">
+              <div class="accordion-heading">
+                <div class = "org_btn">
+                  <div class = 'margin_top_5px'>Copy Event Details for New Event</div>
+                  <div class = "btn_image"><%= link_to image_tag('white.png', width: '100%', height: '100%'), "#copy_evt_details", :data => {:toggle=>"collapse", :parent => "#copy_evt_btn"} %></div>
+                </div>
+              </div>
+              <div id="copy_evt_details" class="accordion-body collapse">
+                      <div class="accordion-inner">
+                        <%= form_for @copyevt, :url => url_for(:controller => 'hostevents', :action => 'copy') do |f| %>  
+                          <div id = "date"><%= f.text_field :startdate, :placeholder => "yyyy-mm-dd", class: "font_10px"%></div>
+                          <div class = "margin_bottom"><%= f.time_select :mealstarttime, { :default => Time.now.change(:hour => 19), :simple_time_select => true, :minute_interval => 30, :time_separator => "", :start_hour => 8, :end_hour => 23 } %></div>
+                              
+                          <%= f.hidden_field :id, :value => @hostevent.permalink %>
+                          <div class = "org_btn"><%= f.submit "Copy"%></div>
+                        <% end %>
+                      </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% elsif !signed_in?%>
+        <% if @hostevent.event_start_date_upcoming? %>
+          <div class = "date_container">
+            <div class = "font_18px font_josefin padding_top_15px table_border_bottom margin_bottom align_left"> &nbsp;&nbsp;Join the Event</div>
+
+            <div class = "padding_around_10 margin_left margin_right">
+                  <%= link_to image_tag('facebook_signup_icon.png', size: '262x30'), "/auth/facebook", id: "sign_in_fb" %>
+            </div>
+            <div class = 'padding_bottom_15px font_josefin center font_bold'> then take a seat and contribute</div>
+          </div>
+        <% else %>
+          <div class = "date_container">
+            <div class = "font_18px font_josefin padding_top_15px table_border_bottom margin_bottom align_left"> &nbsp;&nbsp;Join Us Next Time </div>
+
+            <div class = "padding_around_10 margin_left margin_right">
+                  <%= link_to image_tag('facebook_signup_icon.png', size: '262x30'), "/auth/facebook", id: "sign_in_fb" %>
+            </div>
+            <div class = 'padding_bottom_15px font_josefin center font_bold'> then explore upcoming events to take a seat</div>
+          </div>
+        <% end %>
+      <% end %>
+
+      <div class = "date_container">
+        <div class = "font_18px font_josefin padding_top_15px table_border_bottom margin_bottom align_left"> &nbsp;&nbsp;The Host</div>
+        <div class = "padding_bottom_15px"><%= link_to image_tag(@hostevent.host.avatar.url(:medium), :size => "200x200", :alt => @hostevent.host.name), user_path(@hostevent.host.permalink) %></div>  
+      </div>
+    </aside>   
+  </div>
+<% end %>
+

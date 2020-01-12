@@ -1,0 +1,16 @@
+<div class = 'white_container_no_border padding_around_10 margin_top font_josefin center'>
+    <div class = 'org_font font_cuprum margin_top' style='font-size:24px'>Set up my profile</div>
+    <%= form_for(@user, :url => user_path(@user.permalink), :via => :put) do |t| %>
+        <table class = 'font_16px width_80p margin_top'>
+            <tr><td><%= t.check_box  :yummer_flag %></td><td class = 'width_160px margin_top'>as a Yummer</td></tr>
+            <tr><td><%= t.check_box  :host_flag %></td><td>as a Host</td></tr>
+            <tr><td><%= t.check_box  :chef_flag %></td><td>as a Chef</td></tr>
+            <% if current_user.chef_flag? %>
+                <tr><td><%= t.check_box  :allow_offsite_request_flag %></td><td class = 'font_12px'>to allow offsite cooking requests</td></tr>
+            <% end %>
+        </table>
+
+        <div class = 'margin_left_20px margin_right_20px margin_top'><div class = "org_btn"><%= t.submit "Save Profile Type"%></div></div>
+        
+    <% end %>
+</div>

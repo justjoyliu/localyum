@@ -1,0 +1,32 @@
+<% provide(:title, "Stats") %> 
+<!-- <h1>Update your profile</h1> -->
+
+<div class="span5">
+  <table class = 'table-hover'>
+    <tr>
+      <td class = 'width_100px'>Week</td>
+      <td class = 'width_100px center'>New Members</td>
+    </tr>
+    <% @user_cnt.each do |u, c| %>
+      <tr>
+        <td class = 'width_100px'><%= u.strftime("%Y-%m-%d")  %></td>
+        <td class = 'width_100px center'><%= c.count %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>
+
+<div class="span5">
+  <table class = 'table-hover'>
+    <tr>
+      <td class = 'width_100px'>Week</td>
+      <td class = 'width_100px center'>Last Login</td>
+    </tr>
+    <% @updated_last.each do |u, c| %>
+      <tr>
+        <td class = 'width_100px'><%= u.strftime("%Y-%m-%d")  %></td>
+        <td class = 'width_100px center'><%= c.count %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>

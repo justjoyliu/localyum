@@ -1,0 +1,88 @@
+<% provide(:title, "Edit " + @item.name) %>
+<div class = "mi_edit">
+  <div class = "btn_w100px margin_top_5px"><div class = "lightgray_btn"><%= button_to "Cancel Edits", menuitem_path(@item.permalink), :method => :get %></div></div>
+<%= form_for(@item, :url => menuitem_path(@item.permalink), :via => :put, :html => { :multipart => true }, :validate => true) do |f| %>
+  <div class = "btn_w100px margin_top"><div class = "org_btn"><%= f.submit  "   Save    "%></div></div>
+</div>
+
+<% if @item.menupic_file_name.nil? %>
+  <div class = "span5 menuitem_main_container_wo_pic">
+    <section>
+      <div class = "span3_5">
+        <div class = "font_josefin font_26px font_bold" >
+          <%= f.text_field :name, :placeholder => "Name"%>
+        </div>
+        <div class = "menuitem_subtitle"> Course: <%= f.select("course", @item.course_select {|p| [ p.course] }, selected: @item.course) %> </div>
+        <div class = "add_new_photo_wo_pic">
+          <%= f.file_field :menupic %>
+          <% if @user_agent.browser == "Internet Explorer" and @user_agent.version.to_s.gsub(/\D/, '').to_i < 100 %>
+            <div class = 'center'> (press save to finish adding photo) </div>
+          <% else %>
+            <div class = "btn">Add less than 5MB Photo (press save to complete)</div>
+          <% end %>
+        </div> 
+      </div>
+<% else %>
+  <div class = "menuitem_main_pic" style="background:url(<%= @item.menupic.url(:wide) %>) no-repeat top center"> &nbsp; 
+    <div class = "add_new_photo">
+      <%= f.file_field :menupic %>
+      <% if @user_agent.browser == "Internet Explorer" and @user_agent.version.to_s.gsub(/\D/, '').to_i < 100 %>
+        <div class = 'center'> (press save to finish adding photo) </div>
+      <% else %>
+        <div class = "btn btn-mini btn-block">Change Photo (press save to complete)</div>
+      <% end %>
+    </div> 
+  </div>
+
+  <div class = "span5 menuitem_main_container">
+    <section>
+      <div class = "span3_5">
+        <div class = "font_josefin font_26px font_bold" >
+          <%= f.text_field :name, :placeholder => "Name"%>
+        </div>
+        <div class = "menuitem_subtitle"> Course: <%= f.select("course", @item.course_select {|p| [ p.course] }, selected: @item.course) %> </div>
+      </div>
+<% end %>
+    
+      <div class = "mi_desc">
+        <%= f.text_area :description, :rows => 4, :placeholder => "Description"%>
+      </div>
+    </section>
+    <section class = "mi_main_subcontainer">
+      <div class = "mi_sub_header"> Recipe </div>
+      
+      <div class = "mi_sub_small"> View: <%= f.select("recipeview", @item.recipe_view_select {|p| [ p.recipeview] }, selected: @item.recipeview) %></div>
+         
+      <%= f.text_area :recipe, rows: 5, placeholder: "Enter your recipe here (optional)" %>
+    </section>
+
+    <section class = "mi_main_subcontainer">
+        <div class = "mi_sub_header"> Extra Notes  </div>
+        <%= f.text_area :notes, rows: 2, placeholder: "optional, ideal place to provide background or hint if this dish is extra spicy" %>
+    </section>
+
+  </div>
+    
+
+  <div class = "span3 mi_side_container_edit">
+      <section class = "mi_side_subcontainer">
+        <div class = "mi_sub_header"> Ingredients </div>
+        <%= f.text_area :ingredient, rows: 3, placeholder: "optional, but highly recommended noting ingredients that guests could be allergic to" %>
+      </section>
+  </div>
+
+<% end %>
+
+
+
+        <!-- <td>Flavor Intensity </td> -->
+          <!--%= select("menuitem", "flavorinstensity", [['1 (light)', 1], ['2',2], ['3',3], ['4', 4], ['5 (strong)', 5]]) %-->
+          <!-- <div id="flav_index">3</div> -->
+          <!--%= range_field( "menuitem", :flavorinstensity, :id => "flav_id", :min => 1, :max => 5, :step => 1)%-->
+
+        <!-- <td>Sweetness Scale </td> -->
+        <!--%= select("menuitem", "sweetscale", [['1 (mild)', 1], ['2',2], ['3',3], ['4', 4], ['5 (very)', 5]]) %-->
+
+        <!-- <td>Spicy Scale </td> -->
+        <!--%= select("menuitem", "spicyscale", [['1 (mild)', 1], ['2',2], ['3',3], ['4', 4], ['5 (extremely)', 5]]) %-->
+      

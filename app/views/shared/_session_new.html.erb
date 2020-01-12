@@ -1,0 +1,14 @@
+
+    <%= form_for(:session, url: sessions_path) do |f| %>
+      <!--submitting this form will result in a params hash where params[:session][:email] and params[:session][:password] correspond to the email and password fields-->
+
+      
+      <%= f.email_field :email, :placeholder => "Email" %>
+      
+      <div class="row-fluid">
+        <div class="span8"> <%= f.password_field :password, :placeholder => "Password" %> </div>
+        <div class="form-signup-btn"> <%= f.submit "    Sign in    ", class: "btn btn-small btn-signin" %> </div>
+      </div>
+
+      <div class = "font_10px pull-right"><%= link_to "Forgot Password? ", request_password_reset_path %></div>
+    <% end %>

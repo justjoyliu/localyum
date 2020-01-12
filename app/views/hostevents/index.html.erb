@@ -1,0 +1,68 @@
+<% provide(:title, 'All Dining Events') %>
+<!-- <h1>All Events</h1> -->
+
+<% unless @hostevents.count == 0 %>
+	<div class="container margin_bottom_20px">
+		<!-- <div class = "evt_filter_initial_btn"> -->
+		<div class="accordion" id="evt_filter"> 
+	        <div class="accordion-group evt_filter_container">
+	            <div class="accordion-heading evt_filter_initial_btn link_font_darkgray">
+	              &nbsp; &nbsp; Filter Events
+	              <div class = "evt_filter_image"> <%= link_to image_tag('white.png', :size => "310x30"), "#evt_filter_form", :data => {:toggle=>"collapse", :parent => "#evt_filter"}%> </div>
+	            </div>
+	            <div id="evt_filter_form" class="accordion-body collapse white_container_border">
+	                <div class="accordion-inner">
+	                    <%= form_tag events_path, :method => 'get', :id => "evts_index_filter" do %>
+								<div class = "margin_top">
+									<!--%= select("hostevent", "eventcategory_id", @cuisine_select.collect {|p| [p[0] + " (" + p[1][1].to_s + ")", p[1][0] ]}, :selected => @selected_cuisine_id) %-->
+									<%= select("hostevent", "eventcategory_id", @cuisine_select.collect {|p| [p[0], p[1][0] ]}, :selected => @selected_cuisine_id) %>
+								</div>
+								<div>
+									<%= select("hostevent", "charitypolicy_id", @charity_select.collect {|p| [p[0], p[1][0] ]}, :selected => @selected_charity_id) %>
+								</div>
+								
+								<%= hidden_field_tag :metroarea, @metro_area %>
+								<%= submit_tag "Filter"%>
+						<% end %>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+		<!-- </div> -->
+	</div>
+
+	<!-- <ul class="users"> -->
+	<div>
+	<div class="container" id = "evts_index">
+	  <%= render @hostevents %>
+	</div>
+	</div>
+	<!-- </ul>  -->
+	<% if @hosts.count > 0 %>
+	  <div class = "org_btn margin_top"><%= button_to "Browse Local Chefs", hosts_path(:metroarea => @metro_area), via: :get %></div>
+	<% end %>
+<% else %>
+	<div class = "container font_josefin center">
+		<% if @metro_area == 'Other' %>
+			<div class = "font_24px margin_top"> There are currently no events you can sign up for. </div>
+			<div class = 'margin_top_20px font_22px'>Try searching in one of our targeted metro areas.</div>
+			<div class = "font_20px margin_top_20px"> Or would you like to create one?</div>
+			<div class = "evt_new_btn margin_top"> <%= link_to "Create New Event", new_event_path %> </div>
+			<% if @hosts.count > 0 %>
+				<div class = "font_20px margin_top_20px"> OR you can follow local chefs and get notification via email when they have events.</div>
+			  	<div class = "evt_new_btn margin_top"><div class = "org_btn"><%= button_to "Browse Local Chefs", hosts_path(:metroarea => @metro_area) %></div></div>
+			<% end %>
+		<% else %>
+			<div class = "font_24px margin_top"> There are currently no events you can sign up for in <%= @metro_area.gsub( /_/, ' ') %></div>
+			<div class = "font_20px margin_top_20px"> Would you like to create one?</div>
+			<div class = "evt_new_btn margin_top"> <%= link_to "Create New Event", new_event_path %> </div>
+
+			<% if @hosts.count > 0 %>
+				<div class = "font_20px margin_top_20px"> OR you can follow local chefs and get notification via email when they have events.</div>
+			  	<div class = "evt_new_btn margin_top"><div class = "org_btn"><%= button_to "Browse Local Chefs", hosts_path(:metroarea => @metro_area) %></div></div>
+			<% end %>
+		<% end %>
+	</div>
+<% end %>
+
+

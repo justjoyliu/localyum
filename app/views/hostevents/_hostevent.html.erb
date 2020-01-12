@@ -1,0 +1,68 @@
+  <% if hostevent.menuitems.where('menupic_file_name is not null').count > 0 %>
+    <div class="single_evt_container" style="background:url(<%= hostevent.menuitems.where('menupic_file_name is not null').first.menupic.url(:index_search) %>) no-repeat center"> 
+      <div class="single_evt_details">
+            <%= link_to image_tag('white.png', :width => 300, :height => 200), hostevent_path(hostevent.permalink) %>
+            <div class = "evt_display_overlap">
+              <div class = "evt_name">
+                <%= link_to hostevent.event_name.truncate(40), hostevent_path(hostevent.permalink) %>
+              </div>
+
+              <div class = "evt_desc link_font_black">
+                <%= link_to hostevent.mealstarttime.time.strftime("%a . %b . %d . %Y "), hostevent_path(hostevent.permalink) %> 
+                <br> <%= link_to hostevent.mealstarttime.time.strftime("%I : %M %p"), hostevent_path(hostevent.permalink) %>
+                <br> <%= link_to hostevent.addressuser.city.to_s + ", " + hostevent.addressuser.state.to_s, hostevent_path(hostevent.permalink) %>
+                <br> $ <%= link_to number_with_precision(hostevent.price, :precision => 2), hostevent_path(hostevent.permalink) %>
+              </div>
+            </div>
+      </div>
+    </div>
+  <% elsif hostevent.eventphotos.count == 0 %>
+      <div class="single_evt_container"> 
+        <div class="single_evt_details">
+            <%= link_to image_tag('white.png', width: '300', height: '200'), hostevent_path(hostevent.permalink) %>
+              
+
+              <!-- <p class = "evt_more"> -->
+                <!--%= link_to '', hostevent_path(hostevent.permalink), :class => "icon-plus-sign icon-white" %-->
+              <!-- </p> -->
+
+            <div class = "evt_display_overlap">
+              <div class = "evt_name">
+                <%= link_to hostevent.event_name.truncate(50), hostevent_path(hostevent.permalink) %>
+              </div>
+
+              <div class = "evt_desc link_font_black">
+                <%= link_to hostevent.mealstarttime.time.strftime("%a . %b . %d . %Y "), hostevent_path(hostevent.permalink) %> 
+                <br> <%= link_to hostevent.mealstarttime.time.strftime("%I : %M %p"), hostevent_path(hostevent.permalink) %>
+                <br> <%= link_to hostevent.addressuser.city.to_s + ", " + hostevent.addressuser.state.to_s, hostevent_path(hostevent.permalink) %>
+                <br> $ <%= link_to number_with_precision(hostevent.price, :precision => 2), hostevent_path(hostevent.permalink) %>
+              </div>
+            </div>
+          </div>
+      </div>
+  <% else %>
+    <div class="single_evt_container" style="background:url(<%= hostevent.eventphotos.first.eventpic.url(:index_search) %>) no-repeat center"> 
+      <div class="single_evt_details">
+            <%= link_to image_tag('white.png', :width => 300, :height => 200), hostevent_path(hostevent.permalink) %>
+              
+
+              <!-- <p class = "evt_more"> -->
+                <!--%= link_to '', hostevent_path(hostevent.permalink), :class => "icon-plus-sign icon-white" %-->
+              <!-- </p> -->
+
+            <div class = "evt_display_overlap">
+              <div class = "evt_name">
+                <%= link_to hostevent.event_name.truncate(50), hostevent_path(hostevent.permalink) %>
+              </div>
+
+              <div class = "evt_desc link_font_black">
+                <%= link_to hostevent.mealstarttime.time.strftime("%a . %b . %d . %Y "), hostevent_path(hostevent.permalink) %> 
+                <br> <%= link_to hostevent.mealstarttime.time.strftime("%I:%M %p"), hostevent_path(hostevent.permalink) %>
+                <br> <%= link_to hostevent.addressuser.city.to_s + ", " + hostevent.addressuser.state.to_s, hostevent_path(hostevent.permalink) %>
+                <br> $ <%= link_to number_with_precision(hostevent.price, :precision => 2), hostevent_path(hostevent.permalink) %>
+              </div>
+            </div>
+      </div>
+    </div>
+  <% end %>
+          

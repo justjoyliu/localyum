@@ -1,0 +1,208 @@
+<% provide(:title, "Edit Event") %> 
+
+<div class="row margin_bottom_20px">
+  <div class="span6">
+
+      <div class = "page_tagline_big">
+        Make your event fantastic.
+      </div>
+
+      <div class="event_nav_bar margin_top"><div class="btn-group">
+          <% if @hostevent.hostevent_step2? %>
+            <%= link_to "1: Basic", edit_basic_path(@hostevent.permalink), :class => "btn_complete_active" %>
+            <% else %>
+              <%= link_to "1: Basic", edit_basic_path(@hostevent.permalink), :class => "btn_incomplete_active" %>
+            <% end %>
+
+          <% if @hostevent.hostevent_step1? %>
+            <%= link_to "2: Menu", edit_hostevent_path(@hostevent.permalink), :class => "btn_complete" %>
+            <% else %>
+              <%= link_to "2: Menu", edit_hostevent_path(@hostevent.permalink), :class => "btn_incomplete" %>
+            <% end %>
+          
+          <% if @hostevent.hostevent_step3? %>
+            <%= link_to "3: Photos", addphoto_to_event_path(@hostevent.permalink), :class => "btn_complete" %>
+            <% else %>
+              <%= link_to "3: Photos", addphoto_to_event_path(@hostevent.permalink), :class => "btn_incomplete" %>
+            <% end %>
+      </div></div>
+  </div>
+
+  <div class = 'span6'>
+    <div class = "margin_top_20px"> 
+          <!-- Event Status:  -->
+          <!--%= @hostevent.eventstatus %-->
+        <% if @hostevent.hostevent_status_could_be_complete? and @hostevent.user_id == current_user.id %>
+            <%if @hostevent.eventstatus != "Open" %>
+              <div class = 'btn_w150px margin_bottom'><div class = "org_btn"><%= button_to "Open Event", hostevent_open_path(@hostevent.permalink), confirm: "You cannot edit the time, price, policies, cuisine theme, and name once it is open. Are you sure you want to open this event?" %></div></div> 
+            <% else %>
+              <div class = 'btn_w150px margin_bottom'><div class = "org_btn"><%= button_to "Go to Event Page", hostevent_path(@hostevent.permalink), :method => :get %></div></div>
+            <% end %>
+          <% elsif @hostevent.user_id == current_user.id %>
+            <p> <div class = "highlight"> <%= @hostevent.hostevent_to_complete %> </div> <div class = "small_text"> more detail to complete </div> </p>
+        <% end %>
+  <%= form_for(@hostevent, :url => hostevent_path(@hostevent.permalink), :via => :put, :validate => true) do |f| %>
+          <div class = 'btn_w150px margin_bottom margin_right'><div class = "green_btn"><%= f.submit "Save and Continue" %></div></div>
+
+
+
+          <%= hidden_field_tag :return_edit_page, 'basic' %>
+    </div>
+  </div>
+</div>
+
+  
+<div class = "white_container padding_around" style = 'width: 600px;'>
+  <div style = 'margin: 10px 30px 0px 30px;'>
+    <div class = 'font_bold'>Event Name</div>
+    <%= f.text_area :event_name, rows: 2, placeholder: "Be descriptive as possible, but please keep under 60 characters. This will be displayed when guest search for events." %>
+  </div>
+
+    <div class = "margin_left margin_top row">
+        <div class = "span2">
+          <div id = "date">
+            <div class = 'font_bold'>Event Date</div>
+            <%= f.text_field :startdate, :placeholder => "yyyy-mm-dd"%>
+          </div>
+        </div>
+        <div class = "span2">
+          <div class = 'font_bold'>Start Time</div>
+          <%= f.time_select :mealstarttime, { :default => Time.now.change(:hour => 19), :simple_time_select => true, :minute_interval => 30, :time_separator => "", :start_hour => 8, :end_hour => 23 } %>
+        </div>
+        <div class = "span3">
+          <div class = 'font_bold'>Cuisine Type</div>
+          <%= select("hostevent", "eventcategory_id", Eventcategory.all.collect {|p| [ p.categorytype, p.id] }) %>
+        </div>
+    </div>
+
+      <div class = "margin_left margin_top row">
+        <div class = "span2">
+          <div class = 'font_bold'>Price Per Guest</div>
+          <div class="input-prepend">
+            <span class="add-on">$</span>
+            <%= f.text_field :price, :class => "price_input" %> 
+          </div>
+        </div>
+
+        <div class = 'span5'>
+          <div class = 'font_bold'>Location</div>
+          <% if @hostevent.addressuser_id.nil? and current_user.id == @hostevent.chef_id %>
+            <%= select("hostevent", "addressuser_id", current_user.addressusers.where("line1 is not null").collect {|p| [ p.address_city_state_nickname, p.id ] }, :include_blank => 'Host Provided Venue') %>
+            <%= link_to "Add New Address", 'addressusers/new', data: { toggle: "modal", target: "#ajax-modal" }, remote: true %>
+          <% elsif @hostevent.addressuser_id.nil? or Addressuser.find(@hostevent.addressuser_id).user_id == current_user.id %>
+            <%= select("hostevent", "addressuser_id", current_user.addressusers.where("line1 is not null").collect {|p| [ p.address_city_state_nickname, p.id ] }) %>
+            <%= link_to "Add New Address", 'addressusers/new', data: { toggle: "modal", target: "#ajax-modal" }, remote: true %>
+          <% else %>
+            <%= Addressuser.find(@hostevent.addressuser_id).address_city_state_nickname %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class = "row margin_top margin_left">
+        <div class = "span2">
+          <div class = "font_bold font_lightgray"> Cancellations <div class = "policy_popup"><i class="icon-info-sign popright" rel="popover" 
+              data-title="The cancellation policy you select will determine how much refund would be provided if you or your guests cancels the invitation or request"></i></div></div>
+          
+          <%= select("hostevent font_lightgray", "cancellationpolicy_id", Cancellationpolicy.all.collect {|p| [ p.cancellation_description, p.id ] }) %>
+
+          <div class = "font_bold font_lightgray" style='margin-top:3px;'> Charity Option <div class = "policy_popup"><i class="icon-info-sign popright" rel="popover" 
+              data-title="We will help you contribute a certain percentage of your payout to any one of the selected charities. In addition, we will contribute the same percentage of the servicing fee we generate from this event as you would contribute the selected charities"></i></div></div>
+          
+          <%= select("hostevent", "charitypolicy_id", Charitypolicy.all.collect {|p| [ p.charityname, p.id ] }, {:include_blank => 'None'}) %>
+
+          <div class = 'font_bold margin_top font_lightgray'>Max. guests</div>
+          <%= f.text_field :maxguests, :placeholder => "(optional)" %>     
+
+          <div class = 'font_bold font_lightgray'>Sign up cut off</div>
+          <%= f.text_field :mustbookhoursinadvance, :placeholder => "(optional) hrs" %>  
+        </div>
+
+        <div class = 'span5'>
+          <div class = 'font_bold'>Best Way to Contact</div>
+          <div><%= f.text_area :bestwaytocontact, rows: 4, placeholder: "Please describe best way to contact, including details (this will be only visible to confirmed guests)" %></div>
+
+          <div class = 'font_bold margin_top font_lightgray'>Request for Guests</div>
+          <div><%= f.text_area :requestsforguests, rows: 4, placeholder: "(optional) this would be the space to list any special requests, such as house rules you may have, contact before arrival, etc." %></div>
+        </div>
+      </div>
+
+      <div class = "row margin_top margin_left">
+        <div class = "span2">
+          <div class = 'font_bold font_lightgray'>Options</div> 
+          <div><%= f.check_box  :tip_included %><span class = 'margin_left font_lightgray'> Gratuitiy Included </span></div>
+          <div><%= f.check_box  :local_ingredients_optin %><span class = 'margin_left font_lightgray'> Local Ingredients</span></div>
+          <div><%= f.check_box  :age_21plus %><span class = 'margin_left font_lightgray'> Must be 21+ </span></div>
+          <div><%= f.check_box  :confirmability, {checked: false} %><span class = 'margin_left font_lightgray'> Confirm Guests </span></div>
+        </div>
+
+        <div class = 'span5'>
+          <div class = 'font_bold font_lightgray'>Additional Comments</div>
+          <div><%= f.text_area :extracomments, rows: 6, placeholder: "(optional) this would be the space to list any location restrictions such as parking situation or inform of any pets, etc." %></div>
+        </div>
+      </div>
+
+       <% if @hostevent.chef_id != @hostevent.user_id %>
+        <% if @hostevent.chef_id == current_user.id %>
+          <div style = 'margin: 10px 30px 0px 30px;'>
+            <div class = 'font_bold font_lightgray'><br>Chef's Comments (only viewable to host)</div>
+            <div><%= f.text_area :chef_comment, rows: 3, placeholder: "(optional) this would be the space to include contact information and special requests for hosts" %></div>
+          </div>
+        <% elsif @hostevent.chef_comment.blank? %>
+          <div style = 'margin: 10px 30px 0px 30px;'>
+            <div class = 'font_bold font_lightgray'><br>Chef's Comments (only viewable to host)</div>
+            <div>N/A</div>
+          </div>
+        <% else %>
+          <div style = 'margin: 10px 30px 0px 30px;'>
+            <div class = 'font_bold'><br>Chef's Comments (only viewable to host)</div>
+            <div><%= h(@hostevent.chef_comment).gsub(/\n/, '<br/>').html_safe %></div>
+          </div>
+        <% end %>
+      <% end %>
+</div>
+<% end %>  
+
+
+
+        <div id="ajax-modal" class="modal hide fade" tabindex="-1">
+          <div class='modal-header'>
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 class="modal-title">New Address</h3>
+          </div>
+          <div class='modal-body'><div class="ajax-loader">
+            <!--%= render :template => 'addressusers/new' %-->
+            <div class="margin_left_20px margin_right_20px">
+                <%= form_for(@addressuser, :url => url_for(:controller => "addressusers", :action => "create", :hostevent_id => @hostevent.permalink)) do |f| %>  
+                  <%= render 'shared/error_messages', object: f.object %>
+                  <div class = "margin_bottom margin_top">
+                      <%= f.text_field :nickname, :placeholder => "(optional: for your later reference only)" %>   
+                    </div>
+
+                    <div class = "margin_bottom">
+                      <%= f.text_field :line1, placeholder: "Address Line 1" %>   
+                    </div>
+
+                    <div class = "margin_bottom">
+                      <%= f.text_field :city, :placeholder => "City" %>
+                    </div>
+                    
+                    <div class = "margin_bottom">
+                      <%= f.select("state", @addressuser.us_states_abrev {|p| [ p.state] }, placeholder: "State" ) %>
+                    </div>
+
+                    <div class = "margin_bottom">
+                      <%= f.text_field :zip5, placeholder:"Zip Code" %>
+                    </div>
+
+                    <div class = "margin_bottom">
+                      <%= f.select("metroarea", @addressuser.target_metro {|p| [p[0], p[1]] }) %>
+                    </div>
+
+                    <div class = "margin_bottom">
+                      <%= f.select("private_flag", [['Commercial Property', 0], ['Private Residence', 1]]) %>
+                    </div>
+                    <div class = "org_btn"><%= f.submit "   Add New Address   " %></div>
+                <% end %>
+            </div>
+          </div></div>
+        </div>

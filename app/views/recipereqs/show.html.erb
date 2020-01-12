@@ -1,0 +1,52 @@
+<% provide(:title, "Request Item as Host") %> 
+
+<section class = "font_josefin font_26px font_bold">
+  Request to Host an Event to Feature "<%= @menuitem.name.titleize %>"
+  <div class = 'org_font font_22px margin_top_5px'>From <%= link_to @host.name.titleize, user_path(@host.permalink) %></div>
+</section>
+
+  <div class = "padding_around span5 margin_top margin_bottom_20px white_container">
+    <div class = 'font_bold margin_bottom_5px'>Date</div>
+    <% if @req.req_date.blank? %>
+        <div class = 'margin_bottom'>N/A</div>
+      <% else %>
+        <div class = 'margin_bottom'><%= @req.req_date %></div>
+      <% end %>
+
+    <div class = 'font_bold margin_bottom_5px'>Estimated Guests</div>
+    <% if @req.est_guests.blank? %>
+        <div class = 'margin_bottom'>N/A</div>
+      <% else %>
+        <div class = 'margin_bottom'><%= @req.est_guests %></div>
+      <% end %>
+
+    <div class = 'font_bold margin_bottom_5px'>Price Range</div>
+    <% if @req.price_range.blank? %>
+        <div class = 'margin_bottom'>N/A</div>
+      <% else %>
+        <div class = 'margin_bottom'><%= @req.price_range %></div>
+      <% end %>
+
+    <div class = 'font_bold margin_bottom_5px'>Location</div>
+    <% if @req.req_addressuser_id.blank? %>
+        <div class = 'margin_bottom'>Offsite</div>
+      <% else %>
+        <div class = 'margin_bottom'><%= Addressuser.find(@req.req_addressuser_id).address_city_state_nickname %></div>
+      <% end %>
+
+  </div>
+  
+  <div class = "padding_around span5 margin_top margin_bottom_20px white_container" style='min-height:220px;'>
+    <div class = 'font_bold margin_bottom_5px'>Request Detail</div>
+    <% if @req.req_detail.blank? %>
+        <div class = 'margin_bottom'>N/A</div>
+      <% else %>
+        <div class = 'margin_bottom'><%= h(@req.req_detail).gsub(/\n/, '<br/>').html_safe %></div>
+      <% end %>
+  </div>
+
+
+<div class = 'span11 margin_top_20px'><div class = "org_btn"><%= button_to 'Accept Request', {:controller => "recipereqs", :action => "update_status", :permalink => @req.permalink, :req_status => 1} %></div></div>
+
+<div class = 'span11 margin_top_20px'><div class = "lightgray_btn"><%= button_to 'Decline Request', {:controller => "recipereqs", :action => "update_status", :permalink => @req.permalink, :req_status => -1} %></div></div>
+

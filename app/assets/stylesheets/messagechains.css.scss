@@ -1,0 +1,99 @@
+/*general*/
+	.margin_around_5px{
+		margin: 5px 5px 5px 5px;
+	}
+
+
+/*fonts*/
+	.msg_header{
+		font-size: 16px;
+		line-height: 20px;
+		padding-bottom: 2px;
+		padding-top: 2px;
+	}
+
+	.mi_sub_small, 
+	.mi_sub_small a{
+		font-size: 12px;
+		font-style: italic;
+		color: #999999;
+		line-height: 16px;
+	}
+
+	.msg_unread, 
+	.msg_unread a{
+		color: #009deb;
+	}
+
+	.msg_content_color{
+		/*color: #575757;*/
+		color: #656565;
+	}
+
+/* containers*/
+	.msg_side_box{
+		/*display: inline-block;*/
+		background-color: white;
+		/*width: 200px;*/
+		min-height: 150px;
+		padding: 5px 5px 3px 5px;
+		margin: 0 10px 15px 10px;
+		box-shadow: 3px 3px 3px #888888;
+		overflow: hidden;
+		vertical-align: center;
+	}
+
+	.mgs_chain_box{
+		padding: 10px 5px 10px 20px;
+		margin-bottom: 20px;
+		background-color: white;
+		width: 100%;
+		min-height: 90px;
+		vertical-align: center;
+	}
+
+	.mgs_chain_content{
+		width: 480px;
+		padding-right: 5px;
+		display: inline-block;
+		vertical-align: top;
+	}	
+
+	.mgs_chain_content_side{
+		width: 110px;
+		display: inline-block;
+		vertical-align: top;
+		text-align: right;
+	}
+
+	.msg_border_color{
+		border-left: 3px solid #009deb;
+	}
+
+	.msg_pic_box {
+		width: 90px;
+		height: 90px;
+		padding-right: 5px;
+		text-align: center;
+		display: inline-block;
+		vertical-align: top;
+	}
+
+	.msg_detail_content{
+		width: 400px;
+		display: inline-block;
+	}
+
+	.msg_date{
+		float: right;
+		width: 110px;
+		text-align: right;
+		display: inline-block;
+		padding-top: 4px;
+	}
+
+	.msg_fromto{
+		width: 270px;
+		padding-right: 10px;
+		display: inline-block;
+	}

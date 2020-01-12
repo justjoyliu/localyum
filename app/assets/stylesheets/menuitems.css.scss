@@ -1,0 +1,354 @@
+
+/* recipe box */
+	.single_menuitem_container{
+		display: inline-block;
+		background-color: white;
+		width: 280px;
+		height: 300px;
+		padding: 5px 5px 3px 5px;
+		margin: 0 10px 15px 10px;
+		box-shadow: 3px 3px 3px #888888;
+		overflow: hidden;
+	}
+
+	.menuitem_pic_container{
+		margin-left: 15px;
+		width: 250px;
+		height: 250px;
+		margin-top: 10px;
+		border: solid;
+		border-width: 1px;
+		border-color: #c1c1c1;
+		overflow: hidden;
+	}
+
+	.single_menuitem_details{
+		opacity: 0;
+		filter: alpha(opacity=0);
+		width: 252px;
+		height: 252px;
+		
+		&:hover{
+			opacity: 0.9;
+			filter: alpha(opacity=90);
+		}
+		.menuitem_desc_text {
+			width: 200px;
+			height: 60px;
+			padding: 0 25px 0 25px;
+			/*margin-left: 15px;*/
+			margin-top: -200px;
+			text-align: center;
+			color: #4f4f4f;
+			font-family: 'Josefin Sans', sans-serif;
+			/*font-family: 'Ubuntu', sans-serif;*/
+		    font-size: 26px;
+		    line-height: 30px;
+			a {
+				color: #4f4f4f;
+			}
+		}
+	}
+
+	.menuitem_desc_text {
+		margin-top: -200px;
+		text-align: center;
+		color: #4f4f4f;
+		font-family: 'Josefin Sans', sans-serif;
+		/*font-family: 'Ubuntu', sans-serif;*/
+		font-size: 26px;
+		line-height: 30px;
+		a {
+			color: #4f4f4f;
+		}
+	}
+
+	.single_menuitem_desc_container{
+		padding-top: 5px;
+		width: 240px;
+		padding-left: 15px;
+		color: #4f4f4f;
+		font-size: 13.2px;
+	}
+
+/*recipe page*/
+	.menuitem_main_pic{
+		width: 800px;
+		min-height: 300px;
+		margin: 0px 40px;
+	}
+
+	.menuitem_main_container{
+		width: 500px;
+		margin: -30px 38px;
+		/*margin-top: 240px;*/
+		background-color: white;
+		padding: 30px 30px 20px 30px;
+		min-height: 300px;
+	}
+
+	.menuitem_main_container_wo_pic{
+		width: 500px;
+		margin: 20px 35px;
+		/*margin-top: 240px;*/
+		background-color: white;
+		padding: 30px 30px 20px 30px;
+		min-height: 300px;
+	}
+
+	.mi_main_subcontainer{
+		margin-top: 20px;
+		margin-left: 22px;
+		margin-bottom: 20px;
+		padding-top: 5px;
+		border-top: 1px solid #c1c1c1;
+		min-height: 30px;
+	}
+
+	.mi_edit{
+		position: fixed;
+		width: 62px;
+		top: 100px;
+		left: 10px;
+	}
+
+	/*within main container*/
+		.menuitem_subtitle{
+			margin-top: 10px;
+			font-size: 15px;
+			color: #585858;
+			/*font-style: italic;*/
+		}
+
+		.mi_desc{
+			width: 180px;
+			padding-left: 10px;
+			display: inline-block;
+			color: #585858;
+			text-align: top;
+			font-style: italic;
+		}
+
+		.mi_sub_header{
+			font-size: 16px;
+			line-height: 20px;
+			padding-bottom: 5px;
+			padding-top: 5px;
+		}
+
+		.mi_sub_small{
+			font-size: 12px;
+			font-style: italic;
+			color: #999999;
+			padding-bottom: 5px;
+		}
+
+	/*side*/
+		.mi_side_container{
+			/*width: 200px;*/
+			margin: 20px 0px 15px -15px;
+			min-height: 200px;
+			/*display: inline-block;*/
+			/*background-color: white;*/
+		}
+
+		.mi_margins{
+			margin: 10px 5px 5px 5px;
+		}
+
+		/*.mi_user_img{
+			padding: 10px 10px 10px 10px;
+			text-align: center;
+			font-size: 17px;
+			line-height: 24px;
+			font-weight: bold;
+			background-color: white;
+	      	word-wrap: normal;
+	      	box-shadow: 5px 5px 5px #888888;
+		}*/
+
+		.mi_side_subcontainer{
+			margin: 10px 0 10px 0;
+			padding: 10px 10px 10px 20px;
+			/*border-top: 1px solid #c1c1c1;*/
+			min-height: 30px;
+	      	background-color: white;
+	      	word-wrap: normal;
+	      	box-shadow: 5px 5px 5px #888888;
+		}
+
+/*edit*/
+	.add_new_photo{
+		width: 240px;
+		margin: 0 0 0 550px;
+		input[type="file"] {
+			opacity: 0;
+			filter: alpha(opacity=0);
+		}
+
+		.btn{
+			margin-top: -32px;
+			height: 24px;
+			text-align: center;
+			line-height: 10px;
+		}
+	}
+
+	.add_new_photo_wo_pic{
+		margin-top: 10px;
+		input[type="file"] {
+			opacity: 0;
+			filter: alpha(opacity=0);
+		}
+
+		.btn{
+			margin-top: -64px;
+			height: 14px;
+			text-align: center;
+			line-height: 14px;
+			width: 200px;
+			font-size: 12px;
+		}
+	}
+
+	.mi_side_container_edit{
+				/*width: 200px;*/
+				margin: 10px 0px 15px -15px;
+				min-height: 200px;
+				/*display: inline-block;*/
+				/*background-color: white;*/
+	}
+
+/*user detail page*/
+	.single_menuitem_sm_container{
+		display: inline-block;
+		background-color: white;
+		width: 155px;
+		height: 220px;
+		padding: 5px 5px 2px 5px;
+		margin: 0 5px 8px 5px;
+		box-shadow: 1px 1px 1px #888888;
+		overflow: hidden;
+
+		.menuitem_desc_text {
+			margin-top: -120px;
+			width: 120px;
+			padding: 0 15px 0 15px;
+			text-align: center;
+			color: #4f4f4f;
+			font-family: 'Josefin Sans', sans-serif;
+			/*font-family: 'Ubuntu', sans-serif;*/
+			font-size: 18px;
+			line-height: 24px;
+			a {
+				color: #4f4f4f;
+			}
+		}
+
+		.single_menuitem_details{
+			opacity: 0;
+			filter: alpha(opacity=0);
+			width: 147px;
+			height: 147px;
+			
+			&:hover{
+				opacity: 0.9;
+				filter: alpha(opacity=90);
+			}
+			.menuitem_desc_text {
+				width: 120px;
+				padding: 0 15px 0 15px;
+				/*margin-left: 15px;*/
+				margin-top: -120px;
+				text-align: center;
+				color: #4f4f4f;
+				font-family: 'Josefin Sans', sans-serif;
+				/*font-family: 'Ubuntu', sans-serif;*/
+			    font-size: 18px;
+			    line-height: 24px;
+				a {
+					color: #4f4f4f;
+				}
+			}
+		}
+
+		.single_menuitem_desc_container{
+			padding-top: 5px;
+			width: 140px;
+			padding-left: 5px;
+			color: #4f4f4f;
+			font-size: 12px;
+		}
+	}
+
+	.menuitem_pic_sm_container{
+		margin-left: 5px;
+		width: 145px;
+		height: 145px;
+		margin-top: 5px;
+		border: solid;
+		border-width: 1px;
+		border-color: #c1c1c1;
+		overflow: hidden;
+	}
+
+	.single_menuitem_sm_not_signed_in_container{
+		display: inline-block;
+		background-color: white;
+		width: 155px;
+		height: 180px;
+		padding: 5px 5px 2px 5px;
+		margin: 0 5px 8px 5px;
+		box-shadow: 1px 1px 1px #888888;
+		overflow: hidden;
+
+		.menuitem_desc_text {
+			margin-top: -120px;
+			width: 120px;
+			padding: 0 15px 0 15px;
+			text-align: center;
+			color: #4f4f4f;
+			font-family: 'Josefin Sans', sans-serif;
+			/*font-family: 'Ubuntu', sans-serif;*/
+			font-size: 18px;
+			line-height: 24px;
+			a {
+				color: #4f4f4f;
+			}
+		}
+
+		.single_menuitem_details{
+			opacity: 0;
+			filter: alpha(opacity=0);
+			width: 147px;
+			height: 147px;
+			
+			&:hover{
+				opacity: 0.9;
+				filter: alpha(opacity=90);
+			}
+			.menuitem_desc_text {
+				width: 120px;
+				padding: 0 15px 0 15px;
+				/*margin-left: 15px;*/
+				margin-top: -120px;
+				text-align: center;
+				color: #4f4f4f;
+				font-family: 'Josefin Sans', sans-serif;
+				/*font-family: 'Ubuntu', sans-serif;*/
+			    font-size: 18px;
+			    line-height: 24px;
+				a {
+					color: #4f4f4f;
+				}
+			}
+		}
+
+		.single_menuitem_desc_container{
+			padding-top: 5px;
+			width: 140px;
+			padding-left: 5px;
+			color: #4f4f4f;
+			font-size: 12px;
+		}
+	}	

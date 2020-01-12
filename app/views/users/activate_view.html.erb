@@ -1,0 +1,16 @@
+<% provide(:title, 'Activate Your Account') %>
+
+<div class = 'center font_josefin'>
+  <div class = 'font_bold margin_bottom_20px font_26px'>Would you like us to resend an activation link?</div>
+
+  <div class = "width_200px">
+  	<div class = 'org_btn'>
+    	<%= button_to "Resend", :controller => "users", :action => "resend_activation", :permalink => @user.permalink %>
+  	</div>
+  </div>
+</div>
+<!--<div class="row">
+  <div class="span6">-->
+
+  <!--</div>
+</div>-->

@@ -1,0 +1,342 @@
+<% provide(:title, @hostevent.startdate.to_s + " Attended Guests") %>
+
+<div class="row">
+  <div class="span8">
+    <div class = 'margin_top_5px font_24px font_josefin font_bold center margin_bottom_20px table_border_bottom padding_bottom'> Attended Guests </div>
+    <% if @hostevent.user_id == current_user.id %>
+      <% @attended.each do |guest_signup| %>
+        <div class = "event_guest_container">
+          <%= link_to image_tag(guest_signup.user.avatar.url(:thumb), size:"80x80", class: "img-circle"), user_path(User.find(guest_signup.user_id).permalink) %>
+          <div class = "font_bold"><%= link_to guest_signup.user.name.titlecase, user_path(User.find(guest_signup.user_id).permalink) %></div>
+          <div class = 'font_josefin margin_bottom_5px'> (<%= pluralize(guest_signup.guest_count, "Seat") %>)</div>
+
+          <div class = "font_josefin">
+            Taste 
+            <% unless @rating_cmts.find_by_sender_id(guest_signup.user_id).nil? %>
+              <div class = "policy_popup"><%= link_to " ", '#', class: "icon-info-sign popright", rel: "popover",  
+              title: "#{@rating_cmts.find_by_sender_id(guest_signup.user_id).message_content}" %></div>
+            <% end %>
+          </div>
+            <% if !guest_signup.taste_rating.nil? %>
+              <table class = "event_guest_rating_table_container"><tr>                      
+                                <% if guest_signup.taste_rating >= 1 %>
+                                  <td><div class = "rating_star_on"></td>
+                                  <% if guest_signup.taste_rating >= 2 %>
+                                    <td><div class = "rating_star_on"></td>
+                                    <% if guest_signup.taste_rating >= 3 %>
+                                      <td><div class = "rating_star_on"></td>
+                                      <% if guest_signup.taste_rating >= 4 %>
+                                        <td><div class = "rating_star_on"></td>
+                                        <% if guest_signup.taste_rating >= 5 %>
+                                          <td><div class = "rating_star_on"></td>
+                                        <% else %>
+                                          <td><div class = "rating_star_off"></td>
+                                        <% end %>
+                                      <% else %>
+                                        <td><div class = "rating_star_off"></td>
+                                        <td><div class = "rating_star_off"></td>
+                                      <% end %>
+                                    <% else %>
+                                      <td><div class = "rating_star_off"></td>
+                                      <td><div class = "rating_star_off"></td>
+                                      <td><div class = "rating_star_off"></td>
+                                    <% end %>
+                                  <% else %>
+                                    <td><div class = "rating_star_off"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                  <% end %>
+                                <% else %>
+                                    <td><div class = "rating_star_off"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                <% end %>
+              </tr></table>
+            <% else %>
+              <div class = "intensity_sub margin_bottom_5px"> not rated </div>
+            <% end %>
+          
+          <div class = 'font_josefin margin_top'>
+            Experience
+            <% unless @rating_cmts.find_by_sender_id(guest_signup.user_id).nil? %>
+              <div class = "policy_popup"><%= link_to " ", '#', class: "icon-info-sign popright", rel: "popover",  
+              title: "#{@rating_cmts.find_by_sender_id(guest_signup.user_id).message_content}" %></div>
+            <% end %>
+          </div>
+            <% if !guest_signup.experience_rating.nil? %>
+              <table class = "event_guest_rating_table_container"><tr>                      
+                                <% if guest_signup.experience_rating >= 1 %>
+                                  <td><div class = "rating_star_on"></td>
+                                  <% if guest_signup.experience_rating >= 2 %>
+                                    <td><div class = "rating_star_on"></td>
+                                    <% if guest_signup.experience_rating >= 3 %>
+                                      <td><div class = "rating_star_on"></td>
+                                      <% if guest_signup.experience_rating >= 4 %>
+                                        <td><div class = "rating_star_on"></td>
+                                        <% if guest_signup.experience_rating >= 5 %>
+                                          <td><div class = "rating_star_on"></td>
+                                        <% else %>
+                                          <td><div class = "rating_star_off"></td>
+                                        <% end %>
+                                      <% else %>
+                                        <td><div class = "rating_star_off"></td>
+                                        <td><div class = "rating_star_off"></td>
+                                      <% end %>
+                                    <% else %>
+                                      <td><div class = "rating_star_off"></td>
+                                      <td><div class = "rating_star_off"></td>
+                                      <td><div class = "rating_star_off"></td>
+                                    <% end %>
+                                  <% else %>
+                                    <td><div class = "rating_star_off"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                  <% end %>
+                                <% else %>
+                                    <td><div class = "rating_star_off"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                <% end %>
+              </tr></table>
+            <% else %>
+              <div class = "intensity_sub"> not rated </div>
+            <% end %>
+          
+          <div class = 'table_border_top font_josefin margin_top margin_left margin_right'>
+              <div class = 'padding_top'>Rate the Guest</div>
+              <div class = 'font_lightgray_link_dark margin_top_5px'>
+                <% if guest_signup.host_rating_for_guest.nil? %>
+                  <%= link_to "<i class=\"icon-thumbs-up-alt\"></i>".html_safe, {:controller => "signups", :action => "host_rate_guest", :hostevent_id => @hostevent.permalink, :signup_id => guest_signup.permalink, :host_rating_guest => 1 }%> &nbsp; &nbsp;
+                  <%= link_to "<i class=\"icon-thumbs-down-alt\"></i>".html_safe, {:controller => "signups", :action => "host_rate_guest", :hostevent_id => @hostevent.permalink, :signup_id => guest_signup.permalink, :host_rating_guest => 0 }%>
+                <% elsif guest_signup.host_rating_for_guest > 0 %>
+                  <i class = 'icon-thumbs-up green_font'></i> &nbsp; &nbsp;
+                  <%= link_to "<i class=\"icon-thumbs-down-alt\"></i>".html_safe, {:controller => "signups", :action => "host_rate_guest", :hostevent_id => @hostevent.permalink, :signup_id => guest_signup.permalink, :host_rating_guest => 0 }%>
+                <% else %>
+                  <%= link_to "<i class=\"icon-thumbs-up-alt\"></i>".html_safe, {:controller => "signups", :action => "host_rate_guest", :hostevent_id => @hostevent.permalink, :signup_id => guest_signup.permalink, :host_rating_guest => 1 }%> &nbsp; &nbsp;
+                  <i class = 'icon-thumbs-down red_font'></i>
+                <% end %>
+              </div>
+          </div>
+
+          <div class="accordion margin_top link_font_darkgray" id="cmt_for_rating"> 
+            <div class="accordion-group msg_guest_abt_rating">
+                            <div class="accordion-heading margin_bottom"> 
+                              <%= link_to "Message", guest_signup.signup_collapse, :data => {:toggle=>"collapse", :parent => "#cmt_for_rating"}, :class=>"link_to_org_btn" %>
+                              <!-- "Message #{image_tag('send_message.png', size:"20x20")}".html_safe -->
+                            </div>
+
+                            <%= content_tag :div, :id => guest_signup.signup_collapse_inner, :class=>"accordion-body collapse" do %>
+                          <div class="accordion-inner">
+                            <%= form_for(@messagechain, :validate => true) do |f| %>
+                                    <%= f.text_field :title, :placeholder => "Title" %>
+                                    <%= f.hidden_field :receiver, :value => User.find(guest_signup.user_id).permalink %>
+                                    <%= f.hidden_field :hostevent, :value => @hostevent.permalink %>
+                                    <%= f.fields_for @cmt do |m| %>
+                                      <%= m.text_area :message_content, :rows => 3, :placeholder => "Message to guest", class: "font_12px" %>
+                                      <%= m.hidden_field :first_flag, :value => true %>
+                                      <%= m.hidden_field :order_id, :value => 0 %>
+                                    <% end %>
+                                    <div class = 'org_btn margin_top'><%= f.submit "Send"%></div>
+                            <% end %>
+                          </div>
+                        <% end %>
+            </div>
+          </div>
+        </div>   
+      <% end %>
+    <% else %>
+      <div class = "mng_one_evt center">
+        <br>
+        <h2>You cannot view the guest list unless you are the host</h2>
+      </div>
+    <% end %>
+  </div>    
+
+  <div class="span3_5">
+    <section class = "date_container">
+        <!--%= image_tag @hostevent.eventphotos.first.eventpic.url(:thumb)%-->
+        <div class = "regular_name">
+          <%= link_to @hostevent.event_name, hostevent_path(@hostevent.permalink) %> 
+        </div>
+
+        <div class = "regular_date">
+          <%= @hostevent.mealstarttime.time.strftime("%A, %b. %d, %Y") %> 
+        </div>
+        <div class = "regular_time">
+          @ <%= @hostevent.mealstarttime.time.strftime("%l:%M  %P") %> 
+        </div>
+    </section>
+
+    <section>
+      <div class = "date_container font_josefin font_20px font_bold padding_top_15px padding_bottom_15px">
+        <%= @attended.sum(:guest_count).to_s + " Guest".pluralize(@attended.sum(:guest_count)) + " Attended"%>
+      </div>
+
+      <div class = "date_container font_josefin font_18px padding_top_15px padding_bottom_15px">
+        <div class = 'font_bold'>Earned: <%= number_to_currency(@hostevent.host_net_earnings_cents.to_f/100) %></div>
+        <div class = 'margin_top_5px'>Fees: <%= number_to_currency(@hostevent.ly_net_host_fee.to_f/100) %></div>
+        <% unless @hostevent.host_charity_cents.nil? or @hostevent.host_charity_cents == 0 %>
+          <div class = 'margin_top_5px'>Donated: <%= number_to_currency(@hostevent.host_charity_cents.to_f/100) %></div>
+          <div class = 'margin_top_5px'>Local Yum Donated: <%= number_to_currency(@hostevent.ly_charity_cents.to_f/100) %></div>
+        <% end %>
+      </div>
+    </section>
+
+    <section>
+      <div class = "date_container font_josefin font_16px font_bold padding_top_15px padding_bottom_15px">
+        Taste Rating: <%= @hostevent.event_taste_rating_text %>
+        <% if @hostevent.event_taste_rating > 0 %>
+          <div class = "margin_top">
+                      <table class = "event_rating_table_container"><tr>                      
+                              <% if @hostevent.event_taste_rating >= 1 %>
+                                <td><div class = "rating_star_on"></td>
+                                <% if @hostevent.event_taste_rating >= 2 %>
+                                  <td><div class = "rating_star_on"></td>
+                                  <% if @hostevent.event_taste_rating >= 3 %>
+                                    <td><div class = "rating_star_on"></td>
+                                    <% if @hostevent.event_taste_rating >= 4 %>
+                                      <td><div class = "rating_star_on"></td>
+                                      <% if @hostevent.event_taste_rating >= 5 %>
+                                        <td><div class = "rating_star_on"></td>
+                                      <% elsif @hostevent.event_taste_rating >=  4.5 %>
+                                        <td><div class = "rating_star_half"></td>
+                                        <% else %>
+                                          <td><div class = "rating_star_off"></td>
+                                        <% end %>
+                                    <% elsif @hostevent.event_taste_rating >=  3.5 %>
+                                      <td><div class = "rating_star_half"></td>
+                                      <td><div class = "rating_star_off"></td>
+                                      <% else %>
+                                        <td><div class = "rating_star_off"></td>
+                                      <td><div class = "rating_star_off"></td>
+                                      <% end %>
+                                  <% elsif @hostevent.event_taste_rating >=  2.5 %>
+                                    <td><div class = "rating_star_half"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                    <% else %>
+                                      <td><div class = "rating_star_off"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                    <% end %>
+                                <% elsif @hostevent.event_taste_rating >=  1.5 %>
+                                  <td><div class = "rating_star_half"></td>
+                                  <td><div class = "rating_star_off"></td>
+                                  <td><div class = "rating_star_off"></td>
+                                  <td><div class = "rating_star_off"></td>
+                                  <% else %>
+                                    <td><div class = "rating_star_off"></td>
+                                  <td><div class = "rating_star_off"></td>
+                                  <td><div class = "rating_star_off"></td>
+                                  <td><div class = "rating_star_off"></td>
+                                  <% end %>
+                              <% elsif @hostevent.event_taste_rating >=  0.5 %>
+                                <td><div class = "rating_star_half"></td>
+                                <td><div class = "rating_star_off"></td>
+                                <td><div class = "rating_star_off"></td>
+                                <td><div class = "rating_star_off"></td>
+                                <td><div class = "rating_star_off"></td>
+                              <% else %>
+                                  <td><div class = "rating_star_off"></td>
+                                  <td><div class = "rating_star_off"></td>
+                                  <td><div class = "rating_star_off"></td>
+                                  <td><div class = "rating_star_off"></td>
+                                  <td><div class = "rating_star_off"></td>
+                              <% end %>
+                      </tr></table>
+          </div>
+        <% end %>
+      </div>
+    </section>
+
+    <section>
+      <div class = "date_container font_josefin font_16px font_bold padding_top_15px padding_bottom_15px">
+        Experience Rating: <%= @hostevent.event_experience_rating_text %>
+        <% if @hostevent.event_experience_rating > 0 %>
+          <div class = "margin_top">
+                      <table class = "event_rating_table_container"><tr>                      
+                              <% if @hostevent.event_experience_rating >= 1 %>
+                                <td><div class = "rating_star_on"></td>
+                                <% if @hostevent.event_experience_rating >= 2 %>
+                                  <td><div class = "rating_star_on"></td>
+                                  <% if @hostevent.event_experience_rating >= 3 %>
+                                    <td><div class = "rating_star_on"></td>
+                                    <% if @hostevent.event_experience_rating >= 4 %>
+                                      <td><div class = "rating_star_on"></td>
+                                      <% if @hostevent.event_experience_rating >= 5 %>
+                                        <td><div class = "rating_star_on"></td>
+                                      <% elsif @hostevent.event_experience_rating >=  4.5 %>
+                                        <td><div class = "rating_star_half"></td>
+                                        <% else %>
+                                          <td><div class = "rating_star_off"></td>
+                                        <% end %>
+                                    <% elsif @hostevent.event_experience_rating >=  3.5 %>
+                                      <td><div class = "rating_star_half"></td>
+                                      <td><div class = "rating_star_off"></td>
+                                      <% else %>
+                                        <td><div class = "rating_star_off"></td>
+                                      <td><div class = "rating_star_off"></td>
+                                      <% end %>
+                                  <% elsif @hostevent.event_experience_rating >=  2.5 %>
+                                    <td><div class = "rating_star_half"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                    <% else %>
+                                      <td><div class = "rating_star_off"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                    <td><div class = "rating_star_off"></td>
+                                    <% end %>
+                                <% elsif @hostevent.event_experience_rating >=  1.5 %>
+                                  <td><div class = "rating_star_half"></td>
+                                  <td><div class = "rating_star_off"></td>
+                                  <td><div class = "rating_star_off"></td>
+                                  <td><div class = "rating_star_off"></td>
+                                  <% else %>
+                                    <td><div class = "rating_star_off"></td>
+                                  <td><div class = "rating_star_off"></td>
+                                  <td><div class = "rating_star_off"></td>
+                                  <td><div class = "rating_star_off"></td>
+                                  <% end %>
+                              <% elsif @hostevent.event_experience_rating >=  0.5 %>
+                                <td><div class = "rating_star_half"></td>
+                                <td><div class = "rating_star_off"></td>
+                                <td><div class = "rating_star_off"></td>
+                                <td><div class = "rating_star_off"></td>
+                                <td><div class = "rating_star_off"></td>
+                              <% else %>
+                                  <td><div class = "rating_star_off"></td>
+                                  <td><div class = "rating_star_off"></td>
+                                  <td><div class = "rating_star_off"></td>
+                                  <td><div class = "rating_star_off"></td>
+                                  <td><div class = "rating_star_off"></td>
+                              <% end %>
+                      </tr></table>
+          </div>
+        <% end %>
+      </div>
+    </section>
+    
+    <% if @hostevent.user_id == current_user.id %>
+        <section class = "date_container margin_top">
+          <div class = "margin_top_20px margin_bottom margin_left margin_right">
+            <%= form_for(@messagechain, :validate => true) do |f| %>
+              <%= f.hidden_field :hostevent, :value => @hostevent.permalink %>
+              <%= f.fields_for :messages do |m| %>
+                          <%= m.text_area :message_content, :rows => 4, :placeholder => "Add a comment ..." %>
+                          <%= m.hidden_field :first_flag, :value => true %>
+                          <%= m.hidden_field :order_id, :value => 0 %>
+                          <%= m.hidden_field :public_flag, :value => true %>
+              <% end %>
+              <div class = 'org_btn margin_top'><%= f.submit "      Post      " %></div>
+            <% end %>
+          </div>
+        </section>
+    <% end %> 
+  </div>
+</div>

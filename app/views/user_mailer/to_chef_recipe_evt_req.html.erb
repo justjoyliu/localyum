@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head><title></title>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+  </head>
+
+  <body>
+    <table width="100%" border="0">
+      <tbody>
+        <tr><td style = 'color: #f37d2a; font-size:22px;'>Someone requested an event to feature "<%= @mi.name.titleize %>" on Local Yum</td></tr>
+        
+        <% unless @req.req_date.blank? %>
+          <tr><td style='padding-top:5px;line-height: 24px;'><span style='font-weight: bold;'>Request Date:     </span><%= @req.req_date %></td></tr>
+        <% end %>
+
+        <% unless @req.est_guests.blank? %>
+          <tr><td style='padding-top:5px;line-height: 24px;'><span style='font-weight: bold;'>Estimated Guests: </span><%= @req.est_guests %></td></tr>
+        <% end %>
+
+        <% unless @req.price_range.blank? %>
+          <tr><td style='padding-top:5px;line-height: 24px;'>Price Range:      </span><%= @req.price_range %></td></tr>
+        <% end %>
+
+        <% unless @req.req_addressuser_id.blank? %>
+          <tr><td style='padding-top:5px;line-height: 24px;'><span style='font-weight: bold;'>Location:      </span><%= Addressuser.find(@req.req_addressuser_id).address_city_state_nickname %></td></tr>
+        <% end %>
+
+        <% unless @req.req_detail.blank? %>
+          <tr><td style='padding-top:5px;line-height: 24px;'><span style='font-weight: bold;'>Details:          </span><%= h(@req.req_detail).gsub(/\n/, '<br/>').html_safe %></td></tr>
+        <% end %>
+
+        <tr><td style='margin-top:15px; font-size:16px;line-height: 40px;'><%= link_to "Click here to login and respond to request", recipereq_url(@req.permalink) %></td></tr>
+      </tbody>
+    </table>
+  </body>
+</html>

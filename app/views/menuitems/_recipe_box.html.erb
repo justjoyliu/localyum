@@ -1,0 +1,23 @@
+
+<% @myrecipes.each do |item| %>
+	<div class = "single_menuitem_container">
+		<div class = "menuitem_pic_container" style="background:url(<%= item.menupic.url(:medium) %>) no-repeat center">
+			<% if item.menupic_file_name.nil? %>
+				<%= link_to image_tag('white.png', width: '100%', height:'100%'), menuitem_path(item.permalink) %>
+				<div class = "menuitem_desc_text"><%= link_to item.name.titlecase, menuitem_path(item.permalink) %></div>
+			<% else %>
+				<div class = "single_menuitem_details">
+					<%= link_to image_tag('white.png', width: '100%', height:'100%'), menuitem_path(item.permalink) %>
+					<div class = "menuitem_desc_text"><%= link_to item.name.titlecase, menuitem_path(item.permalink) %></div>
+				</div>
+			<% end %>
+		</div>
+
+		<div class = "single_menuitem_desc_container">
+			<%= item.description.truncate(35) %>
+		</div>
+	</div>
+<% end %>
+
+<%= will_paginate @myrecipes %>
+

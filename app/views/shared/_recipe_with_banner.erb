@@ -1,0 +1,72 @@
+<% @recipes.each do |item| %><% unless item.menupic_file_name.nil? %>
+  <!-- <div class = "single_menuitem_sm_container"> -->
+  <div class = 'height_190px container_inline no_overflow align_top'>
+              <div class = "recipe_banner_container">
+                <div class = "white_container_no_border" >
+                    <%= image_tag item.menupic.url(:medium), :size => '145x145' %>
+
+                    <div class = "single_menuitem_details">
+                      <%= link_to image_tag('white.png', width: '145', height: '145'), menuitem_path(item.permalink) %>
+                      <div class = "menuitem_desc_text">
+                        <%= link_to item.name.titlecase.truncate(40), menuitem_path(item.permalink) %>
+                        <% if item.hostevents.where("eventstatus = ?", "Open").count > 0 %>
+                          <div class = "font_12px">
+                           <%= link_to(menuitem_path(item.permalink)) do  %>  
+                            (Featured in <%= pluralize(item.hostevents.where("eventstatus = ?", "Open").count, 'event') %>)
+                          <% end %>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                </div>
+                
+              <% if signed_in? %>
+                <% unless item.user_id == current_user.id %>
+                  <div class = "heigh_30px margin_top_20px">
+                    <% if current_user.recipereqs.find_by_menuitem_id(item.id) %>
+                      <div class = "banner_container_green_10px link_font_black font_josefin hover_over_to_display_div"> 
+                        <% if current_user.recipereqs.where('menuitem_id = ? and as_host_flag = 1', item.id).count > 0 %>
+                          <div class = "green_btn"> <%= button_to 'Modify Request', edit_recipereq_path(current_user.recipereqs.where('menuitem_id = ? and as_host_flag = 1', item.id).first.permalink), :method => :get%> </div>
+                          <div class="hidden_until_hover white_container font_12px padding_top_5px padding_left padding_right center"> 
+                            <div class = "margin_left margin_right margin_top_5px margin_bottom_5px">
+                              <div class = "lightgray_btn"><%= button_to 'Remove Request', {:controller => "recipereqs", :action => "destroy", :id => item.permalink, :page_return => @title}, :method => :delete, class: "font_12px" %></div>
+                            </div>
+                          </div>
+                        <% else %>
+                          <div class = "padding_top_5px center"> You Requested <i class="icon-heart"></i> </div>
+                          <div class="hidden_until_hover white_container font_12px padding_top_5px padding_left padding_right center"> 
+                            <div class = "margin_left margin_right margin_top_5px margin_bottom_5px">
+                              <div class = "lightgray_btn"><%= button_to 'Remove Request', {:controller => "recipereqs", :action => "destroy", :id => item.permalink, :page_return => @title}, :method => :delete, class: "font_12px" %></div>
+                            </div>
+                          </div>
+                        <% end %>
+                      </div>
+                    <% else %>
+                      <% if item.user.chef_flag? and current_user.host_flag? %>
+                        <div class = "banner_container_org_10px link_font_black font_josefin hover_over_to_display_div"> 
+                            <div class = "org_btn"><%= button_to 'Request Tasting as Yummer', {:controller => "recipereqs", :action => "create", :menuitem => item.permalink, :page_return => @title} %> </div>
+                            <div class="hidden_until_hover white_container font_12px padding_top_5px padding_left padding_right center"> 
+                              <!-- <div class = 'heigh_30px padding_top_5px'>Click To Request Tasting <i class="icon-heart"></i> </div> -->
+                              <div class = "green_btn"><%= button_to 'Request as Host', {:controller => "recipereqs", :action => "create", :menuitem => item.permalink, :as_host_flag => 1}, class: "font_12px" %></div>
+                            </div>
+                        </div>
+                      <% else %>
+                        <div class = "banner_container_org_10px link_font_black font_josefin hover_over_to_display_div"> 
+                            <div class = "org_btn"><%= button_to 'Request Tasting as Yummer', {:controller => "recipereqs", :action => "create", :menuitem => item.permalink, :page_return => @title} %> </div>
+                            <div class="hidden_until_hover white_container font_12px padding_top_5px padding_left padding_right center"> 
+                              <div class = 'heigh_30px padding_top_5px'>Click To Request Tasting <i class="icon-heart"></i> </div>
+                            </div>
+                        </div>
+                      <% end %>
+                    <% end %>
+                  </div>
+                <% else %>
+                  <% if item.recipereqs.count > 0 %>
+                    <div class = "heigh_30px margin_top_20px"><div class = "banner_container_green_10px font_josefin">
+                      <div class = "padding_top_5px center">Recipe Requested <%= pluralize(item.recipereqs.count.to_s, 'time') %></div>
+                    </div></div>
+                  <% end %>
+                <% end %>
+              <% end %>
+  </div></div>
+<% end %><% end %>

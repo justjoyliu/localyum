@@ -1,0 +1,25 @@
+<!--% provide(:title, 'Sign up') %-->
+<!--<h1>Sign up</h1>-->
+
+<!--<div class="row">
+  <div class="span6">-->
+    <%= form_for(User.new, :validate => true) do |f| %>
+      <%= render 'shared/error_messages', object: f.object %>
+
+      <%= f.text_field :name, :placeholder => "First Name or Business Name" %>
+      <%= f.text_field :last_name, :placeholder => "(optional) Last Name" %>
+      <%= f.email_field :email, :placeholder => "Email", class: 'email_icon' %>
+      <%= f.password_field :password, :placeholder => "Password", class: 'password_icon' %>
+      <%= f.password_field :password_confirmation, :placeholder => "Confirm Password", class: 'password_icon' %>
+
+	   <div class="privacy_policy_text">By creating an account, you agree to our 
+	    	<a href="/terms.html" target="_blank" rel="nofollow">Terms of Service </a>
+	   .</div>
+
+      <br>
+
+      <!--%= f.submit "      Sign Up      ", class: "btn btn-small btn-signup" %-->
+      <div class = "org_btn font_bold"><%= f.submit "Create a Free Account"%></div>
+    <% end %>
+  <!--</div>
+</div>-->

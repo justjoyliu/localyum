@@ -1,0 +1,161 @@
+
+      <% @evt_signups.each do |signup| %>
+        <div class = "mng_one_evt" style="background:url('/assets/<%= signup.confirmation_status %>corner.png') no-repeat top right white">
+          <table><tr>
+            <td width = "100px" height = "114px" align = "center" >
+              <%= link_to image_tag(signup.user.avatar.url(:thumb), size: "80x80"), user_path(signup.user.permalink), { :title => "Click Here To View Guest Profile" } %>
+            </td>
+
+            <td width = "220px" class = "mng_one_signup">
+              <div class = "mng_user_name">
+                <%= link_to signup.user.name.titleize, user_path(signup.user.permalink), { :title => "Click Here To View Guest Profile" } %>
+              </div>
+              <div class = 'margin_bottom'> <%=pluralize(signup.guest_count, 'seat') %>  
+                <% if signup.own_group_flag? %> <span> at their Own Table </span>
+                <% else %> <span> at the Communal Table </span>
+                <% end %>
+              </div>
+              <div class = "regular_mustbookhoursinadvance">
+               Request updated <%= time_ago_in_words(signup.updated_at) %> ago
+              </div>
+            </td>
+            <% if signup.confirmation_status.to_s == "Waiting" %>
+              <!-- <td class = "btn_w90px padding_top_15px"> -->
+              <td class = "mng_evt_status_container">
+                <%= form_for :signup, :url => signup_path(signup.permalink), :via => :put do |f| %>
+                  <%= f.hidden_field :confirmation_host, :value => true %>
+                  <%= f.hidden_field :confirmation_status, :value => "Confirmed"%>
+                  <!--%= f.submit " Confirm ", :class => "btn btn-mini mng_evt_btn"  %-->
+                  <button type="submit" class="org_btn">
+                    <i class="icon-ok"></i> Confirm &nbsp;
+                  </button>
+                <% end %>
+                        
+                <%= form_for :signup, :url => signup_path(signup.permalink), :via => :put do |f| %>
+                  <%= f.hidden_field :confirmation_host, :value => false %>
+                  <%= f.hidden_field :confirmation_status, :value => "Declined"%>
+                  <!--%= f.submit " Decline " , :class => "btn btn-mini mng_evt_btn" %-->
+                  <button type="submit" class="lightgray_btn">
+                    <i class="icon-ban-circle"></i> Decline &nbsp;
+                  </button>
+                <% end %>       
+              </td>
+            <% elsif signup.confirmation_status.to_s == "Confirmed" %>
+              <td class = "mng_evt_status_container">
+                <div class = "font_bold font_12px">Payment Status: </div> 
+                <div class = "font_12px"><%= signup.payment_status %></div>
+                <div class = 'margin_top'>
+                  <%= form_for :signup, :url => signup_path(signup.permalink), :via => :put do |f| %>
+                    <%= f.hidden_field :confirmation_host, :value => false %>
+                    <%= f.hidden_field :confirmation_status, :value => "Declined"%>
+                    <!--%= f.submit " Decline " , :class => "btn btn-mini mng_evt_btn" %-->
+                    <button type="submit" class="lightgray_btn">
+                      <i class="icon-ban-circle"></i> Decline &nbsp;
+                    </button>
+                  <% end %>   
+                </div>
+              </td>            
+            <% elsif signup.confirmation_status.to_s == "Attending" %>
+              <td class = "mng_evt_status_container">
+                <div class = "font_bold font_12px">Payment Status: </div> 
+                <div class = "font_12px"><%= signup.payment_status %></div>
+              </td>
+            <% end %>
+          </tr></table>
+        </div>
+      <% end %> 
+
+    <% if @evt_waitlist.count > 0 %>
+      <div class = 'table_border_top margin_top_40px margin_bottom padding_top_15px font_josefin font_bold font_26px center'>
+        Waitlist
+      </div>
+      <% @evt_waitlist.each do |signup| %>
+        <div class = "mng_one_evt" style="background:url('/assets/<%= signup.confirmation_status %>corner.png') no-repeat top right white">
+          <table><tr>
+            <td width = "100px" height = "114px" align = "center" >
+              <%= link_to image_tag(signup.user.avatar.url(:thumb), size: "80x80"), user_path(signup.user.permalink), { :title => "Click Here To View Guest Profile" } %>
+            </td>
+
+            <td width = "220px" class = "mng_one_signup">
+              <div class = "mng_user_name">
+                <%= link_to signup.user.name.titleize, user_path(signup.user.permalink), { :title => "Click Here To View Guest Profile" } %>
+              </div>
+              <div class = 'margin_bottom'> <%=pluralize(signup.guest_count, 'seat') %>  
+                <% if signup.own_group_flag? %> <span> at their Own Table </span>
+                <% else %> <span> at the Communal Table </span>
+                <% end %>
+              </div>
+              <div class = "regular_mustbookhoursinadvance">
+               Request updated <%= time_ago_in_words(signup.updated_at) %> ago
+              </div>
+            </td>
+            
+              <!-- <td class = "btn_w90px padding_top_15px"> -->
+              <td class = "mng_evt_status_container">
+                <%= form_for :signup, :url => signup_path(signup.permalink), :via => :put do |f| %>
+                  <%= f.hidden_field :confirmation_host, :value => true %>
+                  <%= f.hidden_field :confirmation_status, :value => "Confirmed"%>
+                  <!--%= f.submit " Confirm ", :class => "btn btn-mini mng_evt_btn"  %-->
+                  <button type="submit" class="org_btn">
+                    <i class="icon-ok"></i> Confirm &nbsp;
+                  </button>
+                <% end %>
+                        
+                <%= form_for :signup, :url => signup_path(signup.permalink), :via => :put do |f| %>
+                  <%= f.hidden_field :confirmation_host, :value => false %>
+                  <%= f.hidden_field :confirmation_status, :value => "Declined"%>
+                  <!--%= f.submit " Decline " , :class => "btn btn-mini mng_evt_btn" %-->
+                  <button type="submit" class="lightgray_btn">
+                    <i class="icon-ban-circle"></i> Decline &nbsp;
+                  </button>
+                <% end %>       
+              </td>
+          </tr></table>
+        </div>
+      <% end %> 
+
+      <div class = "font_10px"> <%= will_paginate @evt_waitlist %> </div>
+    <% end %> 
+
+    <% if @evt_withdrawn.count > 0 %>
+      <div class = 'table_border_top margin_top_40px margin_bottom padding_top_15px font_josefin font_bold font_26px center'>
+        Declined or Guest Withdrawn
+      </div>
+
+      <% @evt_withdrawn.each do |signup| %>
+        <div class = "mng_one_evt" style="background:url('/assets/<%= signup.confirmation_status %>corner.png') no-repeat top right white">
+          <table><tr>
+            <td width = "100px" height = "114px" align = "center" >
+              <%= link_to image_tag(signup.user.avatar.url(:thumb), size: "80x80"), user_path(signup.user.permalink), { :title => "Click Here To View Guest Profile" } %>
+            </td>
+
+            <td width = "220px" class = "mng_one_signup">
+              <div class = "mng_user_name">
+                <%= link_to signup.user.name.titleize, user_path(signup.user.permalink), { :title => "Click Here To View Guest Profile" } %>
+              </div>
+              <div class = 'margin_bottom'> <%=pluralize(signup.guest_count, 'seat') %>  
+                <% if signup.own_group_flag? %> <span> at their Own Table </span>
+                <% else %> <span> at the Communal Table </span>
+                <% end %>
+              </div>
+              <div class = "regular_mustbookhoursinadvance">
+               Req. updated <%= time_ago_in_words(signup.updated_at) %> ago
+              </div>
+            </td>
+
+            <% if signup.confirmation_status.to_s == "Declined" %>
+              <td class = "mng_evt_status_container">
+                <%= form_for :signup, :url => signup_path(signup.permalink), :via => :put do |f| %>
+                  <%= f.hidden_field :confirmation_host, :value => true %>
+                  <%= f.hidden_field :confirmation_status, :value => "Confirmed"%>
+                  <!--%= f.submit " Confirm ", :class => "btn btn-mini mng_evt_btn"  %-->
+                  <button type="submit" class="org_btn">
+                    <i class="icon-ok"></i> Confirm &nbsp;
+                  </button>
+                <% end %>
+              </td>
+            <% end %>
+          </tr></table>
+        </div>
+      <% end %> 
+    <% end %> 

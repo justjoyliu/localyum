@@ -1,0 +1,143 @@
+<% provide(:title, "Edit Profile") %> 
+<!-- <h1>Update your profile</h1> -->
+
+<div class="row margin_top">
+
+  <div class="span8">
+    <div class = "hover_over_to_display_div">
+      <% if current_user.active_status? %>
+        <div class = 'btn_green'>Account Status: Active</div>
+      <% else %>
+        <div class = 'btn_darkgray'>Account Status: De-activated</div>        
+      <% end %>
+      <div class = "hidden_until_hover center">
+          <% if current_user.active_status? %>
+                    <div class = 'width_200px margin_top'><div class = "btn_darkgray"><%= link_to 'De-Activate Account', deactivate_account_path, confirm: "Once you confirm, your account will no longer be visible to others. All your events will be cancelled. All your upcoming sign ups will be considered withdrawn. You followers and following chefs will be deleted (and will not be recoverable). Are you sure you want to de-activate your account?" %></div></div>
+                  <% else %>
+                    <div class = 'width_200px margin_top'><div class = "btn_green"><%= link_to 'Re-Activate Account', reactivate_account_path %></div></div>
+                  <% end %>
+                  
+                  <div class = 'width_200px margin_top margin_left'>
+                    <% if Unsubscribe.find_by_email(current_user.email).nil? %>
+                      <div class = "lightgray_btn"><%= button_to('Unsubscribe from Newsletters', {:controller => :unsubscribes, :action => 'create', :user_id => current_user.permalink }) %></div>
+                    <% else %>
+                      <div class = "btn_green"><%= button_to('Subscribe to Newsletters', {:controller => :unsubscribes, :action => 'destroy', :id => Unsubscribe.find_by_email(current_user.email)}, :method => :delete) %></div>
+                    <% end %>
+                  </div>
+      </div>
+    </div>
+
+    <%= form_for(@user, :url => user_path(@user.permalink), :via => :put, :html => { :multipart => true }, :validate => true) do |f| %>
+      <%= render 'shared/error_messages', object: f.object %>
+
+      <div class="accordion" id="update_profile">
+        <div class="accordion-group flat_white_container link_font_darkgray">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#update_profile" href="#basic">
+                  Basic Information
+                </a>
+              </div>
+              <div id = "basic" class = "accordion-body collapse"%>
+                <div class="accordion-inner background_gray">
+                  <%= f.text_field :name, placeholder: "First Name" %>
+                  <%= f.text_field :last_name, placeholder: "Last Name" %>
+                  <%= f.text_field :email, placeholder: "Email" %>
+                </div>
+              </div>
+        </div>
+
+        <div class="accordion-group flat_white_container link_font_darkgray">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#update_profile" href="#avatar">
+                  Profile Picture
+                </a>
+              </div>
+              <div id = "avatar" class = "accordion-body collapse"%>
+                <div class="accordion-inner background_gray">
+                      <%= f.file_field :avatar %>
+                </div>
+              </div>
+        </div>
+
+        <div class="accordion-group flat_white_container link_font_darkgray">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#update_profile" href="#socialmedia">
+                  Social Media Information
+                </a>
+              </div>
+              <div id = "socialmedia" class = "accordion-body collapse"%>
+                <div class="accordion-inner background_gray">
+                  <div class="field">
+                      <%= f.text_field :link_facebook, placeholder: "Link to Facebook Profile" %>
+                      <%= f.text_field :link_twitter, placeholder: "Link to Twitter Profile"  %>
+                      <%= f.text_field :link_pintrest, placeholder: "Link to Pinterest Profile"  %>
+                      <%= f.text_field :link_foodblog, placeholder: "Link to My Food Blog"  %>
+                  </div>
+                </div>
+              </div>
+        </div>
+
+        <div class="accordion-group flat_white_container link_font_darkgray">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#update_profile" href="#story">
+                  My Story
+                </a>
+              </div>
+              <div id = "story" class = "accordion-body collapse"%>
+                <div class="accordion-inner background_gray">
+                  <div class="field">
+                    <%= f.text_area :user_story, :rows => "3",
+                      placeholder: "Share your story ... Consider including favorite quote, favorite meal course, taste, and/or hobbies."
+                    %>
+                    <!--%= h(@user.user_story).gsub(/\n/, '<br/>').html_safe %-->
+                  </div>
+
+                </div>
+              </div>
+        </div>
+        <% if current_user.fbid.nil? %>
+          <div class="accordion-group flat_white_container link_font_darkgray">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#update_profile" href="#password_update">
+                  Password
+                </a>
+              </div>
+              <div id = "password_update" class = "accordion-body collapse"%>
+                <div class="accordion-inner background_gray">
+                  <div class="field">
+                    <%= f.password_field :password, placeholder: "New Password" %>
+                    <%= f.password_field :password_confirmation, placeholder: "Confirm New Password" %>
+                  </div>
+                </div>
+              </div>
+          </div>
+        <% end %>
+      </div> 
+      
+      <div class = "org_btn">
+        <%= f.submit "Save Updated Profile"%>
+      </div>
+      <% if @user_agent.browser == "Internet Explorer" %>
+        <div class = 'center margin_top'> Use Chrome or Mozilla Firefox for the ideal experience. Else, please confirm your password in the password section before saving updated profile </div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class = 'span3 offset1'>
+
+    <div class = 'org_btn margin_bottom'><%= button_to "All My Recipes", my_recipebox_path, :method => :get %></div>
+    <div class = 'org_btn margin_bottom'><%= button_to "Attended Event Recipes", my_events_recipes_path, :method => :get %></div>
+    <div class = 'org_btn margin_bottom'><%= button_to "My Past Events", show_mypastevents_path, :method => :get %></div>
+    <div class = 'org_btn margin_bottom'><%= button_to "My Earnings", show_myearnings_path, :method => :get %></div>
+    <div class = 'org_btn margin_bottom'><%= button_to "Address Book", my_address_book_path, :method => :get %></div>
+    
+    <% if current_user.admin %>
+      <div class = 'org_btn margin_bottom'><%= button_to "Send Newsletter", send_customized_newsletter_path, :method => :get %></div>
+      <div class = 'org_btn margin_bottom'><%= button_to "Send Newsletter Test", send_customized_newsletter_test_path, :method => :get %></div>
+    <% end %>
+
+    <div class = 'margin_top_20px'>
+            <%= render 'user_type' %>
+    </div>
+  </div>
+</div>

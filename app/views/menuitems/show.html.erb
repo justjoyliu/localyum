@@ -1,0 +1,143 @@
+<% provide(:title, @item.name) %>
+
+<% if @item.user_id == current_user.id and current_user.active_status? %>
+    <div class = "mi_edit toggle_div">
+      <div class = "btn_w100px margin_top_5px"><div class = "org_btn"><%= button_to "Edit", edit_menuitem_path(@item.permalink), :method => :get %></div></div>
+      <div class = "btn_w100px margin_top"><div class = "lightgray_btn">
+                <%= button_to "Delete", menuitem_path(@item.permalink), :method => :delete %>
+      </div></div>
+    </div>
+<% end %>
+
+<% if @item.menupic_file_name.nil? %>
+  <div class = "span5 menuitem_main_container_wo_pic">
+<% else %>
+  <div class = "menuitem_main_pic" style="background:url(<%= @item.menupic.url(:wide) %>) no-repeat top center"> &nbsp; </div>
+
+  <div class = "span5 menuitem_main_container">
+<% end %>
+
+    <section>
+      <div class = "span3_5">
+        <div class = "font_josefin font_26px font_bold" ><%= @item.name.titlecase %></div>
+        <div class = "menuitem_subtitle"> Course: <%= @item.course %> </div>
+      </div>
+      <div class = "mi_desc">
+        <%= h(@item.description).gsub(/\n/, '<br/>').html_safe %>
+      </div>
+    </section>
+    <section class = "mi_main_subcontainer">
+      <div class = "mi_sub_header"> Recipe </div>
+      
+      <% if @item.recipe.blank? %> <div class = "mi_sub_small"> no recipe available </div>
+      <% elsif @item.recipeview == 'Everyone' %> <%= h(@item.recipe).gsub(/\n/, '<br/>').html_safe %>
+      <% elsif @item.user_id == current_user.id %>
+        <% if @item.recipeview == 'Only Me'  %>
+          <div class = "mi_sub_small"> (only visible to you) </div>
+        <% elsif @item.recipeview == 'Only Friends Attending Event'  %>
+          <div class = "mi_sub_small"> (only visible to guests who attended at least one event that featured this recipe) </div>
+        <% end %>
+        <%= h(@item.recipe).gsub(/\n/, '<br/>').html_safe %>
+      <% elsif @item.recipeview == 'Only Me'  %> <div class = "mi_sub_small"> no recipe available </div>
+      <% elsif @item.recipeview == 'Only Friends Attending Event' && @current_user_signup > 0 %>
+        <%= h(@item.recipe).gsub(/\n/, '<br/>').html_safe %>
+      <% else %>
+        <div class = "mi_sub_small"> Viewable when chef confirms an event sign up featuring this recipe </div>
+      <% end %>    
+    </section>
+
+    <% if !@item.notes.blank? %> 
+      <section class = "mi_main_subcontainer">
+        <div class = "mi_sub_header"> Extra Notes  </div>
+        <%= h(@item.notes).gsub(/\n/, '<br/>').html_safe %>
+      </section>
+    <% end %>
+  </div>
+    
+
+<div class = "span3 mi_side_container">
+
+    <% if @item.user.active_status? %>
+      <div class = "margin_left margin_right white_container_no_border center padding_around_10 margin_bottom">
+        <%= link_to image_tag(@item.user.avatar.url(:thumb), size: "100x100"), user_path(User.find(@item.user_id).permalink) %>
+        <div class = "margin_top_5px margin_left margin_right font_16px font_bold margin_bottom_5px"><%= @item.user.name %></div>
+
+        <% if @featured.count > 0 %>
+          <!-- <section class = "white_container_border center margin_left margin_right margin_bottom_5px"> -->
+          <div class = "heigh_30px margin_bottom_5px margin_top"><div class = "banner_container_green font_josefin">
+            <div class = "padding_top_5px center">Featured in <%= pluralize(@featured.count.to_s, 'event') %></div>
+          </div></div>
+        <% end %>
+
+        <% if @requested_count > 0 %>
+          <!-- <section class = "white_container_border center margin_left margin_right margin_bottom_5px"> -->
+          <div class = "heigh_30px margin_bottom_5px margin_top"><div class = "banner_container_green font_josefin">
+            <div class = "padding_top_5px center">Recipe Requested <%= pluralize(@requested_count.to_s, 'time') %></div>
+          </div></div>
+        <% end %>
+
+        <% unless @item.user_id == current_user.id %>
+          <div class = "heigh_30px margin_top">
+            <% if current_user.recipereqs.find_by_menuitem_id(@item.id) %>
+              <div class = "banner_container_green link_font_black font_josefin hover_over_to_display_div"> 
+                <% if current_user.recipereqs.where('menuitem_id = ? and as_host_flag = 1', @item.id).count > 0 %>
+                          <div class = "green_btn"> <%= button_to 'Modify Request', edit_recipereq_path(current_user.recipereqs.where('menuitem_id = ? and as_host_flag = 1', @item.id).first.permalink), :method => :get%> </div>
+                          <div class="hidden_until_hover white_container font_12px padding_top_5px padding_left padding_right center"> 
+                            <div class = "margin_left margin_right margin_top_5px margin_bottom_5px">
+                              <div class = "lightgray_btn"><%= button_to 'Remove Request', {:controller => "recipereqs", :action => "destroy", :id => @item.permalink}, :method => :delete, class: "font_12px" %></div>
+                            </div>
+                          </div>
+                        <% else %>
+                          <div class = "padding_top_5px center"> You Requested <i class="icon-heart"></i> </div>
+                          <div class="hidden_until_hover white_container font_12px padding_top_5px padding_left padding_right center"> 
+                            <div class = "margin_left margin_right margin_top_5px margin_bottom_5px">
+                              <div class = "lightgray_btn"><%= button_to 'Remove Request', {:controller => "recipereqs", :action => "destroy", :id => @item.permalink}, :method => :delete, class: "font_12px" %></div>
+                            </div>
+                          </div>
+                <% end %>
+              </div>
+            <% else %>
+              <div class = "banner_container_org link_font_black font_josefin hover_over_to_display_div"> 
+                <% if @item.user.chef_flag? and current_user.host_flag? %>
+                            <div class = "org_btn"><%= button_to 'Request Tasting as Yummer', {:controller => "recipereqs", :action => "create", :menuitem => @item.permalink} %> </div>
+                            <div class="hidden_until_hover white_container font_12px padding_top_5px padding_left padding_right center"> 
+                              <!-- <div class = 'heigh_30px padding_top_5px'>Click To Request Tasting <i class="icon-heart"></i> </div> -->
+                              <div class = "green_btn"><%= button_to 'Request as Host', {:controller => "recipereqs", :action => "create", :menuitem => @item.permalink, :as_host_flag => 1}, class: "font_12px" %></div>
+                            </div>
+                      <% else %>
+                            <div class = "org_btn"><%= button_to 'Request Tasting as Yummer', {:controller => "recipereqs", :action => "create", :menuitem => @item.permalink} %> </div>
+                            <div class="hidden_until_hover white_container font_12px padding_top_5px padding_left padding_right center"> 
+                              <div class = 'heigh_30px padding_top_5px'>Click To Request Tasting <i class="icon-heart"></i> </div>
+                            </div>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+
+
+          <div class = "mi_margins"><%= link_to "View Chef's Events", user_path(User.find(@item.user_id).permalink), class: "btn btn-mini btn-block" %></div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class = "white_container_no_border center padding_around margin_left margin_right ">
+        <div class = "margin_top_20px"><i class="icon-remove icon-3x icon-border"></i> </div>
+        <div class = "mi_margins font_lightgray font_10px">de-activated chef</div>
+      </div>
+
+      <% if @featured.count > 0 %>
+        <section class = "white_container_border center margin_left margin_right ">
+          Featured in <div class = "font_josefin font_26px font_bold"><%= pluralize(@featured.count.to_s, 'event') %></div>
+        </section>
+      <% end %>
+    <% end %>
+
+    <% if !@item.ingredient.blank? %> 
+      <section class = "white_container_border padding_around_10 margin_left margin_right">
+        <div class = "mi_sub_header"> Ingredients </div>
+        <div class = "font_josefin"><%= h(@item.ingredient).gsub(/\n/, '<br/>').html_safe %></div>
+      </section>
+    <% end %>
+
+  </div>
+
+

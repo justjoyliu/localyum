@@ -1,0 +1,178 @@
+<!-- <div class="container"> -->
+
+<div class = "span3">
+	<div class = "msg_side_box center">
+		<table width = "100%" height = "150px">
+			<tr>
+				<td width = "48%" class = "table_border_right table_border_bottom"> 
+					<div class = "font_12px">Received</div>
+					<div class = "font_24px font_josefin"><%= @message_received.count %></div>
+				</td>
+				<td width = "48%" class = "table_border_bottom"> 
+					<div class = "font_12px">Sent</div>
+					<div class = "font_24px font_josefin"><%= @message_sent.count %></div>
+				</td>
+			</tr>
+			<tr>
+				<td class = "table_border_right"> 
+					<div class = "font_12px">Read</div>
+					<div class = "font_24px font_josefin"><%= @measage_read %></div>
+				</td>
+				<td> 
+					<div class = "font_12px">Replied</div>
+					<div class = "font_24px font_josefin"><%= @message_replied %></div>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+<div class = "span8">
+	<div class="accordion" id="msg_list"><% @msg_chains.each do |c, m| %>
+	  	<div class="accordion-group mgs_chain_box msg_border_color">
+	  		<div class="accordion-heading">
+		  		<div class = "mgs_chain_content">
+		  			<% if m.sender_id == current_user.id %>
+			  			<% unless c.title.to_s.empty? %>
+			  				<div class = "font_josefin font_18px link_font_black"> <%= link_to c.title.humanize.truncate(120), messagechain_path(c.permalink) %></div>
+			  				<% unless m.receiver_id.nil? %>
+					  			<div class = "mi_sub_small"><%= link_to user_path(User.find(m.receiver_id).permalink) do %>
+					  				To: <%= User.find(m.receiver_id).name_deactivation_consider %> 
+					  			<% end %></div>
+				  			<% end %>
+				  			<% unless c.hostevent_id.nil? %>
+								<div class = "mi_sub_small">
+									<%= link_to hostevent_path(Hostevent.find(c.hostevent_id).permalink) do %>
+										  About Event: <%= Hostevent.find(c.hostevent_id).event_name %>
+									<% end %>
+								</div>
+							<% end %>
+				  		<% else %>
+				  			<% if m.public_flag? %> 
+								<div class = "font_josefin font_18px link_font_black"> <%= link_to "Comment about " + Hostevent.find(c.hostevent_id).event_name.truncate(100), hostevent_path(Hostevent.find(c.hostevent_id).permalink) %></div>
+							<% else %>
+								<div class = "font_josefin font_18px link_font_black"> <%= link_to "Mesage to " + User.find(m.receiver_id).name_deactivation_consider, messagechain_path(c.permalink) %></div>
+								<% if !c.hostevent_id.nil? %>
+									<div class = "mi_sub_small">
+										<%= link_to hostevent_path(Hostevent.find(c.hostevent_id).permalink) do %>
+											  About Event: <%= Hostevent.find(c.hostevent_id).event_name %>
+										<% end %>
+									</div>
+								<% end %>
+			  				<% end %>
+			  			<% end %>
+			  		<% else %>
+						<% unless c.title.to_s.empty? %>
+							<% if m.receiver_read? %>
+								<div class = "font_josefin font_18px link_font_black"> <%= link_to c.title.humanize.truncate(120), messagechain_path(c.permalink) %></div>
+							<% else %>
+								<div class = "msg_unread font_josefin font_18px"> <%= link_to c.title.humanize.truncate(120), messagechain_path(c.permalink) %></div>
+							<% end %>
+
+							<% if !c.hostevent_id.nil? %>
+								<div class = "mi_sub_small">
+									<%= link_to hostevent_path(Hostevent.find(c.hostevent_id).permalink) do %>
+										  About Event: <%= Hostevent.find(c.hostevent_id).event_name %>
+									<% end %>
+								</div>
+							<% end %>
+
+							<div class = "mi_sub_small"><%= link_to user_path(User.find(m.sender_id).permalink) do %>
+								From: <%= User.find(m.sender_id).name_deactivation_consider %>
+								<% unless c.hostevent_id.nil? %><% if Hostevent.find(c.hostevent_id).user_id == m.sender_id %>
+									&nbsp; (event chef)
+								<% end %><% end %>	
+							<% end %></div>
+
+						<% else %>
+							<% if m.public_flag? %>
+								<% if m.receiver_read? %>
+									<div class = "font_josefin font_18px link_font_black"> <%= link_to "Comment about " + Hostevent.find(c.hostevent_id).event_name.truncate(100), hostevent_path(Hostevent.find(c.hostevent_id).permalink) %></div>
+								<% else %>
+									<div class = "msg_unread font_josefin font_18px"> <%= link_to "Comment about " + Hostevent.find(c.hostevent_id).event_name.truncate(100), hostevent_path(Hostevent.find(c.hostevent_id).permalink) %></div>
+								<% end %>
+
+								<div class = "mi_sub_small"><%= link_to user_path(User.find(m.sender_id).permalink) do %>
+									From: <%= User.find(m.sender_id).name_deactivation_consider %>
+									<% unless c.hostevent_id.nil? %><% if Hostevent.find(c.hostevent_id).user_id == m.sender_id %>
+										&nbsp; (event chef)
+									<% end %><% end %>	
+								<% end %></div>
+							<% else %>
+								<% if m.receiver_read? %>
+									<div class = "font_josefin font_18px link_font_black"> <%= link_to "Message from " + User.find(m.sender_id).name_deactivation_consider, messagechain_path(c.permalink) %>
+										<% unless c.hostevent_id.nil? %>
+											<% if Hostevent.find(c.hostevent_id).user_id == m.sender_id %>
+												<span class = "mi_sub_small">(event chef)</span>
+											<% end %>
+										<% end %>
+									</div>
+								<% else %>
+									<div class = "msg_unread font_josefin font_18px"> <%= link_to "Message from " + User.find(m.sender_id).name_deactivation_consider, messagechain_path(c.permalink) %>
+										<% unless c.hostevent_id.nil? %>
+											<% if Hostevent.find(c.hostevent_id).user_id == m.sender_id %>
+												<span class = "mi_sub_small">(event chef)</span>
+											<% end %>
+										<% end %>
+									</div>
+								<% end %>
+								
+
+								<% if !c.hostevent_id.nil? %>
+									<div class = "mi_sub_small">
+										<%= link_to hostevent_path(Hostevent.find(c.hostevent_id).permalink) do %>
+											  About Event: <%= Hostevent.find(c.hostevent_id).event_name %>
+										<% end %>
+									</div>
+								<% end %>
+							<% end %>
+						<% end %>
+						
+					<% end %>
+
+					
+					
+					<div class = "msg_content_color">
+						<%= h(m.message_content.truncate(120)).gsub(/\n/, '<br/>').html_safe %>
+					</div>
+		  		</div>
+	  		
+		  		<div class = "mgs_chain_content_side">
+		  			<div class = "mi_sub_small"> <%= m.created_at.strftime("%b %d, %Y") %> </div>
+		  			<% if !m.receiver_id.nil? and User.find(m.sender_id).active_status? and User.find(m.receiver_id).active_status? %>
+		  				<div class = "mi_sub_small"><%= link_to image_tag('reply.png'), m.msg_collapse(m), :data => {:toggle=>"collapse", :parent => "#msg_list"}%></div>
+		  			<% end %>
+		  			<div><%= link_to ' ', m, :method => :delete, class: "icon-trash" %> </div>
+		  		</div>
+		  	</div>
+		
+		  	<% if !m.receiver_id.nil? %>
+				<%= content_tag :div, :id => m.msg_collapse_inner(m), :class=>"accordion-body collapse" do %>
+		          <div class="accordion-inner">
+		            <%= form_for(Message.new, :validate => true) do |f| %>
+		              <% if m.sender_id == current_user.id %>
+		                <%= f.text_area :message_content, :rows => 4, :placeholder => "Message Again" %>
+		                <%= f.hidden_field :receiver_id, :value => User.find(m.receiver_id).permalink %>
+		              <% else %>
+		                <%= f.text_area :message_content, :rows => 4, :placeholder => "Reply" %>
+		                <%= f.hidden_field :replied_to_msg_id, :value => m.id %>
+		                <%= f.hidden_field :receiver_id, :value => User.find(m.sender_id).permalink %>
+		              <% end %>
+		              
+		              <%= f.hidden_field :messagechain_id, :value => c.permalink %>
+		              
+		              <%= f.submit "      Reply      ", class: "btn btn-small btn-signup" %>
+		            <% end %>
+		          </div>
+		        <% end %>
+	        <% end %>
+        </div>
+	<% end %></div>
+
+	<%= will_paginate @msg_chains %>
+</div>
+
+
+<!-- </div> -->
+
+

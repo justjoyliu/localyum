@@ -1,0 +1,4 @@
+Signup id: <%= @signup.id %>
+User id: <%= @signup.user_id %>
+Event: <%= link_to 'Link for event id' + @signup.hostevent_id, hostevent_url(Hostevent.find(@signup.hostevent_id).permalink) %>
+Failure Message: <%= @fail_msg  %>

@@ -1,0 +1,72 @@
+<div class = "white_container padding_around ">
+  <%= form_for(@menuitem, :validate => true) do |f| %>
+    <%= render 'shared/error_messages', object: f.object %>
+    <table class="table">
+      
+      <thead>
+        <tr>
+          <th colspan="2">New Menu Item</th>
+        </tr>
+      </thead>
+      
+      <tr>
+        <td><%= f.label :name, "Name" %></td>
+        <td><%= f.text_field :name %></td>
+      </tr>
+
+      <tr>
+        <td><%= f.label :menupic, "Photo (<5MB)" %></td>
+        <td><div class="field"><%= f.file_field :menupic %></div></td>
+      </tr> 
+
+      <tr>
+        <td><%= f.label :course, "Course" %></td>
+        <td><%= select("menuitem", "course", @menuitem.course_select {|p| [ p.course] }) %></td>
+      </tr>
+      
+      <tr>
+        <td><%= f.label :recipeview, "Recipe View Option" %></td>
+        <td><%= select("menuitem", "recipeview", @menuitem.recipe_view_select {|p| [ p.recipeview] }) %></td>
+      </tr>
+
+      <tr>
+        <td><%= f.label :description, "Description" %></td>
+        <td><%= f.text_area :description, :rows => 3, placeholder: "optional" %></td>
+      </tr>
+        <!-- <td>Flavor Intensity </td> -->
+          <!--%= select("menuitem", "flavorinstensity", [['1 (light)', 1], ['2',2], ['3',3], ['4', 4], ['5 (strong)', 5]]) %-->
+          <!-- <div id="flav_index">3</div> -->
+          <!--%= range_field( "menuitem", :flavorinstensity, :id => "flav_id", :min => 1, :max => 5, :step => 1)%-->
+
+        <!-- <td>Sweetness Scale </td> -->
+        <!--%= select("menuitem", "sweetscale", [['1 (mild)', 1], ['2',2], ['3',3], ['4', 4], ['5 (very)', 5]]) %-->
+
+        <!-- <td>Spicy Scale </td> -->
+        <!--%= select("menuitem", "spicyscale", [['1 (mild)', 1], ['2',2], ['3',3], ['4', 4], ['5 (extremely)', 5]]) %-->
+      
+      <tr>
+        <td><%= f.label :ingredient, "Ingredients" %></td>
+        <td><%= f.text_area :ingredient, rows: 3, placeholder: "optional, but highly recommended noting ingredients that guests could be allergic to" %></td>
+      </tr>
+
+      <tr>
+        <td><%= f.label :recipe, "Recipe" %></td>
+        <td><%= f.text_area :recipe, rows: 5, placeholder: "optional" %></td>
+      </tr>
+
+      
+
+      <tr>
+        <td><%= f.label :notes, "Extra Notes" %></td>
+        <td><%= f.text_area :notes, rows: 2, placeholder: "optional" %></td>
+      </tr>
+
+      
+ 
+  </table>
+  <div class = "org_btn margin_top_20px"><%= f.submit "      Add      " %></div>
+      <%= hidden_field_tag :event_id, @hostevent.permalink %>
+   <br>
+  <% end %>
+</div>
+

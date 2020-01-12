@@ -1,0 +1,67 @@
+<% provide(:title, "Manage My Events") %>
+<!--% javascript "pagination" %-->
+<div class="row">
+  <aside class="span3">
+    <!-- <section>
+      <h1>
+        <%= image_tag current_user.avatar.url(:thumb)%>
+        <div width = "200px" class = "container_inline"><%= current_user.name %></div>
+      </h1>
+    </section> -->
+    <% if @upcoming_hostevents.count > 0 %><section>
+      <!--%= image_tag @hostevent.eventphotos.first.eventpic.url(:thumb)%-->
+      <% if @host_pending_action > 0 %><div class = "mng_evt_summary_container thick_border_orange">
+      <% else %><div class = "mng_evt_summary_container"><%end%>
+        <% if @upcoming_open_hostevents.count > 0 %>
+          <div>
+            Open Events: <%= @upcoming_open_hostevents.count %> 
+          </div>
+
+          <% if @host_pending_action > 0 %><div class = "font_josefin font_12px margin_bottom">
+            <!-- (<%= @host_pending_action %> Pending Confirmation) -->
+            <%= link_to '(' + @host_pending_action.to_s + ' Pending Confirmation)', {:controller => "users", :action => "show_myevents", :host_pending_action => 'yes'} %>
+          </div><% end %>
+        <% end %>
+
+        <% if @upcoming_hostevents.count - @upcoming_open_hostevents.count  > 0 %><div>
+          Events in Preparation: <%= @upcoming_hostevents.count - @upcoming_open_hostevents.count %> 
+        </div><% end %>
+      </div>
+    </section><% end %>
+    
+    <% if @upcoming_confirmed_attending.count + @upcoming_paid_attending.count + @upcoming_waiting_cnt + @upcoming_withdrawn_cnt > 0 %><section>
+      <% if @upcoming_confirmed_attending.count > 0 %><div class = "mng_evt_summary_container thick_border_orange">
+      <% else %><div class = "mng_evt_summary_container"><%end%>
+        <% if @upcoming_paid_attending.count > 0 %><div>
+          Events Attending: <%= @upcoming_paid_attending.count %> 
+        </div><% end %>
+        <% if @upcoming_confirmed_attending.count > 0 %><div>
+          <%= link_to 'Pending Contribution: '+ @upcoming_confirmed_attending.count.to_s, {:controller => "users", :action => "show_myevents", :guest_pending_action => 'yes'} %>
+          <div class = "margin_left margin_right font_12px font_josefin ital_font">Seat(s) are not confirmed until contribution is collected</div>
+        </div><% end %>
+        <% if @upcoming_waiting_cnt > 0 %><div>
+          Waiting for Chef: <%= @upcoming_waiting_cnt %>
+        </div><% end %>
+        <% if @upcoming_withdrawn_cnt > 0 %><div>
+          Withdrawn: <%= @upcoming_withdrawn_cnt %> 
+        </div><% end %>
+      </div>
+    </section><% end %>
+
+  </aside>
+
+  <div class="span8">
+    <% if @all_events.count > 0 %>
+      <div id = "my_hostevents">
+        <%= render 'upcoming_hostevents' %>
+      </div>
+    <% else %>
+      <br>
+      <h2>
+        You have no upcoming events.
+      </h2>
+      <br>
+      <!--%= render @hostevents %-->
+    <% end %>
+  </div>
+</div>

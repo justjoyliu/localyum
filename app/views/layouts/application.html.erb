@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= full_title(yield(:title)) %></title>
+  	<!--#full_title() defined in app/helpers/application_helper.rb-->
+    
+    <%= stylesheet_link_tag "application", media: "all" %>
+
+    <!-- for bootstrap -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!--[if lt IE 9]>
+      <script src="../../assets/javascripts/html5shiv.js"></script>
+      <script src="../../assets/javascripts/respond.min.js"></script>
+    <![endif]-->
+
+    <!--old hash style would be :media => "all"-->
+    <%= javascript_include_tag "application" %>
+    <!-- %= javascript_include_tag :default % -->
+
+    <% if yield(:title) == "Contribute to Event" %>
+      <!--%= javascript_include_tag "https://js.stripe.com/v2/", "application" %-->
+      <script type="text/javascript" src="https://js.stripe.com/v2"></script> 
+
+      <script type="text/javascript">
+        // Stripe.setPublishableKey('pk_test_epv7skaM9MgeaeppnJCXj5Fh');
+        Stripe.setPublishableKey('pk_live_SUzdomcOoli74ACVnrWw358i');
+        
+        var stripeResponseHandler = function(status, response) {
+          var $form = $('#payment-form');
+     
+          if (response.error) {
+            // Show the errors on the form
+            $form.find('.payment-errors').text(response.error.message);
+            $form.find('button').prop('disabled', false);
+            // alert(response.error.message);
+          } else {
+            // alert(response.type);
+            // token contains id, last4, and card type
+            var token = response.id;
+            var nm = response['card']['name'];
+            var addy = response['card']['address_line1'];
+            var city = response['card']['address_city'];
+            var st = response['card']['address_state'];
+            var zip = response['card']['address_zip'];
+            // Insert the token into the form so it gets submitted to the server
+            $form.append($('<input type="hidden" name="stripeToken" />').val(token));
+            $form.append($('<input type="hidden" name="cardholder" />').val(nm));
+            $form.append($('<input type="hidden" name="address_line1" />').val(addy));
+            $form.append($('<input type="hidden" name="address_city" />').val(city));
+            $form.append($('<input type="hidden" name="address_state" />').val(st));
+            $form.append($('<input type="hidden" name="address_zip" />').val(zip));
+            // and re-submit
+            $form.get(0).submit();
+          }
+        };
+     
+        jQuery(function($) {
+          $('#payment-form').submit(function(e) {
+            var $form = $(this);
+            
+            // Disable the submit button to prevent repeated clicks
+            $form.find('button').prop('disabled', true);
+            // alert("in stripe before token");
+            Stripe.createToken($form, stripeResponseHandler);
+            // alert("in stripe assigned token");
+            // Prevent the form from submitting with the default action
+            return false;
+          });
+        });
+      </script>
+    <% end %>
+
+    <% if yield(:title) == "My Event Earnings" %>
+      <!--%= javascript_include_tag "https://js.stripe.com/v2/", "application" %-->
+      <script type="text/javascript" src="https://js.stripe.com/v2"></script>
+
+      <script type="text/javascript">
+        Stripe.setPublishableKey('pk_live_SUzdomcOoli74ACVnrWw358i');
+     
+        var stripeResponseHandler = function(status, response) {
+          var $form = $('#bank-form');
+     
+          if (response.error) {
+            // Show the errors on the form
+            $form.find('.bank-errors').text(response.error.message);
+            $form.find('button').prop('disabled', false);
+          } else {
+            // token contains id, last4, and card type
+            var token = response.id;
+            // var nm = response['card']['name'];
+
+            // Insert the token into the form so it gets submitted to the server
+            $form.append($('<input type="hidden" name="stripeToken" />').val(token));
+            // and re-submit
+            $form.get(0).submit();
+          }
+        };
+     
+        jQuery(function($) {
+          $('#bank-form').submit(function(e) {
+            var $form = $(this);
+     
+            // Disable the submit button to prevent repeated clicks
+            $form.find('button').prop('disabled', true);
+     
+            Stripe.bankAccount.createToken($form, stripeResponseHandler);
+     
+            // Prevent the form from submitting with the default action
+            return false;
+          });
+        });
+      </script>
+    <% end %>
+
+    <%= display_meta_tags %>
+    <!-- for pinterest -->
+    <meta name="p:domain_verify" content="b2fcc18050affb6f6c004b086556be38"/>
+
+    <%= csrf_meta_tags %>
+    
+    <%= render 'layouts/shim' %>    
+
+    <link rel="icon" type="image/png" href="/assets/localyumiconsmall.png">
+    <!--google font-->
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu:400,700,400italic|Josefin+Sans:400,700,400italic,700italic|Ubuntu+Condensed|Cuprum:400,400italic,700|Sacramento' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Dosis:400,500' rel='stylesheet' type='text/css'>
+    <!-- font-family: 'Ubuntu', sans-serif; -->
+    <!-- font-family: 'Josefin Sans', sans-serif; -->
+    <!-- font-family: 'Ubuntu Condensed', sans-serif; -->
+    <!-- font-family: 'Cuprum', sans-serif; -->
+    <!-- font-family: 'Sacramento', cursive; -->
+
+    <!-- eventphotos/new, header -->
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-45959459-1']);
+      _gaq.push(['_setDomainName', 'localyum.me']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body class = "stripe_background">
+    <%= render 'layouts/header' %> 
+    <div class="container">
+      <div id = "error_container"><% flash.each do |key, value| %>
+        <div class="alert alert-<%= key %>"><%= value %></div>
+      <% end %></div>
+      <%= yield %>
+    </div>
+    <%= render 'layouts/footer' %>
+   
+    <%= debug(params) if Rails.env.development? %>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+<% provide(:title, 'My Recipes') %>
+<div class = 'margin_left'>
+	<div class = 'container_inline'><%= button_to "                    Create a New Recipe                    ", new_menuitem_path, :method => :get, class: 'org_btn' %></div>
+	<div class = 'container_inline margin_left_20px'><%= button_to "           See all Recipe Requests from Hosts           ", recipereqs_path, :method => :get, class: 'org_btn' %></div>
+</div>
+
+<!-- <div class="container"> -->
+<div id = "my_recipe_box">
+	<%= render 'recipe_box' %>
+</div>
+<!-- </div> -->
+
+<!-- <%= will_paginate @myrecipes %> -->
+

@@ -1,0 +1,38 @@
+
+    <%= form_for @addressuser do |f| %>  
+      <%= render 'shared/error_messages', object: f.object %>
+      <div class = "margin_bottom margin_top">
+          <%= f.text_field :nickname, :placeholder => "(optional: for your later reference only)" %>   
+        </div>
+
+        <div class = "margin_bottom">
+          <%= f.text_field :line1, placeholder: "Address Line 1" %>   
+        </div>
+
+        <div class = "margin_bottom">
+          <%= f.text_field :city, :placeholder => "City" %>
+        </div>
+        
+        <div class = "margin_bottom">
+          <%= f.select("state", @addressuser.us_states_abrev {|p| [ p.state] }, placeholder: "State" ) %>
+        </div>
+
+        <div class = "margin_bottom">
+          <%= f.text_field :zip5, placeholder:"Zip Code" %>
+        </div>
+
+        <div class = "margin_bottom">
+          <%= f.select("metroarea", @addressuser.target_metro {|p| [p[0], p[1]] }) %>
+        </div>
+
+        <div class = "margin_bottom">
+          <%= f.text_field :neighborhood, placeholder: "Neighborhood" %>
+        </div>
+
+        <div class = "margin_bottom">
+          <%= f.select("private_flag", [['Commercial Property', 0], ['Private Residence', 1]]) %>
+        </div>
+
+        <%= f.hidden_field :user_id, :value => current_user.id %>
+        <div class = "pull-right"><%= f.submit "   Add New Address   ", class: "btn btn-mini btn-signin" %></div>
+    <% end %>

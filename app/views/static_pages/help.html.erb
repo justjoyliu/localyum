@@ -1,0 +1,226 @@
+<% provide(:title, 'Help') %>
+<div class = 'margin_left_20px margin_right_20px margin_bottom padding_left padding_right'>
+<h1 class = 'font_josefin'>FAQs</h1>
+
+<div class="accordion" id="question_category">
+	<div class="accordion-group flat_white_container link_font_darkgray">          
+		<div class="accordion-heading">
+           	<a class="accordion-toggle" data-toggle="collapse" data-parent="#question_category" href="#general">
+                  Local Yum
+            </a>
+        </div>
+        <div id = "general" class = "accordion-body collapse"%>
+            <div class="accordion-inner background_gray">
+                <ul>
+                	<li><%= link_to "What is Local Yum?", '#faq_1_1'%></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+        <div class="accordion-group flat_white_container link_font_darkgray">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#question_category" href="#hosting">
+                  Hosting Events
+                </a>
+              </div>
+              <div id = "hosting" class = "accordion-body collapse"%>
+                <div class="accordion-inner background_gray">
+                  <ul>
+                	<li><%= link_to "Who can host?", '#faq_2_1'%></li>
+                	<li><%= link_to "Is it legal?", '#faq_2_10'%></li>
+                	<li><%= link_to "Is there a fee to host?", '#faq_2_2'%></li>
+                	<li><%= link_to "How does event charity contributions work?", '#faq_2_9'%></li>
+                	<li><%= link_to "Is my information visible to everyone", '#faq_2_3'%></li>
+                	<li><%= link_to "Can I change my event after I already opened it for seat requests?", '#faq_2_4'%></li>
+                	<li><%= link_to "How do I know if a guest is safe?", '#faq_2_5'%></li>
+                	<li><%= link_to "Can I set house rules?", '#faq_2_6'%></li>
+                	<li><%= link_to "How do I get paid?", '#faq_2_7'%></li>
+                	<li><%= link_to "What if I need to cancel my event?", '#faq_2_8'%></li>
+                	<li><%= link_to "What about taxes? ", '#faq_2_11'%></li>
+                  </ul>
+                </div>
+              </div>
+        </div>
+
+        <div class="accordion-group flat_white_container link_font_darkgray">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#question_category" href="#attending">
+                  Attending Events
+                </a>
+              </div>
+              <div id = "attending" class = "accordion-body collapse"%>
+                <div class="accordion-inner background_gray">
+                   <ul>
+                	<li><%= link_to "Who can attend?", '#faq_3_1'%></li>
+                	<li><%= link_to "What is happens if an event is canceled?", '#faq_3_2'%></li>
+                	<li><%= link_to "What is happens if I cannot attend an event?", '#faq_3_3'%></li>
+                	<li><%= link_to "Is there a fee for attending?", '#faq_3_9'%></li>
+                	<li><%= link_to "When do I pay?", '#faq_3_4'%></li>
+                	<li><%= link_to "Is online payment secure?", '#faq_3_5'%></li>
+                	<li><%= link_to "How do you ensure good, clean, and safe environment?", '#faq_3_6'%></li>
+                	<li><%= link_to "What if I have dietary restrictions and food allergies?", '#faq_3_7'%></li>
+                	<li><%= link_to "What if I am late to an event?", '#faq_3_8'%></li>
+                  </ul>
+                </div>
+              </div>
+        </div>
+
+</div> 
+</div>
+
+<div class = 'margin_left_20px margin_right_20px margin_top margin_bottom_20px padding_bottom padding_top_40px padding_left padding_right'>
+	<h1> Local Yum </h1>
+
+	<div id = 'faq_1_1' class = 'margin_bottom padding_top_40px'> <div class = 'faq_question'>What is Local Yum?</div>
+		 Local Yum helps adventurous foodies meet passionate chefs over a unique experience centered around food. Innovative chefs and open minded hosts can create events and adventurous foodies can book a seat at those events anywhere in the world. 
+
+		 <div class = 'margin_top font_bold'><%= link_to "Find out more about who we are and what we believe here.", about_path %></div>
+	</div>
+</div>
+
+<div class = 'margin_left_20px margin_right_20px margin_top margin_bottom_20px padding_left padding_right padding_top_40px'>
+	<h1> Hosting </h1>
+
+	<div id = 'faq_2_1' class = 'margin_bottom padding_top_40px'> 
+		<div class = 'faq_question'>Who can host?</div>  
+		
+		<div class = 'margin_bottom_5px'>Whether you are a restaurant owner looking to try new recipes or an aspiring chef looking to grow your talent, we have an online community for you at Local Yum to open events to fulfill your needs. </div>
+
+		<div class = 'margin_bottom_5px'>If you decide to host an event, you must agree that you will comply with all applicable laws and regulates that may apply to anything provided in the event, including but not limited to zoning laws, health laws, and license laws. In addition, the price you set for a seat at your event should include any additional cost you may have or taxes you are required to withhold.  </div>
+
+		<div class = 'margin_bottom_5px'>If you choose, you can also donate a portion of your earnings to charity and help your community grow. </div>		
+	</div>
+
+	<div id = 'faq_2_10' class = 'margin_bottom padding_top_40px'> 
+		<div class = 'faq_question'>Is it legal?</div>  
+		
+		<!-- <div class = 'margin_bottom_5px'>It is legal to welcome guests into your house. When you host an event, it is like inviting friend to come over to your house for a dinner party and asking them for a contribution for your cost. </div> -->
+
+		<div class = 'margin_bottom_5px'><!-- Nevertheless,  -->It is important for you to understand how the laws work in your city. Depending on where you host the event, there could be laws and regulates that you must abide by, including but not limited to zoning laws, health laws, and license laws. Furthermore, some cities have laws that restrict your ability to host paying guests for events. Please review your local laws before hosting an event on Local Yum. By accepting our Terms of Service and opening an event listing, you certify that you will follow your local laws and regulations.
+		</div>
+	</div>
+
+	<div id = 'faq_2_2' class = 'margin_bottom padding_top_40px'> 
+		<div class = 'faq_question'>Is there a fee to host?</div>  
+		It is free to list any event. Once a seat booking is confirmed for your event and the guest pays for the seat, Local Yum will charge the host 5% of the seat price as the "seating fee". This fee covers the cost of processing the payments and comes out of the host earnings payout balance.
+	</div>
+
+	<div id = 'faq_2_9' class = 'margin_bottom padding_top_40px'> 
+		<div class = 'faq_question'>How does event charity contributions work? </div> 
+		<div class = 'margin_bottom_5px'>As a host, you can choose to contribute a certain percentage of your earnings from an Event to charity by selecting this option when setting up your event. </div>
+		
+		<!-- <div class = 'margin_bottom_5px'>Local Yum will withhold that amount for you and contribute directly to the charity on a semi-annual basis. You should receive a direct email confirmation from the charity that they have received your contribution.</div> -->
+		<div class = 'margin_bottom_5px'>Local Yum will withhold that amount from your earnings and contribute directly to the charity on a semi-annual basis.</div>
+
+		<div class = 'margin_bottom_5px'>Furthermore, Local Yum will match the percentage you contribute to charity in respective to the “seating fees” Local Yum has collected for the guests that attended your event. </div>	
+
+		<div class = 'margin_bottom_5px'>For example, if your event is $100 per seat and you choose to donate 50% to charity, Local Yum will withhold $47.50 from your earnings to contribute directly to the charity, $47.50 will be your earnings that count towards your balance available for withdraw. Local Yum will collect $5 “seating fee” of which $2.50 will be contributed to charity. </div>	
+	</div>
+
+	<div id = 'faq_2_3' class = 'margin_bottom padding_top_40px'> 
+		<div class = 'faq_question'>Is my information visible to everyone?</div>  
+		Whatever information you choose to fill out in your profile will be visible to anyone visiting the site. However, the event address and your contact information for the event will be only visible to guest who has paid for your event.
+	</div>
+
+	<div id = 'faq_2_4' class = 'margin_bottom padding_top_40px'> 
+		<div class = 'faq_question'>Can I change my event after I already opened it for seat requests? </div> 
+		Once you open your event, you can only modify for future guest sign ups
+		<ul>
+			<li>seat request cut off time</li>
+			<li> maximum guests</li>
+			<li>confirmation setting (whether guests need to wait for your specific confirmation or they will be automatically confirmed when they request for a seat)</li>
+		</ul>
+	</div>
+
+	<div id = 'faq_2_5' class = 'margin_bottom padding_top_40px'> 
+		<div class = 'faq_question'>How do I know if a guest is safe?</div> 
+		  There are multiple ways we try to foster a secure and comfortable environment to meet new people. One is by reviewing their star rating and what others have to say about their experience with this person. Another way is check out the links to social networking sites the guest posted on his or her Local Yum profile page. You can also send a message asking for more information if you would like. In the end, you can always choose the confirm sign up option for your event so that you can review the guest's details and decline any seat requests if you are uncomfortable.
+	</div>
+
+	<div id = 'faq_2_6' class = 'margin_bottom padding_top_40px'> 
+		<div class = 'faq_question'>Can I set house rules?</div> 
+		  Of course, when you set up your event, enter any house rules you may have in the event details "Request for Guests" section. These requests will be visible to guests on the event's detail section. We will additionally display these requests when the guest makes the contribution for your event. If guests do not agree to these house rules, they should not sign up.
+	</div>
+
+	<div id = 'faq_2_7' class = 'margin_bottom padding_top_40px'> 
+		<div class = 'faq_question'>How do I get paid? </div> 
+		<div class = 'margin_bottom_5px'>Once you are logged in, go to <%= link_to "My Earnings", show_myearnings_path %> summary page.</div> 
+		<div class = 'margin_bottom_5px'>All of your event earnings will be reflected 48 hours after each event start time. If there was no dispute opened by a host within 48 hours of your event start time, your earnings from that event will be made available for withdraw. If there was a dispute, we will contact the guest and you directly in hopes of further understanding and resolving the dispute. Once the guest removes his or her dispute, your earning from that event will be made available for withdraw. </div>
+		<div class = 'margin_bottom_5px'>You can enter your banking information to transfer your available balance to your bank for free. If this transfer fails due to us enable to verify your account based on information you entered, we will charge a $2 penalty for every failure.</div>  
+		<div class = 'margin_bottom_5px'>Or you can choose to withdraw your balance to a PayPal email address account for a fee of $5 + 10% of transfer amount. </div> 
+	</div>
+
+	<div id = 'faq_2_8' class = 'margin_bottom padding_top_40px'> 
+		<div class = 'faq_question'>What if I need to cancel my event? </div> 
+		<div class = 'margin_bottom_5px'>Go to your <%= link_to "upcoming events dashboard", show_myevents_path %> and click the button "Cancel Event" for the event you wish to cancel. </div>
+		<div class = 'margin_bottom_5px'>By taking this action, Local Yum will automatically refund all of the paid guests. The host will be charge a penalty of $1 per refunded guest and 10% of refunded amount. This penalty will be deducted from the host’s account earnings balance.</div>
+		<div class = 'margin_bottom_5px'>Please note that this action will also be reflected on the host's profile page so that future guests could use this information as a consideration point towards whether or not to sign up for your future event.</div>	
+	</div>
+
+	<div id = 'faq_2_11' class = 'margin_bottom padding_top_40px'> 
+		<div class = 'faq_question'>What about taxes? </div> 
+		<div class = 'margin_bottom_5px'>We ask that the host incorporate required taxes into the price of the event. Please contact your local tax authorities to understand what taxes are necessary to be withheld.</div>
+	</div>
+</div>
+
+<div class = 'margin_left_20px margin_right_20px margin_top margin_bottom_20px padding_left padding_right padding_top_40px'>
+	<h1> Attending </h1>
+
+	<div id = 'faq_3_1' class = 'margin_bottom padding_top_40px'> 
+		<div class = 'faq_question'>Who can attend?</div>  
+		
+		<div class = 'margin_bottom_5px'>Anyone who is passionate about food and meeting open-minded people. </div>
+
+		<div class = 'margin_bottom_5px'>You can either be a traveller looking to dine with locals to get an authentic experience.</div>
+
+		<div class = 'margin_bottom_5px'>Or you can be a local who likes to meet similar minded people and wants a more personal dining experience than what is offered in a traditional restaurant setting.</div>		
+	</div>
+
+
+	<div id = 'faq_3_2' class = 'margin_bottom padding_top_40px'> 
+		<div class = 'faq_question'>What is happens if an event is canceled? </div>  
+		
+		If the host cancels an event, 100% of your payment and the servicing fee will be refunded back to your credit card. We will additionally make a note on the host's profile page to mark how many times he/she has canceled events in the past. We hope given this information, you can make a good judgment as to whether or not you should request for a seat at that chef's event given his/her history.
+	</div>
+
+	<div id = 'faq_3_3' class = 'margin_bottom padding_top_40px'> 
+		<div class = 'faq_question'>What is happens if I cannot attend an event? </div>  
+		You will be refunded according to the cancellation policy selected by the Host for the Event and reflected in the relevant Event posting. You can find the <%= link_to "details of each cancellation policy here.", cancellation_policy_path %> 
+	</div>
+
+	<div id = 'faq_3_9' class = 'margin_bottom padding_top_40px'> 
+		<div class = 'faq_question'>Is there a fee for attending? </div>  
+		We charge guests a servicing fee of $2 or 5% of the seat price when you contribute to the event, which ever is higher. This fee covers the cost of running the site and ensuring the content is available to you in order for you to discover amazing events. We will call out this fee specifically when you are making your contribution to the event so there will be no surprises. 
+	</div>
+
+	<div id = 'faq_3_4' class = 'margin_bottom padding_top_40px'> 
+		<div class = 'faq_question'>When do I pay?</div>  
+		<div class = 'margin_bottom_5px'>When the host set up the event, the host have the option to confirm every seat request or automatically confirm every request.</div>
+		<div class = 'margin_bottom_5px'>If the event has automatic confirmation, once you request the seat, you can make your contribution and secure your seat for the event.</div>
+		<div class = 'margin_bottom_5px'>Else, you must wait for the host to confirm your seat before you can make your contribution and secure your seat for the event. When the host confirms your request and we are ready to receive your contribution, the bell on the navigation bar will become filled like this <i class="icon-bell-alt"></i>. </div>
+		<div class = 'margin_bottom_5px'>Please note that even if the host has confirmed your seat, your seat will not be considered secured until you make your contribution. Once your seat is secured, the exact address and host contact information for the event will be made visible to you on the event details page.</div>
+	</div>
+
+	<div id = 'faq_3_5' class = 'margin_bottom padding_top_40px'> 
+		<div class = 'faq_question'>Is online payment secure?</div>  
+		It is very secure. The payment partner selected by Local Yum is certified by PCI, the world standard that ensures compliance of the payment platforms with the strictest regulations on security and data protection. 
+	</div>
+
+	<div id = 'faq_3_6' class = 'margin_bottom padding_top_40px'> 
+		<div class = 'faq_question'>How do you ensure good, clean, and safe environment?</div>  
+		<div class = 'margin_bottom_5px'> Our hosts can opt-in to preparing food in a good, clean, and safe environment for the Event. Furthermore, the hosts will dine with you at the same table. It is in their best interest to ensure a good, clean, and safe environment. In addition, we highly encourage you to read previous reviews and ratings of events the host has held before and ask that you review/rate the events that you have attended so we can form a great community centered around good food.</div>
+		<div class = 'margin_bottom_5px'> If you are highly unsatisfied with your experience, you can open a dispute by going to the <%= link_to "Past Event Dashboard", show_mypastevents_path %> and clicking "Dispute Event" button for the relevant event. You must open this dispute within 48 hours after the event start time. </div>
+	</div>
+
+	<div id = 'faq_3_7' class = 'margin_bottom padding_top_40px'> 
+		<div class = 'faq_question'>What if I have dietary restrictions and food allergies?</div>  
+		For all the events, the host will specify the menu items on the event page. We highly encourage the hosts to list the ingredients used in the recipe. Furthermore, we encourage you to communicate your dietary restrictions and allergies to the host by sending a message. 
+	</div>
+
+	<div id = 'faq_3_8' class = 'margin_bottom padding_top_40px'> 
+		<div class = 'faq_question'>What if I am late to an event?</div>  
+		As common courtesy to the hosts, we ask you to communicate with the host if you will be over 15 minutes late.
+	</div>
+</div>
+	

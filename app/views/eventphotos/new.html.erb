@@ -1,0 +1,84 @@
+<% provide(:title, "Edit Event") %> 
+<div class="row margin_bottom_20px">
+  <div class="span6">
+
+      <div class = "page_tagline_big">
+        Make your event fantastic.
+      </div>
+
+      <div class="event_nav_bar margin_top"><div class="btn-group">
+          <% if @hostevent.hostevent_step2? %>
+            <%= link_to "1: Basic", edit_basic_path(@hostevent.permalink), :class => "btn_complete" %>
+            <% else %>
+              <%= link_to "1: Basic", edit_basic_path(@hostevent.permalink), :class => "btn_incomplete" %>
+            <% end %>
+
+          <% if @hostevent.hostevent_step1? %>
+            <%= link_to "2: Menu", edit_hostevent_path(@hostevent.permalink), :class => "btn_complete" %>
+            <% else %>
+              <%= link_to "2: Menu", edit_hostevent_path(@hostevent.permalink), :class => "btn_incomplete" %>
+            <% end %>
+
+          <%= render :partial => "event_setup_nav", :locals => { :hostevent => @hostevent } %>
+      </div></div>
+  </div>
+  <div class = 'span6'>
+    <div class = "margin_top_20px"> 
+          <%if @hostevent.hostevent_status_could_be_complete? %>
+            <% if @hostevent.eventstatus != "Open" %>
+              <div class = 'btn_w150px margin_bottom margin_right'><div class = "lightgray_btn"><%= button_to "Back to Basic Info", edit_basic_path(@hostevent.permalink) %></div></div>
+              <div class = 'btn_w150px margin_bottom'><div class = "org_btn"><%= button_to "Open Event", hostevent_open_path(@hostevent.permalink), confirm: "You cannot edit this event once it is open. Are you sure you want to open this event?" %></div></div>
+            <% else %>
+                <div class = 'btn_w150px margin_bottom'><div class = "org_btn"><%= button_to "Go to Event Page", hostevent_path(@hostevent.permalink), :method => :get %></div></div>
+            <% end %>
+          <% else %>
+            <div class = 'btn_w150px margin_bottom margin_right'><div class = "lightgray_btn"><%= button_to "Back to Basic Info", edit_basic_path(@hostevent.permalink) %></div></div>
+            <p> <div class = "highlight"> <%= @hostevent.hostevent_to_complete %> </div> <div class = "small_text"> more detail to complete </div> </p>
+          <% end %>
+    </div>
+  </div>
+</div>
+<div class = "row">
+      <div class = "span5">
+
+        <div class = 'font_josefin font_16px center margin_bottom'>All the pictures included with your menu items will be automatically included as photos for your event. </div>
+        
+
+        <%= form_for(@eventphoto, :url => create_photo_path(@hostevent.permalink), :html => { :id => "upload", :multipart => true }) do |f| %>
+          <%= render 'shared/error_messages', object: f.object %>
+          
+          <!-- <div class="org_btn fileinput-button"> -->
+              <!-- <span>Add files...</span> -->
+              <!-- The file input field used as target for the file upload widget -->
+              <!-- <input id="create_eventphoto" value = "Add Photo" type="file" name="eventphoto[eventpic]" multiple> -->
+          <!-- </div> -->
+
+          <!-- <div class = "pull-right"><%= f.submit "Save changes", class: "btn btn-mini btn-signin" %></div> -->
+          <div id="drop">
+            <div>Drop Here</div>
+
+            <a>Browse</a>
+            <input id="create_eventphoto" type="file" name="eventphoto[eventpic]" multiple>
+
+            <div class = 'font_lightgray font_10px center font_josefin margin_top'>All photos must be less than 10MB. If you upload large photos, please allow for 1-2 minute processing time. </div>
+          </div>
+
+          <ul>
+            <!-- The file uploads will be shown here -->
+          </ul>  
+        <% end %>
+      </div>
+      <div class = 'span6 offset1'>
+        <div id = "eventphotos" class = "margin_top">
+          <% @eventphoto_existing.each do |p| %>
+            <article class="evt_photo_med_container" style="background:url(<%= p.eventpic.url(:medium)%>) no-repeat center" >
+              <div class = "evt_photo_delete_btn"> 
+                <%= link_to delete_photo_path(:id => p.id, :permalink => @hostevent.permalink), :method => :delete do %>
+                  <i class="icon-trash icon-3x"></i>
+                <% end %>
+              </div>
+            </article>
+          <% end %>
+        </div>
+      </div>
+</div>

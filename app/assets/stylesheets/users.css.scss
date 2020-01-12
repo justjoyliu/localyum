@@ -1,0 +1,84 @@
+// Place all the styles related to the Users controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+/*colors*/
+	$orange1: #f19231;
+	$grayMediumLight: #eaeaea;
+	$grayDark: #3e3c3f;
+	$green: #82b94e; /*#86b72e;*/
+
+.btn_100p,
+.btn_100p input[type = "submit"]{
+		background-color: $orange1;
+		height: 40px;
+		text-align: center;
+		/*margin: 10px 0 10px 0;*/
+		/*vertical-align: center;*/
+		line-height: 40px;
+		width: 100%;
+		font-family: 'Josefin Sans', sans-serif;
+		font-size: 16px;
+		border-color: transparent;
+		/*overflow: hidden;*/
+		a{
+			color: #3e3c3f;
+		}
+	}
+
+.btn_darkgray,
+.btn_darkgray a, 
+.btn_darkgray a:hover,
+.btn_darkgray a:active{
+	background-color: $grayDark;
+	width: 100%;
+	color: $grayMediumLight;
+	font-family: 'Josefin Sans', sans-serif;
+	border-color: transparent;
+	height: 28px;
+	line-height: 28px;
+	vertical-align: middle;
+	text-align: center;
+	overflow: hidden;
+}
+
+.btn_green,
+.btn_green a, 
+.btn_green input[type = "submit"],
+.btn_green button{
+	background-color: $green;
+	width: 100%;
+	border-color: transparent;
+    width: 100%;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    vertical-align: center;
+    font-family: 'Josefin Sans', sans-serif;
+	color: $grayMediumLight;
+	overflow: hidden;
+}
+
+.margin_left_400px{
+	margin-left: 370px;
+}
+
+.flat_white_container {
+      background-color: white;
+      -webkit-border-radius: 0px; 
+      -moz-border-radius: 0px; 
+      -o-border-radius: 0px; 
+      border-radius: 0px; 
+      border-style:solid;
+      border-color: #e3e3e3;
+      border-width:1px;
+      margin-bottom: 0px;
+      margin-top: -1px;
+      /*min-height: 440px;*/
+/*      a{
+			color: #3e3c3f;
+		}*/
+    }
+
+.background_gray{
+	background-color: $grayMediumLight;
+}
